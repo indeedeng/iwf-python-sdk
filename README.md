@@ -32,7 +32,7 @@ poetry install
 
 #### Update IDL
 Initialize the IDL Git submodule
-```bash 
+```bash
 git submodule update --init --recursive
 ```
 

@@ -16,7 +16,7 @@ jobs:
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run linters
-    - uses: pre-commit/action@v3.0.0
+      uses: pre-commit/action@v3.0.0
   pytest:
     runs-on: ubuntu-latest
     steps:
