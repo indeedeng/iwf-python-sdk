@@ -16,6 +16,22 @@ How does a user ask questions if they are stuck?
 
 What does a user need to know if they want to start contributing? If this information is extensive, capture it in a CONTRIBUTING.md file and link to that file here.
 
+Virtual environment setup:
+```bash
+poetry install
+```
+
+Generate API client from IDL:
+```bash
+poetry add openapi-python-client
+poetry run openapi-python-client generate --path iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yaml
+```
+
+Lint
+```bash
+poetry run pre-commit run --show-diff-on-failure --color=always --all-files
+```
+
 ## Project Maintainers
 
 Who are the project maintainers, and how can they be reached?

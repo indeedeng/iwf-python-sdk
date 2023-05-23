@@ -1,0 +1,61 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+exclude: ^iwf-api/
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.4.0
+  hooks:
+  - id: check-ast
+  - id: trailing-whitespace
+  - id: check-toml
+  - id: end-of-file-fixer
+
+- repo: https://github.com/asottile/add-trailing-comma
+  rev: v2.1.0
+  hooks:
+  - id: add-trailing-comma
+
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v2.1.0
+  hooks:
+  - id: pretty-format-yaml
+    args:
+    - --autofix
+    - --preserve-quotes
+    - --indent=2
+
+- repo: https://github.com/hadialqattan/pycln
+  rev: v1.1.0
+  hooks:
+  - id: pycln
+    args: ["-a"]
+
+- repo: https://github.com/ambv/black
+  rev: 22.3.0
+  hooks:
+  - id: black
+    language_version: python3
+
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: "v0.0.267"
+  hooks:
+  - id: ruff
+
+- repo: local
+  hooks:
+
+  - id: isort
+    name: isort
+    entry: poetry run isort
+    language: system
+    types: [python]
+
+  - id: mypy
+    name: Validate types with MyPy
+    entry: poetry run mypy
+    language: system
+    types: [python]
+    pass_filenames: false
+    args:
+    - "iwf"
