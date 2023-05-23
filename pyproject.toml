@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "iwf-python-sdk"
+version = "0.1.0"
+description = ""
+authors = ["Indeed Engineering"]
+readme = "README.md"
+packages = [{include = "iwf"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+iwf-api = { path = "iwf-api" }
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.2.1"
+mypy = "^1.1.1"
+isort = "^5.11.4"
+pre-commit = "^3.0.1"
+wemake-python-styleguide = "^0.17.0"
+pytest-cov = "^4.0.0"
+anyio = "^3.6.2"
+pytest-env = "^0.8.1"
+httpx = "^0.23.3"
+openapi-python-client = "^0.14.0"
+
+[tool.ruff]
+ignore = ["E501"]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+src_paths = ["iwf",]
+
+[tool.mypy]
+ignore_missing_imports = true
+allow_subclassing_any = true
+allow_untyped_calls = true
+pretty = true
+show_error_codes = true
+implicit_reexport = true
+allow_untyped_decorators = true
+warn_unused_ignores = false
+warn_return_any = false
+namespace_packages = true
+plugins = ["pydantic.mypy"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

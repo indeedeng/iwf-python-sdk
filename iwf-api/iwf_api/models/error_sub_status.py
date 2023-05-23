@@ -1,0 +1,11 @@
+from enum import Enum
+
+
+class ErrorSubStatus(str, Enum):
+    UNCATEGORIZED_SUB_STATUS = "UNCATEGORIZED_SUB_STATUS"
+    WORKER_API_ERROR = "WORKER_API_ERROR"
+    WORKFLOW_ALREADY_STARTED_SUB_STATUS = "WORKFLOW_ALREADY_STARTED_SUB_STATUS"
+    WORKFLOW_NOT_EXISTS_SUB_STATUS = "WORKFLOW_NOT_EXISTS_SUB_STATUS"
+
+    def __str__(self) -> str:
+        return str(self.value)
