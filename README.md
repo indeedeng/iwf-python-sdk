@@ -30,6 +30,17 @@ poetry install
 
 ### Common Tasks
 
+#### Update IDL
+Initialize the IDL Git submodule
+```bash 
+git submodule update --init --recursive
+```
+
+Update IDL to the latest commit.
+```bash
+git submodule update --remote --merge
+```
+
 #### Generate API client from IDL
 
 This project uses [openapi-python-client](https://github.com/openapi-generators/openapi-python-client) to generate an API client from the IDL. To update the generated client:
