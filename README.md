@@ -14,20 +14,34 @@ How does a user ask questions if they are stuck?
 
 ## How To Contribute
 
-What does a user need to know if they want to start contributing? If this information is extensive, capture it in a CONTRIBUTING.md file and link to that file here.
+This project uses [Poetry](https://python-poetry.org/) as a dependency manager. Check out Poetry's [documentation on how to install it](https://python-poetry.org/docs/#installing-with-the-official-installer) on your system before proceeding.
 
-Virtual environment setup:
+> ❗Note: If you use Conda or Pyenv as your environment / package manager, avoid dependency conflicts by doing the following first:
+1. Before installing Poetry, create and activate a new Conda env (e.g. conda create -n langchain python=3.9)
+2. Install Poetry (see above)
+3. Tell Poetry to use the virtualenv python environment (poetry config virtualenvs.prefer-active-python true)
+4. Continue with the following steps.
+
+To install requirements:
+
 ```bash
 poetry install
 ```
 
-Generate API client from IDL:
+### Common Tasks
+
+#### Generate API client from IDL
+
+This project uses [openapi-python-client](https://github.com/openapi-generators/openapi-python-client) to generate an API client from the IDL. To update the generated client:
+
 ```bash
-poetry add openapi-python-client
-poetry run openapi-python-client generate --path iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yaml
+poetry run openapi-python-client update --path iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yaml
 ```
 
-Lint
+#### Linting
+
+To run linting for this project:
+
 ```bash
 poetry run pre-commit run --show-diff-on-failure --color=always --all-files
 ```
