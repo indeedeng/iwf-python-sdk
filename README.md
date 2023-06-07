@@ -28,6 +28,20 @@ To install requirements:
 poetry install
 ```
 
+### Running iwf-server locally
+
+#### VSCode Dev Container
+
+Dev Container is an easy way to get iwf-server running locally. Follow these steps to launch a dev container:
+- Install Docker, VSCode, and [VSCode Dev Container plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+- Open the project in VSCode.
+    ```bash
+    cd iwf-python-sdk
+    code .
+    ```
+- Launch the Remote-Containers: Reopen in Container command from Command Palette (Ctrl + Shift + P). You can also click in the bottom left corner to access the remote container menu.
+- Once the dev container starts, iwf-server will be listening on port 8801.
+
 ### Common Tasks
 
 #### Update IDL
