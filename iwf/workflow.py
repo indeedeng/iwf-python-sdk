@@ -8,7 +8,7 @@ from state_def import StateDef
 class ObjectWorkflow(ABC):
     """ObjectWorkflow is the interface to define a workflow definition.
     ObjectWorkflow is a top level concept in iWF. Any object that is long-lasting
-    can be modeled as an "ObjectWorkflow".
+    can be modeled as an ObjectWorkflow.
     """
 
     def get_workflow_states(self) -> [StateDef]:
@@ -30,8 +30,8 @@ class ObjectWorkflow(ABC):
     def get_persistence_schema(self) -> PersistenceSchema:
         """
         GetPersistenceSchema defines all the persistence fields for this workflow, includes:
-         1. Data attributes
-         2. Search attributes
+          1. Data attributes
+          2. Search attributes
         Data attributes can be read/upsert in WorkflowState WaitUntil/Execute API
         Data attributes  can also be read by getDataAttributes API by external applications using Client
         Search attributes can be read/upsert in WorkflowState WaitUntil/Execute API
@@ -46,8 +46,8 @@ class ObjectWorkflow(ABC):
     def get_communication_schema(self) -> CommunicationSchema:
         """
         GetCommunicationSchema defines all the communication methods for this workflow, this includes
-        1. Signal channel
-        2. Interstate channel
+          1. Signal channel
+          2. Interstate channel
         Signal channel is for external applications to send signal to workflow execution.
         ObjectWorkflow execution can listen on the signal in the WorkflowState WaitUntil API and receive in
         the WorkflowState Execute API
@@ -58,3 +58,7 @@ class ObjectWorkflow(ABC):
             A communication schema
         """
         pass
+
+
+def get_workflow_type(wf: ObjectWorkflow) -> str:
+    return wf.__class__.__name__

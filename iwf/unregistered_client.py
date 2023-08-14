@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Any, List, Optional, Type
 
 from iwf_api import Client
@@ -38,7 +39,6 @@ from iwf_api.models import (
     WorkflowStatus,
     WorkflowStopRequest,
 )
-from pydantic.main import BaseModel
 
 from iwf.client_options import ClientOptions
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
@@ -46,12 +46,13 @@ from iwf.stop_workflow_options import StopWorkflowOptions
 from iwf.utils.client_utils import get_search_attribute_value
 
 
-class UnregisteredWorkflowOptions(BaseModel):
+@dataclass
+class UnregisteredWorkflowOptions:
     workflow_id_reuse_policy: Optional[IDReusePolicy]
     cron_schedule: Optional[str]
     workflow_retry_policy: Optional[WorkflowRetryPolicy]
     start_state_options: Optional[WorkflowStateOptions]
-    initial_search_attribute: List[SearchAttribute] = []
+    initial_search_attribute: Optional[List[SearchAttribute]]
     workflow_config_override: Optional[WorkflowConfig]
 
 

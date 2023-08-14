@@ -92,3 +92,17 @@ class WorkflowState(ABC, Generic[T]):
         Returns: WorkflowStateOptions
         """
         pass
+
+
+def get_state_id(state: WorkflowState) -> str:
+    options = state.get_state_options()
+    if options is None or options.state_id is None:
+        return state.__class__.__name__
+    return options.state_id
+
+
+def should_skip_wait_until(state: WorkflowState) -> bool:
+    func_name = state.wait_until.__name__
+    parent_method = getattr(super(type(state), state), func_name)
+    # when wait_until is the same as base class, it's not implemented
+    return parent_method == state.wait_until
