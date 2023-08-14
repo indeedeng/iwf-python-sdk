@@ -14,11 +14,13 @@ class WorkflowGetDataObjectsRequest:
         workflow_id (str):
         workflow_run_id (Union[Unset, str]):
         keys (Union[Unset, List[str]]):
+        use_memo_for_data_attributes (Union[Unset, bool]):
     """
 
     workflow_id: str
     workflow_run_id: Union[Unset, str] = UNSET
     keys: Union[Unset, List[str]] = UNSET
+    use_memo_for_data_attributes: Union[Unset, bool] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -27,6 +29,8 @@ class WorkflowGetDataObjectsRequest:
         keys: Union[Unset, List[str]] = UNSET
         if not isinstance(self.keys, Unset):
             keys = self.keys
+
+        use_memo_for_data_attributes = self.use_memo_for_data_attributes
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -39,6 +43,8 @@ class WorkflowGetDataObjectsRequest:
             field_dict["workflowRunId"] = workflow_run_id
         if keys is not UNSET:
             field_dict["keys"] = keys
+        if use_memo_for_data_attributes is not UNSET:
+            field_dict["useMemoForDataAttributes"] = use_memo_for_data_attributes
 
         return field_dict
 
@@ -51,10 +57,13 @@ class WorkflowGetDataObjectsRequest:
 
         keys = cast(List[str], d.pop("keys", UNSET))
 
+        use_memo_for_data_attributes = d.pop("useMemoForDataAttributes", UNSET)
+
         workflow_get_data_objects_request = cls(
             workflow_id=workflow_id,
             workflow_run_id=workflow_run_id,
             keys=keys,
+            use_memo_for_data_attributes=use_memo_for_data_attributes,
         )
 
         workflow_get_data_objects_request.additional_properties = d

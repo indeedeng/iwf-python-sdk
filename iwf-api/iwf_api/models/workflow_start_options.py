@@ -23,6 +23,7 @@ class WorkflowStartOptions:
         retry_policy (Union[Unset, WorkflowRetryPolicy]):
         search_attributes (Union[Unset, List['SearchAttribute']]):
         workflow_config_override (Union[Unset, WorkflowConfig]):
+        use_memo_for_data_attributes (Union[Unset, bool]):
     """
 
     id_reuse_policy: Union[Unset, IDReusePolicy] = UNSET
@@ -30,6 +31,7 @@ class WorkflowStartOptions:
     retry_policy: Union[Unset, "WorkflowRetryPolicy"] = UNSET
     search_attributes: Union[Unset, List["SearchAttribute"]] = UNSET
     workflow_config_override: Union[Unset, "WorkflowConfig"] = UNSET
+    use_memo_for_data_attributes: Union[Unset, bool] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -54,6 +56,8 @@ class WorkflowStartOptions:
         if not isinstance(self.workflow_config_override, Unset):
             workflow_config_override = self.workflow_config_override.to_dict()
 
+        use_memo_for_data_attributes = self.use_memo_for_data_attributes
+
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -67,6 +71,8 @@ class WorkflowStartOptions:
             field_dict["searchAttributes"] = search_attributes
         if workflow_config_override is not UNSET:
             field_dict["workflowConfigOverride"] = workflow_config_override
+        if use_memo_for_data_attributes is not UNSET:
+            field_dict["useMemoForDataAttributes"] = use_memo_for_data_attributes
 
         return field_dict
 
@@ -107,12 +113,15 @@ class WorkflowStartOptions:
         else:
             workflow_config_override = WorkflowConfig.from_dict(_workflow_config_override)
 
+        use_memo_for_data_attributes = d.pop("useMemoForDataAttributes", UNSET)
+
         workflow_start_options = cls(
             id_reuse_policy=id_reuse_policy,
             cron_schedule=cron_schedule,
             retry_policy=retry_policy,
             search_attributes=search_attributes,
             workflow_config_override=workflow_config_override,
+            use_memo_for_data_attributes=use_memo_for_data_attributes,
         )
 
         workflow_start_options.additional_properties = d

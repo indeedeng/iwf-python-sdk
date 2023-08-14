@@ -6,7 +6,6 @@ from ..models.wait_until_api_failure_policy import WaitUntilApiFailurePolicy
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.command_carry_over_policy import CommandCarryOverPolicy
     from ..models.persistence_loading_policy import PersistenceLoadingPolicy
     from ..models.retry_policy import RetryPolicy
 
@@ -20,7 +19,6 @@ class WorkflowStateOptions:
     Attributes:
         search_attributes_loading_policy (Union[Unset, PersistenceLoadingPolicy]):
         data_attributes_loading_policy (Union[Unset, PersistenceLoadingPolicy]):
-        command_carry_over_policy (Union[Unset, CommandCarryOverPolicy]):
         wait_until_api_timeout_seconds (Union[Unset, int]):
         execute_api_timeout_seconds (Union[Unset, int]):
         wait_until_api_retry_policy (Union[Unset, RetryPolicy]):
@@ -31,7 +29,6 @@ class WorkflowStateOptions:
 
     search_attributes_loading_policy: Union[Unset, "PersistenceLoadingPolicy"] = UNSET
     data_attributes_loading_policy: Union[Unset, "PersistenceLoadingPolicy"] = UNSET
-    command_carry_over_policy: Union[Unset, "CommandCarryOverPolicy"] = UNSET
     wait_until_api_timeout_seconds: Union[Unset, int] = UNSET
     execute_api_timeout_seconds: Union[Unset, int] = UNSET
     wait_until_api_retry_policy: Union[Unset, "RetryPolicy"] = UNSET
@@ -48,10 +45,6 @@ class WorkflowStateOptions:
         data_attributes_loading_policy: Union[Unset, Dict[str, Any]] = UNSET
         if not isinstance(self.data_attributes_loading_policy, Unset):
             data_attributes_loading_policy = self.data_attributes_loading_policy.to_dict()
-
-        command_carry_over_policy: Union[Unset, Dict[str, Any]] = UNSET
-        if not isinstance(self.command_carry_over_policy, Unset):
-            command_carry_over_policy = self.command_carry_over_policy.to_dict()
 
         wait_until_api_timeout_seconds = self.wait_until_api_timeout_seconds
         execute_api_timeout_seconds = self.execute_api_timeout_seconds
@@ -76,8 +69,6 @@ class WorkflowStateOptions:
             field_dict["searchAttributesLoadingPolicy"] = search_attributes_loading_policy
         if data_attributes_loading_policy is not UNSET:
             field_dict["dataAttributesLoadingPolicy"] = data_attributes_loading_policy
-        if command_carry_over_policy is not UNSET:
-            field_dict["commandCarryOverPolicy"] = command_carry_over_policy
         if wait_until_api_timeout_seconds is not UNSET:
             field_dict["waitUntilApiTimeoutSeconds"] = wait_until_api_timeout_seconds
         if execute_api_timeout_seconds is not UNSET:
@@ -95,7 +86,6 @@ class WorkflowStateOptions:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.command_carry_over_policy import CommandCarryOverPolicy
         from ..models.persistence_loading_policy import PersistenceLoadingPolicy
         from ..models.retry_policy import RetryPolicy
 
@@ -113,13 +103,6 @@ class WorkflowStateOptions:
             data_attributes_loading_policy = UNSET
         else:
             data_attributes_loading_policy = PersistenceLoadingPolicy.from_dict(_data_attributes_loading_policy)
-
-        _command_carry_over_policy = d.pop("commandCarryOverPolicy", UNSET)
-        command_carry_over_policy: Union[Unset, CommandCarryOverPolicy]
-        if isinstance(_command_carry_over_policy, Unset):
-            command_carry_over_policy = UNSET
-        else:
-            command_carry_over_policy = CommandCarryOverPolicy.from_dict(_command_carry_over_policy)
 
         wait_until_api_timeout_seconds = d.pop("waitUntilApiTimeoutSeconds", UNSET)
 
@@ -151,7 +134,6 @@ class WorkflowStateOptions:
         workflow_state_options = cls(
             search_attributes_loading_policy=search_attributes_loading_policy,
             data_attributes_loading_policy=data_attributes_loading_policy,
-            command_carry_over_policy=command_carry_over_policy,
             wait_until_api_timeout_seconds=wait_until_api_timeout_seconds,
             execute_api_timeout_seconds=execute_api_timeout_seconds,
             wait_until_api_retry_policy=wait_until_api_retry_policy,

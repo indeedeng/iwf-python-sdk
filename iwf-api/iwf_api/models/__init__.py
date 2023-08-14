@@ -1,8 +1,6 @@
 """ Contains all the data models used in inputs/outputs """
 
 from .channel_request_status import ChannelRequestStatus
-from .command_carry_over_policy import CommandCarryOverPolicy
-from .command_carry_over_type import CommandCarryOverType
 from .command_combination import CommandCombination
 from .command_request import CommandRequest
 from .command_results import CommandResults
@@ -32,6 +30,8 @@ from .timer_result import TimerResult
 from .timer_status import TimerStatus
 from .wait_until_api_failure_policy import WaitUntilApiFailurePolicy
 from .worker_error_response import WorkerErrorResponse
+from .workflow_conditional_close import WorkflowConditionalClose
+from .workflow_conditional_close_type import WorkflowConditionalCloseType
 from .workflow_config import WorkflowConfig
 from .workflow_config_update_request import WorkflowConfigUpdateRequest
 from .workflow_dump_request import WorkflowDumpRequest
@@ -70,8 +70,6 @@ from .workflow_worker_rpc_response import WorkflowWorkerRpcResponse
 
 __all__ = (
     "ChannelRequestStatus",
-    "CommandCarryOverPolicy",
-    "CommandCarryOverType",
     "CommandCombination",
     "CommandRequest",
     "CommandResults",
@@ -101,6 +99,8 @@ __all__ = (
     "TimerStatus",
     "WaitUntilApiFailurePolicy",
     "WorkerErrorResponse",
+    "WorkflowConditionalClose",
+    "WorkflowConditionalCloseType",
     "WorkflowConfig",
     "WorkflowConfigUpdateRequest",
     "WorkflowDumpRequest",
