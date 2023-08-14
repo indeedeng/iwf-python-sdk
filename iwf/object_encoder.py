@@ -467,7 +467,7 @@ class PayloadCodec(ABC):
 
 @dataclass(frozen=True)
 class ObjectEncoder:
-    """Data converter for converting and encoding payloads to/from Python values.
+    """Object Encoder for converting and encoding payloads to/from Python values.
 
     This combines :py:class:`PayloadConverter` which converts values with
     :py:class:`PayloadCodec` which encodes bytes.
