@@ -9,7 +9,6 @@ class ObjectWorkflow(ABC):
     """ObjectWorkflow is the interface to define a workflow definition.
     ObjectWorkflow is a top level concept in iWF. Any object that is long-lasting
     can be modeled as an "ObjectWorkflow".
-
     """
 
     def get_workflow_states(self) -> [StateDef]:

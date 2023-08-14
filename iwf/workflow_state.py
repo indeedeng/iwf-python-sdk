@@ -27,19 +27,20 @@ class WorkflowState(ABC, Generic[T]):
         communication: Communication,
     ) -> CommandRequest:
         """
-        WaitUntil is the method to set up commands set up to wait for, before `Execute` API is invoked.
+        WaitUntil is the method to set up commands set up to wait for, before `execute` API is invoked.
         It's optional -- execute will be invoked instead if this is not implemented.
 
         Args:
             ctx: the context info of this API invocation, like workflow start time, workflowId, etc
             input: input: the state input
-            persistence:  the API for 1) data attributes, 2) search attributes and 3) stateExecutionLocals 4) recordEvent
-                        DataObjects and SearchAttributes are defined by ObjectWorkflow interface.
-                        StateExecutionLocals are for passing data within the state execution
-                        RecordEvent is for storing some tracking info(e.g. RPC call input/output) when executing the API.
-                        Note that any write API will be recorded to server after the whole WaitUntil API response is accepted
+            persistence:  the API for
+                    1) data attributes: defined by ObjectWorkflow interface
+                    2) search attributes: defined by ObjectWorkflow interface
+                    3) stateExecutionLocals: for passing data within the state execution
+                    4) recordEvent: for storing some tracking info(e.g. RPC call input/output) when executing the API.
+                    Note that any write API will be recorded to server after the whole waitUntil API response is accepted
             communication: the API right now only for publishing value to internalChannel
-                        Note that any write API will be recorded to server after the whole start API response is accepted.
+                        Note that any write API will be recorded to server after the whole waitUntil API response is accepted.
 
         Returns: the requested command
         """
@@ -61,13 +62,14 @@ class WorkflowState(ABC, Generic[T]):
               ctx: the context info of this API invocation, like workflow start time, workflowId, etc
               input:  the state input
               command_results: the results of the command that executed by WaitUntil
-              persistence:  the API for 1) data attributes, 2) search attributes and 3) stateExecutionLocals 4) recordEvent
-                                  DataObjects and SearchAttributes are defined by ObjectWorkflow interface.
-                                  StateExecutionLocals are for passing data within the state execution
-                                  RecordEvent is for storing some tracking info(e.g. RPC call input/output) when executing the API.
-                                  Note that any write API will be recorded to server after the whole WaitUntil API response is accepted
-              communication: the API right now only for publishing value to internalChannel
-                                  Note that any write API will be recorded to server after the whole start API response is accepted.
+              persistence:  the API for
+                    1) data attributes: defined by ObjectWorkflow interface
+                    2) search attributes: defined by ObjectWorkflow interface
+                    3) stateExecutionLocals: for passing data within the state execution
+                    4) recordEvent: for storing some tracking info(e.g. RPC call input/output) when executing the API.
+                    Note that any write API will be recorded to server after the whole waitUntil API response is accepted
+              communication: the API right now only for publishing value to internalChannel.
+                            Note that any write API will be recorded to server after the whole execute API response is accepted.
 
           Returns: the decision of what to do next(e.g. transition to next states or closing workflow)
 
