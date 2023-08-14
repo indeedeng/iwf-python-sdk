@@ -1,12 +1,12 @@
 from pydantic.main import BaseModel
 
-from iwf.converter import DataConverter
+from iwf.object_encoder import ObjectEncoder
 
 
 class ClientOptions(BaseModel):
     server_url: str
     worker_url: str
-    converter: DataConverter
+    converter: ObjectEncoder
 
 
 def localDefault() -> ClientOptions:
@@ -30,5 +30,5 @@ def minimum(
     return ClientOptions(
         server_url=server_url,
         worker_url=worker_url,
-        converter=DataConverter.default,
+        object_encoder=ObjectEncoder.default,
     )

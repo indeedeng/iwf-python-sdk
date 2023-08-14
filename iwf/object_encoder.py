@@ -14,11 +14,9 @@ import uuid
 import warnings
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from datetime import datetime
 from enum import IntEnum
 from typing import (
     Any,
-    Callable,
     ClassVar,
     Dict,
     Mapping,
@@ -47,7 +45,7 @@ if sys.version_info >= (3, 10):
 
 
 class PayloadConverter(ABC):
-    """Base payload converter to/from multiple payloads/values."""
+    """Base payload converter to/from payload/value."""
 
     default: ClassVar[PayloadConverter]
     """Default payload converter."""
@@ -98,7 +96,7 @@ class PayloadConverter(ABC):
 
 
 class EncodingPayloadConverter(ABC):
-    """Base converter to/from single payload/value with a known encoding for use in CompositePayloadConverter."""
+    """Base converter for a known encoding for use in CompositePayloadConverter."""
 
     @property
     @abstractmethod
@@ -468,7 +466,7 @@ class PayloadCodec(ABC):
 
 
 @dataclass(frozen=True)
-class DataConverter:
+class ObjectEncoder:
     """Data converter for converting and encoding payloads to/from Python values.
 
     This combines :py:class:`PayloadConverter` which converts values with
@@ -484,7 +482,7 @@ class DataConverter:
     payload_converter: PayloadConverter = dataclasses.field(init=False)
     """Payload converter created from the :py:attr:`payload_converter_class`."""
 
-    default: ClassVar[DataConverter]
+    default: ClassVar[ObjectEncoder]
     """Singleton default data converter."""
 
     def __post_init__(self) -> None:  # noqa: D105
@@ -537,31 +535,9 @@ DefaultPayloadConverter.default_encoding_payload_converters = (
     JSONPlainPayloadConverter(),
 )
 
-DataConverter.default = DataConverter()
+ObjectEncoder.default = ObjectEncoder()
 
-PayloadConverter.default = DataConverter.default.payload_converter
-
-
-def default() -> DataConverter:
-    """Default data converter.
-
-    .. deprecated::
-        Use :py:meth:`DataConverter.default` instead.
-    """
-    return DataConverter.default
-
-
-def _get_iso_datetime_parser() -> Callable[[str], datetime]:
-    """Isolates system version check and returns relevant datetime passer
-
-    Returns:
-        A callable to parse date strings into datetimes.
-    """
-    if sys.version_info >= (3, 11):
-        return datetime.fromisoformat  # noqa
-    else:
-        # Isolate import for py > 3.11, as dependency only installed for < 3.11
-        return parser.isoparse
+PayloadConverter.default = ObjectEncoder.default.payload_converter
 
 
 def value_to_type(
