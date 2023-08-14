@@ -78,7 +78,17 @@ class WorkflowState(ABC, Generic[T]):
 
     def get_state_options(self) -> WorkflowStateOptions:
         """GetStateOptions can just return nil to use the default Options
-        StateOptions is optional configuration to adjust the state behaviors
+        StateOptions is optional configuration to adjust the state behaviors. Default values:
+             StateId:  name of the implementation class
+             waitUntilApiFailurePolicy: FAIL_WORKFLOW_ON_FAILURE
+             PersistenceLoadingPolicy for dataAttributes/searchAttributes: LOAD_ALL_WITHOUT_LOCKING
+             waitUntil/execute API:
+                timeout: 30s
+                retryPolicy:
+                    InitialIntervalSeconds: 1
+                    MaxInternalSeconds:100
+                    MaximumAttempts: 0
+                    BackoffCoefficient: 2
         Returns: WorkflowStateOptions
         """
         pass
