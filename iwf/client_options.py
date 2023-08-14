@@ -1,34 +1,18 @@
-from pydantic.main import BaseModel
+from dataclasses import dataclass
 
 from iwf.object_encoder import ObjectEncoder
 
 
-class ClientOptions(BaseModel):
+@dataclass
+class ClientOptions:
     server_url: str
     worker_url: str
-    converter: ObjectEncoder
+    object_encoder: ObjectEncoder
 
 
 def localDefault() -> ClientOptions:
-    return minimum(
+    return ClientOptions(
         server_url="http://localhost:8801",
         worker_url="http://localhost:8802",
-    )
-
-
-def dockerDefault() -> ClientOptions:
-    return minimum(
-        server_url="http://localhost:8801",
-        worker_url="http://host.docker.internal:8802",
-    )
-
-
-def minimum(
-    worker_url: str,
-    server_url: str,
-) -> ClientOptions:
-    return ClientOptions(
-        server_url=server_url,
-        worker_url=worker_url,
         object_encoder=ObjectEncoder.default,
     )

@@ -47,9 +47,6 @@ if sys.version_info >= (3, 10):
 class PayloadConverter(ABC):
     """Base payload converter to/from payload/value."""
 
-    default: ClassVar[PayloadConverter]
-    """Default payload converter."""
-
     @abstractmethod
     def to_payload(
         self,
@@ -536,8 +533,6 @@ DefaultPayloadConverter.default_encoding_payload_converters = (
 )
 
 ObjectEncoder.default = ObjectEncoder()
-
-PayloadConverter.default = ObjectEncoder.default.payload_converter
 
 
 def value_to_type(

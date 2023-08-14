@@ -1,0 +1,2 @@
+class CommandResults:
+    pass
