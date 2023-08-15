@@ -76,7 +76,7 @@ class WorkflowState(ABC, Generic[T]):
         """
         raise NotImplementedError("This implementation shouldn't be invoked")
 
-    def get_state_options(self) -> WorkflowStateOptions:
+    def get_state_options(self) -> WorkflowStateOptions:  # type: ignore
         """GetStateOptions can just return nil to use the default Options
         StateOptions is optional configuration to adjust the state behaviors. Default values:
              StateId:  name of the implementation class
@@ -105,3 +105,14 @@ def should_skip_wait_until(state: WorkflowState) -> bool:
     func_name = state.wait_until.__name__
     parent_method = getattr(super(type(state), state), func_name)
     return parent_method == state.wait_until
+
+
+def get_none_type() -> type[T]:
+    """
+    This returns the NoneType to make it more friendly to use.
+    Alternatively, users can also use Python builtin types.NoneType but mypy will complain about it.
+
+    Returns:
+        The type for None
+    """
+    return type(None)  # type: ignore

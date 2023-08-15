@@ -4,12 +4,17 @@ from iwf.communication import Communication
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.workflow_context import WorkflowContext
-from iwf.workflow_state import WorkflowState, T, should_skip_wait_until
+from iwf.workflow_state import (
+    WorkflowState,
+    T,
+    should_skip_wait_until,
+    get_none_type,
+)
 
 
 class DirectStateSkip(WorkflowState[None]):
     def get_input_type(self) -> type[T]:
-        return None
+        return get_none_type()
 
     def execute(
         self,
@@ -22,14 +27,14 @@ class DirectStateSkip(WorkflowState[None]):
         raise NotImplementedError
 
 
-class DirectStateNotSkip(WorkflowState[None]):
-    def get_input_type(self) -> type[T]:
-        return None
+class DirectStateNotSkip(WorkflowState[int]):
+    def get_input_type(self) -> type[int]:
+        return int
 
     def wait_until(
         self,
         ctx: WorkflowContext,
-        input: T,
+        input: int,
         persistence: Persistence,
         communication: Communication,
     ) -> CommandRequest:
@@ -38,7 +43,7 @@ class DirectStateNotSkip(WorkflowState[None]):
     def execute(
         self,
         ctx: WorkflowContext,
-        input: T,
+        input: int,
         command_results: CommandResults,
         persistence: Persistence,
         communication: Communication,
