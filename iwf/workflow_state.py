@@ -17,7 +17,7 @@ class WorkflowState(ABC, Generic[T]):
 
     @abstractmethod
     def get_input_type(self) -> type[T]:
-        raise NotImplementedError
+        raise NotImplementedError("This implementation shouldn't be invoked")
 
     def wait_until(
         self,
