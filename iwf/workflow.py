@@ -2,7 +2,7 @@ from abc import ABC
 
 from iwf.communication_schema import CommunicationSchema
 from iwf.persistence_schema import PersistenceSchema
-from state_def import StateDef
+from state_schema import StateSchema
 
 
 class ObjectWorkflow(ABC):
@@ -11,7 +11,7 @@ class ObjectWorkflow(ABC):
     can be modeled as an ObjectWorkflow.
     """
 
-    def get_workflow_states(self) -> [StateDef]:
+    def get_workflow_states(self) -> StateSchema:
         """
         GetWorkflowStates defines the states of the workflow. A state represents
             a step of the workflow state machine.
@@ -23,9 +23,9 @@ class ObjectWorkflow(ABC):
             will not start any state execution after workflow stated. Application can still
             use RPC to invoke new state execution in the future.
         Returns:
-            A list of workflow state definitions
+            A list of workflow state definitions. Default to empty.
         """
-        pass
+        return StateSchema()
 
     def get_persistence_schema(self) -> PersistenceSchema:
         """
@@ -39,9 +39,9 @@ class ObjectWorkflow(ABC):
         External applications can also use "SearchWorkflow" API to find workflows by SQL-like query
 
         Returns:
-            A persistence schema
+            A persistence schema. Default to empty.
         """
-        pass
+        return PersistenceSchema()
 
     def get_communication_schema(self) -> CommunicationSchema:
         """
@@ -55,9 +55,9 @@ class ObjectWorkflow(ABC):
         E.g. WorkflowStateA will continue after receiving a value from WorkflowStateB
 
         Returns:
-            A communication schema
+            A communication schema. Default to empty.
         """
-        pass
+        return CommunicationSchema()
 
 
 def get_workflow_type(wf: ObjectWorkflow) -> str:

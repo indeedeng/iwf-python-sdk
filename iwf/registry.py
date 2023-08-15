@@ -1,5 +1,7 @@
+from typing import List
+
 from iwf.errors import WorkflowDefinitionError
-from iwf.state_def import StateDef
+from iwf.state_schema import StateDef
 from iwf.workflow import ObjectWorkflow, get_workflow_type
 from iwf.workflow_state import get_state_id
 
@@ -14,7 +16,7 @@ class Registry:
         self._register_workflow(wf)
         self._register_workflow_state(wf)
 
-    def add_workflows(self, wfs: [ObjectWorkflow]):
+    def add_workflows(self, wfs: List[ObjectWorkflow]):
         for wf in wfs:
             self.add_workflow(wf)
 
@@ -37,7 +39,7 @@ class Registry:
         wf_type = get_workflow_type(wf)
         state_map = {}
         starting_state = None
-        for state_def in wf.get_workflow_states():
+        for state_def in wf.get_workflow_states().states:
             state_id = get_state_id(state_def.state)
             if state_id in state_map:
                 raise WorkflowDefinitionError(

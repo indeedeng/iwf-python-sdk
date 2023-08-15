@@ -6,7 +6,7 @@ from iwf.registry import Registry
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
 from iwf.workflow import ObjectWorkflow, get_workflow_type
 from iwf.workflow_options import WorkflowOptions
-from iwf.workflow_state import get_state_id
+from iwf.workflow_state import get_state_id, should_skip_wait_until
 from iwf.workflow_state_options import WorkflowStateOptions, to_idl_state_options
 
 

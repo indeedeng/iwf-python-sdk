@@ -1,6 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 from iwf_api.models import SearchAttributeValueType
 
@@ -29,4 +29,4 @@ def search_attribute_def(
 
 @dataclass
 class PersistenceSchema:
-    persistence_fields: [PersistenceField]
+    persistence_fields: List[PersistenceField] = field(default_factory=list)

@@ -1,6 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 
 
 class CommunicationMethodType(Enum):
@@ -27,4 +27,4 @@ def internal_channel_def(name: str, value_type: type):
 
 @dataclass
 class CommunicationSchema:
-    communication_methods: [CommunicationMethod]
+    communication_methods: List[CommunicationMethod] = field(default_factory=list)
