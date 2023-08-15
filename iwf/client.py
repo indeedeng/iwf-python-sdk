@@ -35,7 +35,9 @@ class Client:
 
         if starting_state_def is not None:
             starting_state_id = get_state_id(starting_state_def.state)
-            starting_state_opts = to_idl_state_options(starting_state_def.state.get_state_options())
+            starting_state_opts = to_idl_state_options(
+                starting_state_def.state.get_state_options()
+            )
 
             if should_skip_wait_until(starting_state_def.state):
                 if starting_state_opts is None:

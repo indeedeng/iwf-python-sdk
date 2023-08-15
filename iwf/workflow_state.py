@@ -44,7 +44,7 @@ class WorkflowState(ABC, Generic[T]):
 
         Returns: the requested command
         """
-        pass
+        raise NotImplementedError("This implementation shouldn't be invoked")
 
     @abstractmethod
     def execute(
@@ -74,7 +74,7 @@ class WorkflowState(ABC, Generic[T]):
           Returns: the decision of what to do next(e.g. transition to next states or closing workflow)
 
         """
-        raise NotImplementedError
+        raise NotImplementedError("This implementation shouldn't be invoked")
 
     def get_state_options(self) -> WorkflowStateOptions:
         """GetStateOptions can just return nil to use the default Options
@@ -104,5 +104,4 @@ def get_state_id(state: WorkflowState) -> str:
 def should_skip_wait_until(state: WorkflowState) -> bool:
     func_name = state.wait_until.__name__
     parent_method = getattr(super(type(state), state), func_name)
-    # when wait_until is the same as base class, it's not implemented
     return parent_method == state.wait_until
