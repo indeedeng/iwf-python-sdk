@@ -51,12 +51,12 @@ from iwf.stop_workflow_options import StopWorkflowOptions
 
 @dataclass
 class UnregisteredWorkflowOptions:
-    workflow_id_reuse_policy: Optional[IDReusePolicy]
-    cron_schedule: Optional[str]
-    workflow_retry_policy: Optional[WorkflowRetryPolicy]
-    start_state_options: Optional[WorkflowStateOptions]
-    initial_search_attribute: Optional[List[SearchAttribute]]
-    workflow_config_override: Optional[WorkflowConfig]
+    workflow_id_reuse_policy: Optional[IDReusePolicy] = None
+    cron_schedule: Optional[str] = None
+    workflow_retry_policy: Optional[WorkflowRetryPolicy] = None
+    start_state_options: Optional[WorkflowStateOptions] = None
+    initial_search_attribute: Optional[List[SearchAttribute]] = None
+    workflow_config_override: Optional[WorkflowConfig] = None
 
 
 T = TypeVar("T")

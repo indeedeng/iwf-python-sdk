@@ -2,7 +2,7 @@ from abc import ABC
 
 from iwf.communication_schema import CommunicationSchema
 from iwf.persistence_schema import PersistenceSchema
-from state_schema import StateSchema
+from iwf.state_schema import StateSchema
 
 
 class ObjectWorkflow(ABC):

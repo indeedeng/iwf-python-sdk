@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from workflow_state import WorkflowState
+from iwf.workflow_state import WorkflowState
 
 
 @dataclass
