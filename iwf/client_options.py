@@ -10,7 +10,7 @@ class ClientOptions:
     object_encoder: ObjectEncoder
 
 
-def localDefault() -> ClientOptions:
+def local_default() -> ClientOptions:
     return ClientOptions(
         server_url="http://localhost:8801",
         worker_url="http://localhost:8802",
