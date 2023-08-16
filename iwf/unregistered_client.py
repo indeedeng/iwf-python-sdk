@@ -1,11 +1,11 @@
+import http
 from dataclasses import dataclass
-from typing import Any, List, Optional, Type
+from typing import Any, List, Optional, Type, TypeVar
 
 from iwf_api import Client
 from iwf_api.api.default import (
     post_api_v1_workflow_dataobjects_get,
     post_api_v1_workflow_reset,
-    post_api_v1_workflow_rpc,
     post_api_v1_workflow_search,
     post_api_v1_workflow_searchattributes_get,
     post_api_v1_workflow_signal,
@@ -15,12 +15,9 @@ from iwf_api.api.default import (
     post_api_v_1_workflow_get_with_wait,
 )
 from iwf_api.models import (
-    ErrorResponse,
     IDReusePolicy,
-    PersistenceLoadingPolicy,
     SearchAttribute,
     SearchAttributeKeyAndType,
-    StateCompletionOutput,
     WorkflowConfig,
     WorkflowGetDataObjectsRequest,
     WorkflowGetRequest,
@@ -28,7 +25,6 @@ from iwf_api.models import (
     WorkflowGetSearchAttributesResponse,
     WorkflowResetRequest,
     WorkflowRetryPolicy,
-    WorkflowRpcRequest,
     WorkflowSearchRequest,
     WorkflowSearchResponse,
     WorkflowSignalRequest,
@@ -38,12 +34,19 @@ from iwf_api.models import (
     WorkflowStateOptions,
     WorkflowStatus,
     WorkflowStopRequest,
+    WorkflowGetResponse,
 )
+from iwf_api.types import Response
 
 from iwf.client_options import ClientOptions
+from iwf.errors import (
+    process_http_error,
+    process_http_error_get_api,
+    WorkflowAbnormalExitError,
+    WorkflowDefinitionError,
+)
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
 from iwf.stop_workflow_options import StopWorkflowOptions
-from iwf.utils.client_utils import get_search_attribute_value
 
 
 @dataclass
@@ -56,12 +59,15 @@ class UnregisteredWorkflowOptions:
     workflow_config_override: Optional[WorkflowConfig]
 
 
+T = TypeVar("T")
+
+
 class UnregisteredClient:
     def __init__(self, client_options: ClientOptions):
         self.client_options = client_options
         self.api_client = Client(base_url=client_options.server_url)
 
-    async def start_workflow(
+    def start_workflow(
         self,
         workflow_type: str,
         workflow_id: str,
@@ -75,12 +81,15 @@ class UnregisteredClient:
             iwf_worker_url=self.client_options.worker_url,
             iwf_workflow_type=workflow_type,
             workflow_timeout_seconds=workflow_timeout_seconds,
-            state_input=await self.client_options.converter.encode(input),
+            state_input=self.client_options.object_encoder.encode(input),
         )
         if start_state_id:
             request.start_state_id = start_state_id
 
         if options:
+            if options.start_state_options:
+                request.state_options = options.start_state_options
+
             start_options = WorkflowStartOptions()
             if options.workflow_id_reuse_policy:
                 start_options.id_reuse_policy = options.workflow_id_reuse_policy
@@ -88,41 +97,25 @@ class UnregisteredClient:
                 start_options.cron_schedule = options.cron_schedule
             if options.workflow_retry_policy:
                 start_options.retry_policy = options.workflow_retry_policy
-            if options.start_state_options:
-                request.state_options = options.start_state_options
-            for search_attribute in options.initial_search_attribute:
-                if not search_attribute.value_type:
-                    raise Exception("value_type is required")
-                value = get_search_attribute_value(
-                    search_attribute.value_type,
-                    search_attribute,
-                )
-                if not value:
-                    raise Exception(
-                        f"Search attribute value is not set correctly for key {search_attribute.key} with value type {search_attribute.value_type}",
-                    )
-            if options.initial_search_attribute:
-                start_options.search_attributes = options.initial_search_attribute
+
             if options.workflow_config_override:
                 start_options.workflow_config_override = (
                     options.workflow_config_override
                 )
             request.workflow_start_options = start_options
 
-        response = await post_api_v1_workflow_start.asyncio(
+        response = post_api_v1_workflow_start.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
-        if isinstance(response, ErrorResponse):
-            raise Exception(response.detail)
-        return response.workflow_run_id
+        return handler_error_and_return(response)
 
-    async def get_simple_workflow_result_with_wait(
+    def get_simple_workflow_result_with_wait(
         self,
         workflow_id: str,
         workflow_run_id: str,
-        type_hint: Optional[Type] = None,
-    ):
+        type_hint: Optional[Type[T]] = None,
+    ) -> Optional[T]:
         """For most cases, a workflow only has one result(one completion state)
         Use this API to retrieve the output of the state"""
         request = WorkflowGetRequest(
@@ -130,73 +123,57 @@ class UnregisteredClient:
             workflow_run_id=workflow_run_id,
             needs_results=True,
         )
-        response = await post_api_v_1_workflow_get_with_wait.asyncio(
+        response = post_api_v_1_workflow_get_with_wait.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
+        if response.status_code != http.HTTPStatus.OK:
+            raise process_http_error_get_api(response.status_code, response.parsed)  # type: ignore
 
+        assert isinstance(response, WorkflowGetResponse)
         if response.workflow_status != WorkflowStatus.COMPLETED:
-            raise Exception(f"Workflow {workflow_id} is not completed yet.")
+            raise WorkflowAbnormalExitError(response)
 
         if not response.results or len(response.results) == 0:
             return None
         filtered_results = [
             result for result in response.results if result.completed_state_output
         ]
-        # TODO: Make sure there is only one result
-        if len(filtered_results) == 1:
+        if len(filtered_results) == 0:
+            return None
+        elif len(filtered_results) == 1:
             result = filtered_results[0]
         else:
-            result = response.results[0]
-        return await self.client_options.converter.decode(
-            result.completed_state_output,
+            raise WorkflowDefinitionError(
+                "workflow must have one or zero state output for using this API"
+            )
+
+        return self.client_options.object_encoder.decode(
+            result.completed_state_output,  # type: ignore
             type_hint,
         )
 
-    async def get_complex_workflow_result_with_wait(
-        self,
-        workflow_id: str,
-        workflow_run_id: Optional[str] = None,
-    ) -> List[StateCompletionOutput]:
-        request = WorkflowGetRequest(
-            workflow_id=workflow_id,
-            workflow_run_id=workflow_run_id,
-            needs_results=True,
-        )
-        response = await post_api_v_1_workflow_get_with_wait.asyncio(
-            client=self.api_client,
-            json_body=request,
-        )
-        if isinstance(response, ErrorResponse):
-            raise Exception(response.detail)
-
-        if response.workflow_status != WorkflowStatus.COMPLETED:
-            raise Exception(f"Workflow {workflow_id} is not completed yet.")
-
-        return response.results
-
-    async def signal_workflow(
+    def signal_workflow(
         self,
         workflow_id: str,
         workflow_run_id: str,
         signal_channel_name: str,
-        signal_value: Any,
+        signal_value: Optional[Any],
     ) -> None:
         request = WorkflowSignalRequest(
             workflow_id=workflow_id,
             workflow_run_id=workflow_run_id,
             signal_channel_name=signal_channel_name,
-            signal_value=await self.client_options.converter.encode(signal_value),
+            signal_value=self.client_options.object_encoder.encode(signal_value),
         )
 
-        response = await post_api_v1_workflow_signal.asyncio(
+        response = post_api_v1_workflow_signal.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
-        if isinstance(response, ErrorResponse):
-            raise Exception(response.detail)
+        return handler_error_and_return(response)
 
-    async def reset_workflow(
+    def reset_workflow(
         self,
         workflow_id: str,
         workflow_run_id: str,
@@ -225,14 +202,13 @@ class UnregisteredClient:
                 reset_workflow_type_and_options.skip_signal_reapply
             )
 
-        response = await post_api_v1_workflow_reset.asyncio(
+        response = post_api_v1_workflow_reset.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
-        if isinstance(response, ErrorResponse):
-            raise Exception(response.detail)
+        return handler_error_and_return(response)
 
-    async def skip_timer(
+    def skip_timer(
         self,
         workflow_id: str,
         workflow_run_id: str,
@@ -246,12 +222,13 @@ class UnregisteredClient:
             workflow_state_execution_id=f"{workflow_state_id}-{state_execution_number}",
             timer_command_id=timer_command_id,
         )
-        return await post_api_v1_workflow_timer_skip.asyncio(
+        response = post_api_v1_workflow_timer_skip.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
+        return handler_error_and_return(response)
 
-    async def skip_timer_at_command_index(
+    def skip_timer_at_command_index(
         self,
         workflow_id: str,
         workflow_run_id: str,
@@ -265,12 +242,13 @@ class UnregisteredClient:
             workflow_state_execution_id=f"{workflow_state_id}-{state_execution_number}",
             timer_command_index=timer_command_index,
         )
-        await post_api_v1_workflow_timer_skip.asyncio(
+        response = post_api_v1_workflow_timer_skip.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
+        return handler_error_and_return(response)
 
-    async def stop_workflow(
+    def stop_workflow(
         self,
         workflow_id: str,
         workflow_run_id: str,
@@ -283,68 +261,40 @@ class UnregisteredClient:
         if options:
             request.stop_type = options.workflow_stop_type
             request.reason = options.reason
-        return await post_api_v1_workflow_stop.asyncio(
+        response = post_api_v1_workflow_stop.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
+        return handler_error_and_return(response)
 
-    async def get_any_workflow_data_objects(
+    def get_any_workflow_data_objects(
         self,
         workflow_id: str,
         workflow_run_id: str,
-        attribute_keys: List[str] = None,
+        attribute_keys: List[str] = None,  # type: ignore
     ):
         request = WorkflowGetDataObjectsRequest(
             workflow_id=workflow_id,
             workflow_run_id=workflow_run_id,
             keys=attribute_keys,
         )
-        return await post_api_v1_workflow_dataobjects_get.asyncio(
+        response = post_api_v1_workflow_dataobjects_get.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
+        return handler_error_and_return(response)
 
-    async def search_workflow(
+    def search_workflow(
         self,
         request: WorkflowSearchRequest,
     ) -> WorkflowSearchResponse:
-        return await post_api_v1_workflow_search.asyncio(
+        response = post_api_v1_workflow_search.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
+        return handler_error_and_return(response)
 
-    async def invoke_rpc(
-        self,
-        input: Any,
-        workflow_id: str,
-        workflow_run_id: str,
-        rpc_name: str,
-        timeout_seconds: int,
-        type_hint: Optional[Type] = None,
-        data_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None,
-        search_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None,
-    ):
-        request = WorkflowRpcRequest(
-            input_=await self.client_options.converter.encode(input),
-            workflow_id=workflow_id,
-            workflow_run_id=workflow_run_id,
-            rpc_name=rpc_name,
-            timeout_seconds=timeout_seconds,
-        )
-        if data_attributes_loading_policy:
-            request.data_attributes_loading_policy = data_attributes_loading_policy
-        if search_attributes_loading_policy:
-            request.search_attributes_loading_policy = search_attributes_loading_policy
-        response = await post_api_v1_workflow_rpc.asyncio(
-            client=self.api_client,
-            json_body=request,
-        )
-        return await self.client_options.converter.decode(
-            response.output,
-            type_hint,
-        )
-
-    async def get_any_workflow_search_attributes(
+    def get_any_workflow_search_attributes(
         self,
         workflow_id: str,
         workflow_run_id: str,
@@ -353,9 +303,16 @@ class UnregisteredClient:
         request = WorkflowGetSearchAttributesRequest(
             workflow_id=workflow_id,
             workflow_run_id=workflow_run_id,
-            keys=attribute_keys,
+            keys=attribute_keys,  # type: ignore
         )
-        return await post_api_v1_workflow_searchattributes_get.asyncio(
+        response = post_api_v1_workflow_searchattributes_get.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
+        return handler_error_and_return(response)
+
+
+def handler_error_and_return(response: Response):
+    if response.status_code != http.HTTPStatus.OK:
+        raise process_http_error(response.status_code, response.parsed)  # type: ignore
+    return response.parsed

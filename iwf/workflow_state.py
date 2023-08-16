@@ -46,7 +46,6 @@ class WorkflowState(ABC, Generic[T]):
         """
         raise NotImplementedError("This implementation shouldn't be invoked")
 
-    @abstractmethod
     def execute(
         self,
         ctx: WorkflowContext,
@@ -72,7 +71,6 @@ class WorkflowState(ABC, Generic[T]):
                             Note that any write API will be recorded to server after the whole execute API response is accepted.
 
           Returns: the decision of what to do next(e.g. transition to next states or closing workflow)
-
         """
         raise NotImplementedError("This implementation shouldn't be invoked")
 
@@ -105,14 +103,3 @@ def should_skip_wait_until(state: WorkflowState) -> bool:
     func_name = state.wait_until.__name__
     parent_method = getattr(super(type(state), state), func_name)
     return parent_method == state.wait_until
-
-
-def get_none_type() -> type[T]:
-    """
-    This returns the NoneType to make it more friendly to use.
-    Alternatively, users can also use Python builtin types.NoneType but mypy will complain about it.
-
-    Returns:
-        The type for None
-    """
-    return type(None)  # type: ignore

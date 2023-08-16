@@ -7,7 +7,7 @@ from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOpti
 from iwf.workflow import ObjectWorkflow, get_workflow_type
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import get_state_id, should_skip_wait_until
-from iwf.workflow_state_options import WorkflowStateOptions, to_idl_state_options
+from iwf.workflow_state_options import to_idl_state_options
 
 
 class Client:
@@ -16,7 +16,7 @@ class Client:
         self._options = options
         self._unregistered_client = UnregisteredClient(options)
 
-    async def start_workflow(
+    def start_workflow(
         self,
         wf: ObjectWorkflow,
         wf_id: str,
@@ -40,6 +40,13 @@ class Client:
             )
 
             if should_skip_wait_until(starting_state_def.state):
-                if starting_state_opts is None:
-                    starting_state_opts = WorkflowStateOptions()
-                    starting_state_opts.execute_api_timeout_seconds = 2
+                starting_state_opts.skip_wait_until = True
+
+            unreg_opts.start_state_options = starting_state_opts
+
+        if options is not None:
+            unreg_opts.workflow_id_reuse_policy = options.workflow_id_reuse_policy
+            unreg_opts.workflow_retry_policy = options.workflow_retry_policy
+            unreg_opts.cron_schedule = options.workflow_cron_schedule
+
+            # TODO: set initial search attributes here

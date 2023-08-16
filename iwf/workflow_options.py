@@ -1,12 +1,12 @@
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Optional
 
 from iwf_api.models import IDReusePolicy, WorkflowRetryPolicy
 
 
 @dataclass
 class WorkflowOptions:
-    workflow_id_reuse_policy: IDReusePolicy
-    workflow_cron_schedule: str
-    workflow_retry_policy: WorkflowRetryPolicy
-    InitialSearchAttributes: dict[str, Any]
+    workflow_id_reuse_policy: Optional[IDReusePolicy] = None
+    workflow_cron_schedule: Optional[str] = None
+    workflow_retry_policy: Optional[WorkflowRetryPolicy] = None
+    InitialSearchAttributes: Optional[dict[str, Any]] = None
