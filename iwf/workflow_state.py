@@ -70,7 +70,7 @@ class WorkflowState(ABC, Generic[T]):
           communication: the API right now only for publishing value to internalChannel.
                         Note that any write API will be recorded to server after the whole execute API response is accepted.
 
-          Returns: the decision of what to do next(e.g. transition to next states or closing workflow)
+        Returns: the decision of what to do next(e.g. transition to next states or closing workflow)
         """
         raise NotImplementedError("This implementation shouldn't be invoked")
 
