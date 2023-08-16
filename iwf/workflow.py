@@ -62,3 +62,7 @@ class ObjectWorkflow(ABC):
 
 def get_workflow_type(wf: ObjectWorkflow) -> str:
     return wf.__class__.__name__
+
+
+def get_workflow_type_by_class(wf_class: type[ObjectWorkflow]) -> str:
+    return wf_class.__name__

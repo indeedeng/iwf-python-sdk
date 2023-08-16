@@ -3,7 +3,7 @@ from typing import Any, Optional, TypeVar, Type
 from iwf.client_options import ClientOptions
 from iwf.registry import Registry
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
-from iwf.workflow import ObjectWorkflow, get_workflow_type
+from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import get_state_id, should_skip_wait_until
 from iwf.workflow_state_options import to_idl_state_options
@@ -19,13 +19,26 @@ class Client:
 
     def start_workflow(
         self,
-        wf: ObjectWorkflow,
+        wf_class: type[ObjectWorkflow],
         wf_id: str,
         timeout_seconds: int,
         input: Any = None,
         options: Optional[WorkflowOptions] = None,
-    ) -> str:
-        wf_type = get_workflow_type(wf)
+    ) -> None:
+        """
+
+        Args:
+            wf_class: the workflow definition class
+            wf_id: workflowId
+            timeout_seconds: the timeout. Use zero for infinite timeout(only works for Temporal as backend)
+            input: input of the workflow, aka, the input of the starting state of the workflow
+            options: advanced options
+
+        Raises:
+            ClientSideError for non-retryable error
+            ServerSideError for server error
+        """
+        wf_type = get_workflow_type_by_class(wf_class)
         wf = self._registry.get_workflow_with_check(wf_type)
 
         starting_state_def = self._registry.get_workflow_starting_state_def(wf_type)
@@ -53,7 +66,7 @@ class Client:
 
             unreg_opts.start_state_options = starting_state_opts
 
-        return self._unregistered_client.start_workflow(
+        self._unregistered_client.start_workflow(
             wf_type, wf_id, starting_state_id, timeout_seconds, input, unreg_opts
         )
 
@@ -62,6 +75,21 @@ class Client:
         workflow_id: str,
         type_hint: Optional[Type[T]] = None,
     ) -> Optional[T]:
+        """
+        This will be waiting up to 5~60 seconds (configurable in HTTP client and capped by server) for workflow to
+        complete, and return the workflow completion result.
+        Args:
+            workflow_id: workflowId
+            type_hint:  the type of workflow result
+
+        Returns:
+            the completion result if there is one
+        Raises
+            WorkflowAbnormalExitError if workflow failed/timeout/canceled/terminated
+            WorkflowStillRunningError if workflow is still running after exceeding the waiting timeout(HTTP timeout)
+            ClientSideError for non-retryable error
+            ServerSideError for server error
+        """
         return self._unregistered_client.get_simple_workflow_result_with_wait(
             workflow_id, "", type_hint
         )
