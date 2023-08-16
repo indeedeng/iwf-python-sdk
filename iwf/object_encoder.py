@@ -33,7 +33,7 @@ from typing import (
 from iwf_api.models import EncodedObject
 from typing_extensions import Literal
 
-from iwf.utils.iwf_typing import union_to_optional
+from iwf.utils.iwf_typing import check_not_unset
 
 if sys.version_info < (3, 11):
     # Python's datetime.fromisoformat doesn't support certain formats pre-3.11
@@ -196,8 +196,8 @@ class CompositePayloadConverter(PayloadConverter):
             KeyError: Unknown payload encoding
             RuntimeError: Error during decode
         """
-        encoding = union_to_optional(payload.encoding)
-        converter = self.converters.get(encoding)  # TODO: check Unset?
+        encoding = check_not_unset(payload.encoding)
+        converter = self.converters.get(encoding)
         if converter is None:
             raise KeyError(f"Unknown payload encoding {encoding}")
         try:

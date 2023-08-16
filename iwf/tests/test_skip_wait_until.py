@@ -3,18 +3,18 @@ from iwf.command_results import CommandResults
 from iwf.communication import Communication
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
+from iwf.utils.iwf_typing import none_type
 from iwf.workflow_context import WorkflowContext
 from iwf.workflow_state import (
     WorkflowState,
     T,
     should_skip_wait_until,
-    get_none_type,
 )
 
 
 class DirectStateSkip(WorkflowState[None]):
     def get_input_type(self) -> type[T]:
-        return get_none_type()
+        return none_type()
 
     def execute(
         self,

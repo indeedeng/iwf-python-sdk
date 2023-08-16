@@ -20,3 +20,5 @@ def test_convert_to_idl():
         ),
     )
     assert non_empty_idl == to_idl_state_options(non_empty)
+    non_empty.state_id = "state-id-2"
+    assert non_empty.state_id == "state-id-2"

@@ -1,7 +1,6 @@
-from typing import Any
+from typing import Any, Optional
 
 from iwf.client_options import ClientOptions
-from iwf.errors import InvalidArgumentError
 from iwf.registry import Registry
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
 from iwf.workflow import ObjectWorkflow, get_workflow_type
@@ -22,15 +21,23 @@ class Client:
         wf_id: str,
         timeout_seconds: int,
         input: Any = None,
-        options: WorkflowOptions = None,
-    ):
+        options: Optional[WorkflowOptions] = None,
+    ) -> str:
         wf_type = get_workflow_type(wf)
-        wf = self._registry.get_workflow(wf_type)
-        if wf is None:
-            raise InvalidArgumentError("workflow {} is not registered".format(wf_type))
+        wf = self._registry.get_workflow_with_check(wf_type)
 
         starting_state_def = self._registry.get_workflow_starting_state_def(wf_type)
-        unreg_opts = UnregisteredWorkflowOptions()
+        unreg_opts = (
+            UnregisteredWorkflowOptions()
+        )  # TODO Why Mypy is complaining with creating an empty data class??
+
+        if options is not None:
+            unreg_opts.workflow_id_reuse_policy = options.workflow_id_reuse_policy
+            unreg_opts.workflow_retry_policy = options.workflow_retry_policy
+            unreg_opts.cron_schedule = options.workflow_cron_schedule
+
+            # TODO: set initial search attributes here
+
         starting_state_id = None
 
         if starting_state_def is not None:
@@ -44,9 +51,6 @@ class Client:
 
             unreg_opts.start_state_options = starting_state_opts
 
-        if options is not None:
-            unreg_opts.workflow_id_reuse_policy = options.workflow_id_reuse_policy
-            unreg_opts.workflow_retry_policy = options.workflow_retry_policy
-            unreg_opts.cron_schedule = options.workflow_cron_schedule
-
-            # TODO: set initial search attributes here
+        return self._unregistered_client.start_workflow(
+            wf_type, wf_id, starting_state_id, timeout_seconds, input, unreg_opts
+        )
