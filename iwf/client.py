@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Optional, TypeVar, Type
 
 from iwf.client_options import ClientOptions
 from iwf.registry import Registry
@@ -7,6 +7,8 @@ from iwf.workflow import ObjectWorkflow, get_workflow_type
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import get_state_id, should_skip_wait_until
 from iwf.workflow_state_options import to_idl_state_options
+
+T = TypeVar("T")
 
 
 class Client:
@@ -53,4 +55,13 @@ class Client:
 
         return self._unregistered_client.start_workflow(
             wf_type, wf_id, starting_state_id, timeout_seconds, input, unreg_opts
+        )
+
+    def get_simple_workflow_result_with_wait(
+        self,
+        workflow_id: str,
+        type_hint: Optional[Type[T]] = None,
+    ) -> Optional[T]:
+        return self._unregistered_client.get_simple_workflow_result_with_wait(
+            workflow_id, "", type_hint
         )
