@@ -49,17 +49,14 @@ class Registry:
             state_id = get_state_id(state_def.state)
             if state_id in state_map:
                 raise WorkflowDefinitionError(
-                    "Workflow {} cannot have duplicate stateId {}".format(
-                        wf_type, state_id
-                    )
+                    f"Workflow {wf_type} cannot have duplicate stateId {state_id}"
                 )
             state_map[state_id] = state_def.state
             if state_def.can_start_workflow:
                 if starting_state is not None:
                     raise WorkflowDefinitionError(
-                        "Workflow {} cannot contain more than one starting state ".format(
-                            wf_type
-                        )
+                        f"Workflow {wf_type} cannot contain more than one starting "
+                        f"state"
                     )
                 starting_state = state_def.state
             self._stateStore[wf_type] = state_map
