@@ -26,7 +26,7 @@ class Registry:
     def get_workflow_with_check(self, wf_type: str) -> ObjectWorkflow:
         wf = self.get_workflow(wf_type)
         if wf is None:
-            raise InvalidArgumentError("workflow {} is not registered".format(wf_type))
+            raise InvalidArgumentError(f"workflow {wf_type} is not registered")
         return wf
 
     def get_workflow_starting_state_def(self, wf_type: str) -> Optional[StateDef]:

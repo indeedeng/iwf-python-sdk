@@ -9,4 +9,4 @@ class WorkflowOptions:
     workflow_id_reuse_policy: Optional[IDReusePolicy] = None
     workflow_cron_schedule: Optional[str] = None
     workflow_retry_policy: Optional[WorkflowRetryPolicy] = None
-    InitialSearchAttributes: Optional[dict[str, Any]] = None
+    initial_search_attributes: Optional[dict[str, Any]] = None
