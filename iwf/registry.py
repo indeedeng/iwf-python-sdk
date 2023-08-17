@@ -8,9 +8,9 @@ from iwf.workflow_state import get_state_id
 
 class Registry:
     def __init__(self):
-        self._workflowStore = {}
-        self._startingStateStore = {}
-        self._stateStore = {}
+        self._workflow_store = {}
+        self._starting_state_store = {}
+        self._state_store = {}
 
     def add_workflow(self, wf: ObjectWorkflow):
         self._register_workflow(wf)
@@ -21,7 +21,7 @@ class Registry:
             self.add_workflow(wf)
 
     def get_workflow(self, wf_type: str) -> Optional[ObjectWorkflow]:
-        return self._workflowStore.get(wf_type)
+        return self._workflow_store.get(wf_type)
 
     def get_workflow_with_check(self, wf_type: str) -> ObjectWorkflow:
         wf = self.get_workflow(wf_type)
@@ -30,16 +30,27 @@ class Registry:
         return wf
 
     def get_workflow_starting_state_def(self, wf_type: str) -> Optional[StateDef]:
-        return self._startingStateStore.get(wf_type)
+        return self._starting_state_store.get(wf_type)
 
     def get_workflow_state_defs(self, wf_type: str) -> dict[str, StateDef]:
-        return self._stateStore.get(wf_type)
+        return self._state_store.get(wf_type)
+
+    def get_workflow_state_def_with_check(
+        self, wf_type: str, state_id: str
+    ) -> StateDef:
+        states = self._state_store.get(wf_type)
+        state_def = states.get(state_id)
+        if state_def is None:
+            raise InvalidArgumentError(
+                f"workflow {wf_type} state {state_id} is not registered"
+            )
+        return state_def
 
     def _register_workflow(self, wf):
         wf_type = get_workflow_type(wf)
-        if wf_type in self._workflowStore:
+        if wf_type in self._workflow_store:
             raise WorkflowDefinitionError("workflow type conflict: ", wf_type)
-        self._workflowStore[wf_type] = wf
+        self._workflow_store[wf_type] = wf
 
     def _register_workflow_state(self, wf):
         wf_type = get_workflow_type(wf)
@@ -59,5 +70,5 @@ class Registry:
                         f"state"
                     )
                 starting_state = state_def.state
-            self._stateStore[wf_type] = state_map
-            self._startingStateStore[wf_type] = starting_state
+            self._state_store[wf_type] = state_map
+            self._starting_state_store[wf_type] = starting_state

@@ -6,7 +6,7 @@ from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOpti
 from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import get_state_id, should_skip_wait_until
-from iwf.workflow_state_options import to_idl_state_options
+from iwf.workflow_state_options import _to_idl_state_options
 
 T = TypeVar("T")
 
@@ -59,7 +59,7 @@ class Client:
 
         if starting_state_def is not None:
             starting_state_id = get_state_id(starting_state_def.state)
-            starting_state_opts = to_idl_state_options(
+            starting_state_opts = _to_idl_state_options(
                 starting_state_def.state.get_state_options(),
             )
 

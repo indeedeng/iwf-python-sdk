@@ -1,8 +1,26 @@
-from dataclasses import dataclass
-from typing import Any, Union
+from __future__ import annotations
+
+import typing
+from typing import Union
 
 from iwf.errors import WorkflowDefinitionError
-from iwf.workflow_state import WorkflowState, get_state_id_by_class
+
+if typing.TYPE_CHECKING:
+    from iwf.workflow_state import (
+        WorkflowState,
+        get_state_id_by_class,
+        should_skip_wait_until,
+    )
+    from iwf.registry import Registry
+
+from dataclasses import dataclass
+from typing import Any
+
+from iwf_api.models.state_movement import StateMovement as IdlStateMovement
+
+from iwf.object_encoder import ObjectEncoder
+
+from iwf.workflow_state_options import _to_idl_state_options
 
 
 @dataclass
@@ -21,18 +39,18 @@ force_failing_sys_state_id = reserved_state_id_prefix + "FORCE_FAILING_WORKFLOW"
 dead_end_sys_state_id = reserved_state_id_prefix + "DEAD_END"
 
 
-dead_end = StateMovement(dead_end_sys_state_id)
+dead_end_state_movement = StateMovement(dead_end_sys_state_id)
 
 
-def graceful_complete_workflow(output: Any = None) -> StateMovement:
+def graceful_complete_workflow_state_movement(output: Any = None) -> StateMovement:
     return StateMovement(graceful_completing_sys_state_id, output)
 
 
-def force_complete_workflow(output: Any = None) -> StateMovement:
+def force_complete_workflow_state_movement(output: Any = None) -> StateMovement:
     return StateMovement(force_completing_sys_state_id, output)
 
 
-def force_fail_workflow(output: Any = None) -> StateMovement:
+def force_fail_workflow_state_movement(output: Any = None) -> StateMovement:
     return StateMovement(force_failing_sys_state_id, output)
 
 
@@ -46,3 +64,20 @@ def state_movement(
     if state_id.startswith(reserved_state_id_prefix):
         raise WorkflowDefinitionError("cannot use reserved stateId")
     return StateMovement(state_id, state_input)
+
+
+def _to_idl_state_movement(
+    movement: StateMovement, wf_type: str, registry: Registry, encoder: ObjectEncoder
+) -> IdlStateMovement:
+    idl_movement = IdlStateMovement(
+        state_id=movement.state_id, state_input=encoder.encode(movement.state_input)
+    )
+    if not movement.state_id.startswith(reserved_state_id_prefix):
+        state = registry.get_workflow_state_def_with_check(
+            wf_type, movement.state_id
+        ).state
+        idl_state_options = _to_idl_state_options(state.get_state_options())
+        if should_skip_wait_until(state):
+            idl_state_options.skip_wait_until = True
+        idl_movement.state_options = idl_state_options
+    return idl_movement

@@ -503,7 +503,7 @@ class ObjectEncoder:
 
     def decode(
         self,
-        payload: EncodedObject,
+        payload: Optional[EncodedObject],
         type_hint: Optional[Type] = None,
     ) -> Any:
         """Decode payloads into values.
@@ -517,6 +517,8 @@ class ObjectEncoder:
         Returns:
             Decoded and converted value.
         """
+        if payload is None:
+            return None
         if self.payload_codec:
             payload = self.payload_codec.decode(payload)
         return self.payload_converter.from_payload(payload, type_hint)

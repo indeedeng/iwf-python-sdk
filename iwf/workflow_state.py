@@ -77,7 +77,7 @@ class WorkflowState(ABC, Generic[T]):
         """
         raise NotImplementedError(not_implemented_error_msg)
 
-    def get_state_options(self) -> WorkflowStateOptions:  # type: ignore
+    def get_state_options(self) -> WorkflowStateOptions:
         """GetStateOptions can just return nil to use the default Options
         StateOptions is optional configuration to adjust the state behaviors. Default values:
              StateId:  name of the implementation class
@@ -92,7 +92,7 @@ class WorkflowState(ABC, Generic[T]):
                     BackoffCoefficient: 2
         Returns: WorkflowStateOptions
         """
-        pass
+        return WorkflowStateOptions()
 
 
 def get_state_id(state: WorkflowState) -> str:

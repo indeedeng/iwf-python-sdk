@@ -21,7 +21,7 @@ class WorkflowStateOptions:
     wait_until_api_failure_policy: Optional[WaitUntilApiFailurePolicy] = None
 
 
-def to_idl_state_options(
+def _to_idl_state_options(
     options: Optional[WorkflowStateOptions],
 ) -> IdlWorkflowStateOptions:
     res = IdlWorkflowStateOptions()

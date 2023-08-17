@@ -1,6 +1,10 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from iwf_api.models.context import Context
+
+from iwf.utils.iwf_typing import unset_to_none
+
 
 @dataclass
 class WorkflowContext:
@@ -10,3 +14,16 @@ class WorkflowContext:
     state_execution_id: Optional[str] = None
     first_attempt_timestamp_seconds: Optional[int] = None
     attempt: Optional[int] = None
+
+
+def _from_idl_context(idl_context: Context) -> WorkflowContext:
+    return WorkflowContext(
+        workflow_id=idl_context.workflow_id,
+        workflow_run_id=idl_context.workflow_run_id,
+        workflow_start_timestamp_seconds=idl_context.workflow_started_timestamp,
+        state_execution_id=unset_to_none(idl_context.state_execution_id),
+        first_attempt_timestamp_seconds=unset_to_none(
+            idl_context.first_attempt_timestamp
+        ),
+        attempt=unset_to_none(idl_context.attempt),
+    )
