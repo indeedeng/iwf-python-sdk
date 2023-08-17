@@ -29,5 +29,7 @@ jobs:
       uses: knowsuchagency/poetry-install@v1
       env:
         POETRY_VIRTUALENVS_CREATE: false
+    - name: "Set up iWF environment"
+      run: docker compose -f iwf/tests/iwf-service-env/docker-compose.yml up -d
     - name: Run pytest check
       run: poetry run pytest -vv --cov="iwf" .
