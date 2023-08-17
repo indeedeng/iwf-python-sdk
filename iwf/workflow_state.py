@@ -102,6 +102,10 @@ def get_state_id(state: WorkflowState) -> str:
     return options.state_id
 
 
+def get_state_id_by_class(state: type[WorkflowState]) -> str:
+    return state.__name__
+
+
 def should_skip_wait_until(state: WorkflowState) -> bool:
     func_name = state.wait_until.__name__
     parent_method = getattr(super(type(state), state), func_name)
