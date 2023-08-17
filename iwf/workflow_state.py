@@ -12,12 +12,15 @@ from iwf.workflow_state_options import WorkflowStateOptions
 T = TypeVar("T")
 
 
+not_implemented_error_msg = "This implementation shouldn't be invoked"
+
+
 class WorkflowState(ABC, Generic[T]):
     """WorkflowState is the interface to define a workflow state."""
 
     @abstractmethod
     def get_input_type(self) -> type[T]:
-        raise NotImplementedError("This implementation shouldn't be invoked")
+        raise NotImplementedError(not_implemented_error_msg)
 
     def wait_until(
         self,
@@ -44,7 +47,7 @@ class WorkflowState(ABC, Generic[T]):
 
         Returns: the requested command
         """
-        raise NotImplementedError("This implementation shouldn't be invoked")
+        raise NotImplementedError(not_implemented_error_msg)
 
     def execute(
         self,
@@ -72,7 +75,7 @@ class WorkflowState(ABC, Generic[T]):
 
         Returns: the decision of what to do next(e.g. transition to next states or closing workflow)
         """
-        raise NotImplementedError("This implementation shouldn't be invoked")
+        raise NotImplementedError(not_implemented_error_msg)
 
     def get_state_options(self) -> WorkflowStateOptions:  # type: ignore
         """GetStateOptions can just return nil to use the default Options

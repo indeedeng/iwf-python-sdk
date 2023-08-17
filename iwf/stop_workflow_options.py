@@ -1,7 +1,9 @@
+from dataclasses import dataclass
+
 from iwf_api.models import WorkflowStopType
-from pydantic.main import BaseModel
 
 
-class StopWorkflowOptions(BaseModel):
+@dataclass
+class StopWorkflowOptions:
     workflow_stop_type: WorkflowStopType
     reason: str
