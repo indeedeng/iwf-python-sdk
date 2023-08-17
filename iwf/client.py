@@ -1,4 +1,4 @@
-from typing import Any, Optional, TypeVar, Type
+from typing import Any, Optional, Type, TypeVar
 
 from iwf.client_options import ClientOptions, local_default
 from iwf.registry import Registry
@@ -60,7 +60,7 @@ class Client:
         if starting_state_def is not None:
             starting_state_id = get_state_id(starting_state_def.state)
             starting_state_opts = to_idl_state_options(
-                starting_state_def.state.get_state_options()
+                starting_state_def.state.get_state_options(),
             )
 
             if should_skip_wait_until(starting_state_def.state):
