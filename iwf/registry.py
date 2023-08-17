@@ -1,9 +1,8 @@
 from typing import List, Optional
 
 from iwf.errors import WorkflowDefinitionError, InvalidArgumentError
-from iwf.state_schema import StateDef
 from iwf.workflow import ObjectWorkflow, get_workflow_type
-from iwf.workflow_state import get_state_id
+from iwf.workflow_state import get_state_id, WorkflowState
 
 
 class Registry:
@@ -29,22 +28,19 @@ class Registry:
             raise InvalidArgumentError(f"workflow {wf_type} is not registered")
         return wf
 
-    def get_workflow_starting_state_def(self, wf_type: str) -> Optional[StateDef]:
+    def get_workflow_starting_state(self, wf_type: str) -> Optional[WorkflowState]:
         return self._starting_state_store.get(wf_type)
 
-    def get_workflow_state_defs(self, wf_type: str) -> dict[str, StateDef]:
-        return self._state_store.get(wf_type)
-
-    def get_workflow_state_def_with_check(
+    def get_workflow_state_with_check(
         self, wf_type: str, state_id: str
-    ) -> StateDef:
+    ) -> WorkflowState:
         states = self._state_store.get(wf_type)
-        state_def = states.get(state_id)
-        if state_def is None:
+        state = states.get(state_id)
+        if state is None:
             raise InvalidArgumentError(
                 f"workflow {wf_type} state {state_id} is not registered"
             )
-        return state_def
+        return state
 
     def _register_workflow(self, wf):
         wf_type = get_workflow_type(wf)

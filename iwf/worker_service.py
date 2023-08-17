@@ -35,15 +35,14 @@ class WorkerService:
     ):
         self._registry = registry
         self._options = options
-        pass
 
     def handle_workflow_state_wait_until(
         self,
         request: WorkflowStateWaitUntilRequest,
     ) -> WorkflowStateWaitUntilResponse:
-        state = self._registry.get_workflow_state_def_with_check(
+        state = self._registry.get_workflow_state_with_check(
             request.workflow_type, request.workflow_state_id
-        ).state
+        )
 
         context = _from_idl_context(request.context)
         _input = self._options.object_encoder.decode(
@@ -60,9 +59,9 @@ class WorkerService:
         self,
         request: WorkflowStateExecuteRequest,
     ) -> WorkflowStateExecuteResponse:
-        state = self._registry.get_workflow_state_def_with_check(
+        state = self._registry.get_workflow_state_with_check(
             request.workflow_type, request.workflow_state_id
-        ).state
+        )
 
         context = _from_idl_context(request.context)
         _input = self._options.object_encoder.decode(

@@ -73,9 +73,7 @@ def _to_idl_state_movement(
         state_id=movement.state_id, state_input=encoder.encode(movement.state_input)
     )
     if not movement.state_id.startswith(reserved_state_id_prefix):
-        state = registry.get_workflow_state_def_with_check(
-            wf_type, movement.state_id
-        ).state
+        state = registry.get_workflow_state_with_check(wf_type, movement.state_id)
         idl_state_options = _to_idl_state_options(state.get_state_options())
         if should_skip_wait_until(state):
             idl_state_options.skip_wait_until = True

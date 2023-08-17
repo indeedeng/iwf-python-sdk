@@ -43,7 +43,7 @@ class Client:
         wf_type = get_workflow_type_by_class(wf_class)
         wf = self._registry.get_workflow_with_check(wf_type)
 
-        starting_state_def = self._registry.get_workflow_starting_state_def(wf_type)
+        starting_state = self._registry.get_workflow_starting_state(wf_type)
         unreg_opts = (
             UnregisteredWorkflowOptions()
         )  # TODO Why Mypy is complaining with creating an empty data class??
@@ -57,13 +57,13 @@ class Client:
 
         starting_state_id = None
 
-        if starting_state_def is not None:
-            starting_state_id = get_state_id(starting_state_def.state)
+        if starting_state is not None:
+            starting_state_id = get_state_id(starting_state)
             starting_state_opts = _to_idl_state_options(
-                starting_state_def.state.get_state_options(),
+                starting_state.get_state_options(),
             )
 
-            if should_skip_wait_until(starting_state_def.state):
+            if should_skip_wait_until(starting_state):
                 starting_state_opts.skip_wait_until = True
 
             unreg_opts.start_state_options = starting_state_opts
