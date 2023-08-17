@@ -23,9 +23,6 @@ pytest-env = "^0.8.1"
 httpx = "^0.23.3"
 openapi-python-client = "^0.14.0"
 
-[tool.poetry.group.test.dependencies]
-flask = "^2.3.2"
-
 [tool.ruff]
 ignore = ["E501"]
 
