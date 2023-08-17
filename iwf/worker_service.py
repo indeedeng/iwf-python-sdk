@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-from iwf.state_decision_mapper import _to_idl_state_decision
 from iwf_api.models import (
     WorkflowStateWaitUntilRequest,
     WorkflowStateWaitUntilResponse,
@@ -14,6 +13,7 @@ from iwf.communication import Communication
 from iwf.object_encoder import ObjectEncoder
 from iwf.persistence import Persistence
 from iwf.registry import Registry
+from iwf.state_decision import _to_idl_state_decision
 from iwf.utils.iwf_typing import unset_to_none
 from iwf.workflow_context import _from_idl_context
 
