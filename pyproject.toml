@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "iwf"}]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 iwf-api = { path = "iwf-api" }
 python-dateutil = { version = "^2.8.2", python = "<3.11" }
 

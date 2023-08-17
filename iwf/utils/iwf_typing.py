@@ -10,6 +10,7 @@ def none_type() -> type[T]:
     This returns the NoneType to make it more friendly to use.
     Alternatively, users can also use Python builtin types.NoneType but mypy will complain about it.
 
+    NOTE: this only works for Python 3.9 and above
     Returns:
         The type for None
     """
