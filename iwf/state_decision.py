@@ -15,11 +15,6 @@ from iwf.object_encoder import ObjectEncoder
 
 from iwf.state_movement import (
     StateMovement,
-    dead_end_state_movement,
-    graceful_complete_workflow_state_movement,
-    force_complete_workflow_state_movement,
-    force_fail_workflow_state_movement,
-    state_movement,
     _to_idl_state_movement,
 )
 
@@ -29,25 +24,25 @@ class StateDecision:
     next_states: List[StateMovement]
 
 
-dead_end = StateDecision([dead_end_state_movement])
+dead_end = StateDecision([StateMovement.dead_end])
 
 
 def graceful_complete_workflow(output: Any = None) -> StateDecision:
-    return StateDecision([graceful_complete_workflow_state_movement(output)])
+    return StateDecision([StateMovement.graceful_complete_workflow(output)])
 
 
 def force_complete_workflow(output: Any = None) -> StateDecision:
-    return StateDecision([force_complete_workflow_state_movement(output)])
+    return StateDecision([StateMovement.force_complete_workflow(output)])
 
 
 def force_fail_workflow(output: Any = None) -> StateDecision:
-    return StateDecision([force_fail_workflow_state_movement(output)])
+    return StateDecision([StateMovement.force_fail_workflow(output)])
 
 
 def single_next_state(
     state: Union[str, type[WorkflowState]], state_input: Any = None
 ) -> StateDecision:
-    return StateDecision([state_movement(state, state_input)])
+    return StateDecision([StateMovement.create(state, state_input)])
 
 
 def multi_next_states(next_states: List[StateMovement]) -> StateDecision:

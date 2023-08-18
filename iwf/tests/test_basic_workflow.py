@@ -11,7 +11,7 @@ from iwf.state_decision import (
     graceful_complete_workflow,
     single_next_state,
 )
-from iwf.state_schema import StateSchema, starting_state, non_starting_state
+from iwf.state_schema import StateSchema
 from iwf.tests.worker_server import registry
 from iwf.utils.iwf_typing import NoneType
 from iwf.workflow import ObjectWorkflow
@@ -60,7 +60,7 @@ class State2(WorkflowState[None]):
 
 class BasicWorkflow(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
-        return StateSchema([starting_state(State1()), non_starting_state(State2())])
+        return StateSchema.with_starting_state(State1(), State2())
 
 
 hello_wf = BasicWorkflow()
