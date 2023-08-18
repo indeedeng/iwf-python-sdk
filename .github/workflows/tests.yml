@@ -31,5 +31,5 @@ jobs:
         POETRY_VIRTUALENVS_CREATE: false
     - name: "Set up iWF environment"
       run: docker compose -f iwf/tests/iwf-service-env/docker-compose.yml up -d
-    - name: Run pytest check # sleep 30s to wait for the server to be ready
-      run: sleep 30 && poetry run pytest -vv --cov="iwf" .
+    - name: Run pytest check # sleep 50s to wait for the server to be ready
+      run: sleep 50 && poetry run pytest -vv --cov="iwf" .
