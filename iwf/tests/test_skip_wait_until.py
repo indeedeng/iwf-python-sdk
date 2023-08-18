@@ -4,9 +4,7 @@ from iwf.communication import Communication
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.workflow_context import WorkflowContext
-from iwf.workflow_state import T
-from iwf.workflow_state import WorkflowState
-from iwf.workflow_state import should_skip_wait_until
+from iwf.workflow_state import T, WorkflowState, should_skip_wait_until
 
 
 class DirectStateSkip(WorkflowState[None]):

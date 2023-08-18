@@ -7,14 +7,12 @@ from iwf.command_request import CommandRequest
 from iwf.command_results import CommandResults
 from iwf.communication import Communication
 from iwf.persistence import Persistence
-from iwf.state_decision import (
-    StateDecision,
-)
+from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
 from iwf.tests.worker_server import registry
 from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
-from iwf.workflow_state import WorkflowState, T
+from iwf.workflow_state import T, WorkflowState
 
 
 class State1(WorkflowState[Union[int, str]]):

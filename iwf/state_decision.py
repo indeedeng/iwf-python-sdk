@@ -7,16 +7,13 @@ if typing.TYPE_CHECKING:
     from iwf.workflow_state import WorkflowState
 
 from dataclasses import dataclass
-from typing import List, Any, Union
+from typing import Any, List, Union
 
 from iwf_api.models.state_decision import StateDecision as IdlStateDecision
 
 from iwf.object_encoder import ObjectEncoder
 
-from iwf.state_movement import (
-    StateMovement,
-    _to_idl_state_movement,
-)
+from iwf.state_movement import StateMovement, _to_idl_state_movement
 
 
 @dataclass

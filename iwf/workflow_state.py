@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import TypeVar, Generic, get_args
+from typing import Generic, TypeVar, get_args
 
 from iwf.command_request import CommandRequest
 from iwf.command_results import CommandResults
