@@ -1,6 +1,5 @@
-from threading import Thread
+import traceback
 
-import pytest
 from flask import Flask, request
 from iwf_api.models import WorkflowStateWaitUntilRequest, WorkflowStateExecuteRequest
 
@@ -32,15 +31,18 @@ def handle_wait_until():
 @workflow_worker.route(workflow_state_execute_api_path, methods=["POST"])
 def handle_execute():
     req = WorkflowStateExecuteRequest.from_dict(request.json)
+    print("debug request qlong\n", req, "\n")
     resp = worker_service.handle_workflow_state_execute(req)
+    print("debug resp qlong\n", resp, "\n")
     return resp.to_dict()
 
 
-@pytest.fixture(autouse=True)
-def run_around_tests():
-    thread = Thread(target=workflow_worker.run, args=("127.0.0.1", 8802))
-    thread.start()
-
-    yield
-
-    thread._stop()
+@workflow_worker.errorhandler(Exception)
+def internal_error(exception):
+    print("500 error caught")
+    print(traceback.format_exc())
+    response = exception.get_response()
+    # replace the body with JSON
+    response.data = traceback.format_exc()
+    response.content_type = "application/json"
+    return response

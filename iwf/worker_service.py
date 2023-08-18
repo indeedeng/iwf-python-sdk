@@ -64,6 +64,7 @@ class WorkerService:
         )
 
         context = _from_idl_context(request.context)
+
         _input = self._options.object_encoder.decode(
             unset_to_none(request.state_input), state.get_input_type()
         )

@@ -130,14 +130,15 @@ class UnregisteredClient:
         if response.status_code != http.HTTPStatus.OK:
             raise process_http_error_get_api(response.status_code, response.parsed)  # type: ignore
 
-        assert isinstance(response, WorkflowGetResponse)
-        if response.workflow_status != WorkflowStatus.COMPLETED:
-            raise WorkflowAbnormalExitError(response)
+        parsed = response.parsed
+        assert isinstance(parsed, WorkflowGetResponse)
+        if parsed.workflow_status != WorkflowStatus.COMPLETED:
+            raise WorkflowAbnormalExitError(parsed)
 
-        if not response.results or len(response.results) == 0:
+        if not parsed.results or len(parsed.results) == 0:
             return None
         filtered_results = [
-            result for result in response.results if result.completed_state_output
+            result for result in parsed.results if result.completed_state_output
         ]
         if len(filtered_results) == 0:
             return None

@@ -249,7 +249,7 @@ class BinaryNullPayloadConverter(EncodingPayloadConverter):
         type_hint: Optional[Type] = None,
     ) -> Any:
         """See base class."""
-        if len(payload.data) > 0:  # TODO: check Unset?
+        if isinstance(payload.data, str) and len(payload.data) > 0:
             raise RuntimeError("Expected empty data set for binary/null")
         return None
 
@@ -377,10 +377,13 @@ class JSONPlainPayloadConverter(EncodingPayloadConverter):
     ) -> Any:
         """See base class."""
         try:
-            obj = json.loads(payload.data, cls=self._decoder)  # TODO: check Unset?
-            if type_hint:
-                obj = value_to_type(type_hint, obj, self._custom_type_converters)
-            return obj
+            if isinstance(payload.data, str):
+                obj = json.loads(payload.data, cls=self._decoder)
+                if type_hint:
+                    obj = value_to_type(type_hint, obj, self._custom_type_converters)
+                return obj
+            else:
+                return None
         except json.JSONDecodeError as err:
             raise RuntimeError("Failed parsing") from err
 

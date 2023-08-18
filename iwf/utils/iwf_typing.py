@@ -19,10 +19,10 @@ def none_type() -> type[T]:
 
 def check_not_unset(input: Union[Unset, T]) -> T:
     assert not isinstance(input, Unset), "instance cannot be unset"
-    return T(input)  # type: ignore
+    return input
 
 
 def unset_to_none(input: Union[Unset, T]) -> Optional[T]:
     if isinstance(input, Unset):
         return None
-    return T(input)  # type: ignore
+    return input
