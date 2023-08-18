@@ -49,7 +49,7 @@ def internal_error(exception):
     return response
 
 
-_webApp = Thread(target=_flask_app.run, args=("127.0.0.1", 8802))
+_webApp = Thread(target=_flask_app.run, args=("0.0.0.0", 8802))
 # when debugging, keep the thread running so that we can see the error in history
 _webApp.setDaemon(not debug_mode)
 _webApp.start()
