@@ -35,6 +35,8 @@ from iwf_api.models import (
     WorkflowStatus,
     WorkflowStopRequest,
     WorkflowGetResponse,
+    ErrorResponse,
+    EncodedObject,
 )
 from iwf_api.types import Response
 
@@ -128,7 +130,8 @@ class UnregisteredClient:
             json_body=request,
         )
         if response.status_code != http.HTTPStatus.OK:
-            raise process_http_error_get_api(response.status_code, response.parsed)  # type: ignore
+            assert isinstance(response.parsed, ErrorResponse)
+            raise process_http_error_get_api(response.status_code, response.parsed)
 
         parsed = response.parsed
         assert isinstance(parsed, WorkflowGetResponse)
@@ -149,8 +152,9 @@ class UnregisteredClient:
                 "workflow must have one or zero state output for using this API"
             )
 
+        assert isinstance(result.completed_state_output, EncodedObject)
         return self.client_options.object_encoder.decode(
-            result.completed_state_output,  # type: ignore
+            result.completed_state_output,
             type_hint,
         )
 
@@ -268,17 +272,18 @@ class UnregisteredClient:
         )
         return handler_error_and_return(response)
 
-    def get_any_workflow_data_objects(
+    def get_workflow_data_attributes(
         self,
         workflow_id: str,
         workflow_run_id: str,
-        attribute_keys: List[str] = None,  # type: ignore
+        attribute_keys: Optional[List[str]] = None,
     ):
         request = WorkflowGetDataObjectsRequest(
             workflow_id=workflow_id,
             workflow_run_id=workflow_run_id,
-            keys=attribute_keys,
         )
+        if attribute_keys:
+            request.keys = attribute_keys
         response = post_api_v1_workflow_dataobjects_get.sync_detailed(
             client=self.api_client,
             json_body=request,
@@ -295,7 +300,7 @@ class UnregisteredClient:
         )
         return handler_error_and_return(response)
 
-    def get_any_workflow_search_attributes(
+    def get_workflow_search_attributes(
         self,
         workflow_id: str,
         workflow_run_id: str,
@@ -304,8 +309,9 @@ class UnregisteredClient:
         request = WorkflowGetSearchAttributesRequest(
             workflow_id=workflow_id,
             workflow_run_id=workflow_run_id,
-            keys=attribute_keys,  # type: ignore
         )
+        if attribute_keys:
+            request.keys = attribute_keys
         response = post_api_v1_workflow_searchattributes_get.sync_detailed(
             client=self.api_client,
             json_body=request,
@@ -315,5 +321,6 @@ class UnregisteredClient:
 
 def handler_error_and_return(response: Response):
     if response.status_code != http.HTTPStatus.OK:
-        raise process_http_error(response.status_code, response.parsed)  # type: ignore
+        assert isinstance(response.parsed, ErrorResponse)
+        raise process_http_error(response.status_code, response.parsed)
     return response.parsed
