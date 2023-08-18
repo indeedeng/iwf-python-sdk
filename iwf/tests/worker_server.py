@@ -6,9 +6,7 @@ from iwf_api.models import WorkflowStateWaitUntilRequest, WorkflowStateExecuteRe
 
 from iwf.registry import Registry
 from iwf.worker_service import (
-    workflow_state_wait_until_api_path,
     WorkerService,
-    workflow_state_execute_api_path,
 )
 
 debug_mode = False
@@ -25,14 +23,14 @@ def index():
     return "hello"
 
 
-@_flask_app.route(workflow_state_wait_until_api_path, methods=["POST"])
+@_flask_app.route(WorkerService.api_path_workflow_state_wait_until, methods=["POST"])
 def handle_wait_until():
     req = WorkflowStateWaitUntilRequest.from_dict(request.json)
     resp = _worker_service.handle_workflow_state_wait_until(req)
     return resp.to_dict()
 
 
-@_flask_app.route(workflow_state_execute_api_path, methods=["POST"])
+@_flask_app.route(WorkerService.api_path_workflow_state_execute, methods=["POST"])
 def handle_execute():
     req = WorkflowStateExecuteRequest.from_dict(request.json)
     resp = _worker_service.handle_workflow_state_execute(req)

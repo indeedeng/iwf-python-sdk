@@ -1,3 +1,4 @@
+import typing
 from dataclasses import dataclass
 
 from iwf_api.models import (
@@ -18,9 +19,6 @@ from iwf.utils.iwf_typing import unset_to_none
 from iwf.workflow_context import _from_idl_context
 from iwf.workflow_state import get_input_type
 
-workflow_state_wait_until_api_path = "/api/v1/workflowState/start"
-workflow_state_execute_api_path = "/api/v1/workflowState/decide"
-
 
 @dataclass
 class WorkerOptions:
@@ -31,6 +29,13 @@ default_worker_options = WorkerOptions(ObjectEncoder.default)
 
 
 class WorkerService:
+    api_path_workflow_state_wait_until: typing.ClassVar[
+        str
+    ] = "/api/v1/workflowState/start"
+    api_path_workflow_state_execute: typing.ClassVar[
+        str
+    ] = "/api/v1/workflowState/decide"
+
     def __init__(
         self, registry: Registry, options: WorkerOptions = default_worker_options
     ):
