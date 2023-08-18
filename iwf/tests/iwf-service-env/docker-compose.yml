@@ -69,13 +69,15 @@ services:
     container_name: iwf-server
     image: iworkflowio/iwf-server:latest #NOTE: you can change to version tag like v1.0.0-RC6
     environment:
-      - AUTO_FIX_WORKER_URL=172.17.0.1 # this will let iwf-server automatically replace all iwfWorkerUrls of "localhost" or "127.0.0.1" with "172.17.0.1"
+      - AUTO_FIX_WORKER_URL=host.docker.internal # this will let iwf-server automatically replace all iwfWorkerUrls of "localhost" or "127.0.0.1" with "host.docker.internal"
     networks:
       - temporal-network
     ports:
       - 8801:8801
     depends_on:
       - temporal
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 networks:
   temporal-network:
     driver: bridge
