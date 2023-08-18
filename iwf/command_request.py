@@ -12,11 +12,13 @@ class TimerCommand:
     command_id: Optional[str]
     firing_unix_timestamp_seconds: int
 
-
-def timer_command_by_duration(
-    duration: timedelta, command_id: Optional[str] = None
-) -> TimerCommand:
-    return TimerCommand(command_id, int(time.time()) + int(duration.total_seconds()))
+    @classmethod
+    def timer_command_by_duration(
+        cls, duration: timedelta, command_id: Optional[str] = None
+    ):
+        return TimerCommand(
+            command_id, int(time.time()) + int(duration.total_seconds())
+        )
 
 
 @dataclass
@@ -25,4 +27,5 @@ class CommandRequest:
 
 
 def _to_idl_command_request(request: CommandRequest) -> IdlCommandRequest:
+    # TODO
     return IdlCommandRequest(command_waiting_type=CommandWaitingType.ALL_COMPLETED)
