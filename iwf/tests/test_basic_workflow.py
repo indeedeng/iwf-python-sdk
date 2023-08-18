@@ -1,5 +1,6 @@
 import inspect
 import time
+from typing import Union
 
 from iwf.client import Client
 from iwf.command_request import CommandRequest
@@ -16,7 +17,7 @@ from iwf.workflow_context import WorkflowContext
 from iwf.workflow_state import WorkflowState, T
 
 
-class State1(WorkflowState[str]):
+class State1(WorkflowState[Union[int, str]]):
     def wait_until(
         self,
         ctx: WorkflowContext,
@@ -24,16 +25,20 @@ class State1(WorkflowState[str]):
         persistence: Persistence,
         communication: Communication,
     ) -> CommandRequest:
+        if input != "input":
+            raise RuntimeError("input is incorrect")
         return CommandRequest()
 
     def execute(
         self,
         ctx: WorkflowContext,
-        input: str,
+        input: T,
         command_results: CommandResults,
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
+        if input != "input":
+            raise RuntimeError("input is incorrect")
         return StateDecision.single_next_state(State2)
 
 
@@ -62,6 +67,6 @@ client = Client(registry)
 def test_basic_workflow():
     wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-    client.start_workflow(BasicWorkflow, wf_id, 100)
+    client.start_workflow(BasicWorkflow, wf_id, 100, "input")
     res = client.get_simple_workflow_result_with_wait(wf_id, str)
     assert res == "done"

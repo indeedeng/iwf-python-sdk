@@ -112,5 +112,5 @@ def get_input_type(state):
     bases = state.__orig_bases__
     for b in bases:
         if b.__origin__ == WorkflowState:
-            return get_args(b)
+            return get_args(b)[0]
     return None
