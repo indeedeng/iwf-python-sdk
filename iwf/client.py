@@ -41,12 +41,10 @@ class Client:
             ServerSideError for server error
         """
         wf_type = get_workflow_type_by_class(wf_class)
-        wf = self._registry.get_workflow_with_check(wf_type)
+        self._registry.get_workflow_with_check(wf_type)
 
         starting_state = self._registry.get_workflow_starting_state(wf_type)
-        unreg_opts = (
-            UnregisteredWorkflowOptions()
-        )  # TODO Why Mypy is complaining with creating an empty data class??
+        unreg_opts = UnregisteredWorkflowOptions()
 
         if options is not None:
             unreg_opts.workflow_id_reuse_policy = options.workflow_id_reuse_policy

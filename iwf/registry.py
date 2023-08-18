@@ -6,10 +6,14 @@ from iwf.workflow_state import get_state_id, WorkflowState
 
 
 class Registry:
+    _workflow_store: dict[str, ObjectWorkflow]
+    _starting_state_store: dict[str, WorkflowState]
+    _state_store: dict[str, dict[str, WorkflowState]]
+
     def __init__(self):
-        self._workflow_store = {}
-        self._starting_state_store = {}
-        self._state_store = {}
+        self._workflow_store = dict()
+        self._starting_state_store = dict()
+        self._state_store = dict()
 
     def add_workflow(self, wf: ObjectWorkflow):
         self._register_workflow(wf)
@@ -19,11 +23,8 @@ class Registry:
         for wf in wfs:
             self.add_workflow(wf)
 
-    def get_workflow(self, wf_type: str) -> Optional[ObjectWorkflow]:
-        return self._workflow_store.get(wf_type)
-
     def get_workflow_with_check(self, wf_type: str) -> ObjectWorkflow:
-        wf = self.get_workflow(wf_type)
+        wf = self._workflow_store.get(wf_type)
         if wf is None:
             raise InvalidArgumentError(f"workflow {wf_type} is not registered")
         return wf
@@ -35,6 +36,8 @@ class Registry:
         self, wf_type: str, state_id: str
     ) -> WorkflowState:
         states = self._state_store.get(wf_type)
+        if states is None:
+            raise InvalidArgumentError(f"workflow {wf_type} is not registered")
         state = states.get(state_id)
         if state is None:
             raise InvalidArgumentError(
