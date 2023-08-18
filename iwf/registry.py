@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from iwf.errors import WorkflowDefinitionError, InvalidArgumentError
 from iwf.workflow import ObjectWorkflow, get_workflow_type
@@ -19,7 +19,7 @@ class Registry:
         self._register_workflow(wf)
         self._register_workflow_state(wf)
 
-    def add_workflows(self, wfs: List[ObjectWorkflow]):
+    def add_workflows(self, *wfs: ObjectWorkflow):
         for wf in wfs:
             self.add_workflow(wf)
 
