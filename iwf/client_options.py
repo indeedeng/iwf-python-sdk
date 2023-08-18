@@ -9,10 +9,10 @@ class ClientOptions:
     worker_url: str
     object_encoder: ObjectEncoder
 
-
-def local_default() -> ClientOptions:
-    return ClientOptions(
-        server_url="http://localhost:8801",
-        worker_url="http://localhost:8802",
-        object_encoder=ObjectEncoder.default,
-    )
+    @classmethod
+    def local_default(cls):
+        return ClientOptions(
+            server_url="http://localhost:8801",
+            worker_url="http://localhost:8802",
+            object_encoder=ObjectEncoder.default,
+        )

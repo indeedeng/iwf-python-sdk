@@ -23,30 +23,32 @@ from iwf.state_movement import (
 class StateDecision:
     next_states: List[StateMovement]
 
+    dead_end: typing.ClassVar[StateDecision]
 
-dead_end = StateDecision([StateMovement.dead_end])
+    @classmethod
+    def graceful_complete_workflow(cls, output: Any = None) -> StateDecision:
+        return StateDecision([StateMovement.graceful_complete_workflow(output)])
+
+    @classmethod
+    def force_complete_workflow(cls, output: Any = None) -> StateDecision:
+        return StateDecision([StateMovement.force_complete_workflow(output)])
+
+    @classmethod
+    def force_fail_workflow(cls, output: Any = None) -> StateDecision:
+        return StateDecision([StateMovement.force_fail_workflow(output)])
+
+    @classmethod
+    def single_next_state(
+        cls, state: Union[str, type[WorkflowState]], state_input: Any = None
+    ) -> StateDecision:
+        return StateDecision([StateMovement.create(state, state_input)])
+
+    @classmethod
+    def multi_next_states(cls, next_states: List[StateMovement]) -> StateDecision:
+        return StateDecision(next_states)
 
 
-def graceful_complete_workflow(output: Any = None) -> StateDecision:
-    return StateDecision([StateMovement.graceful_complete_workflow(output)])
-
-
-def force_complete_workflow(output: Any = None) -> StateDecision:
-    return StateDecision([StateMovement.force_complete_workflow(output)])
-
-
-def force_fail_workflow(output: Any = None) -> StateDecision:
-    return StateDecision([StateMovement.force_fail_workflow(output)])
-
-
-def single_next_state(
-    state: Union[str, type[WorkflowState]], state_input: Any = None
-) -> StateDecision:
-    return StateDecision([StateMovement.create(state, state_input)])
-
-
-def multi_next_states(next_states: List[StateMovement]) -> StateDecision:
-    return StateDecision(next_states)
+StateDecision.dead_end = StateDecision([StateMovement.dead_end])
 
 
 def _to_idl_state_decision(

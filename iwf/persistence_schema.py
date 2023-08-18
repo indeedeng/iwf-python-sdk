@@ -16,17 +16,19 @@ class PersistenceField:
     field_type: PersistenceFieldType
     search_attribute_type: Optional[SearchAttributeValueType] = None
 
+    @classmethod
+    def data_attribute_def(cls, key: str):
+        return PersistenceField(key, PersistenceFieldType.DataAttribute)
 
-def data_attribute_def(key: str) -> PersistenceField:
-    return PersistenceField(key, PersistenceFieldType.DataAttribute)
-
-
-def search_attribute_def(
-    key: str, sa_type: SearchAttributeValueType
-) -> PersistenceField:
-    return PersistenceField(key, PersistenceFieldType.SearchAttribute, sa_type)
+    @classmethod
+    def search_attribute_def(cls, key: str, sa_type: SearchAttributeValueType):
+        return PersistenceField(key, PersistenceFieldType.SearchAttribute, sa_type)
 
 
 @dataclass
 class PersistenceSchema:
     persistence_fields: List[PersistenceField] = field(default_factory=list)
+
+    @classmethod
+    def create(cls, *args: PersistenceField):
+        return PersistenceSchema(list(args))

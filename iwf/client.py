@@ -1,6 +1,6 @@
 from typing import Any, Optional, Type, TypeVar
 
-from iwf.client_options import ClientOptions, local_default
+from iwf.client_options import ClientOptions
 from iwf.registry import Registry
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
 from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
@@ -15,7 +15,7 @@ class Client:
     def __init__(self, registry: Registry, options: Optional[ClientOptions] = None):
         self._registry = registry
         if options is None:
-            options = local_default()
+            options = ClientOptions.local_default()
         self._options = options
         self._unregistered_client = UnregisteredClient(options)
 

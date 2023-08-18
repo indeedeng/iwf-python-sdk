@@ -8,8 +8,6 @@ from iwf.communication import Communication
 from iwf.persistence import Persistence
 from iwf.state_decision import (
     StateDecision,
-    graceful_complete_workflow,
-    single_next_state,
 )
 from iwf.state_schema import StateSchema
 from iwf.tests.worker_server import registry
@@ -40,7 +38,7 @@ class State1(WorkflowState[str]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        return single_next_state(State2)
+        return StateDecision.single_next_state(State2)
 
 
 class State2(WorkflowState[None]):
@@ -55,7 +53,7 @@ class State2(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        return graceful_complete_workflow("done")
+        return StateDecision.graceful_complete_workflow("done")
 
 
 class BasicWorkflow(ObjectWorkflow):
