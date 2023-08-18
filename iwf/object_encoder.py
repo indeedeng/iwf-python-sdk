@@ -33,9 +33,6 @@ from typing import (
 from iwf_api.models import EncodedObject
 from typing_extensions import Literal
 
-if sys.version_info < (3, 11):
-    # Python's datetime.fromisoformat doesn't support certain formats pre-3.11
-    from dateutil import parser  # type: ignore
 # StrEnum is available in 3.11+
 if sys.version_info >= (3, 11):
     from enum import StrEnum
