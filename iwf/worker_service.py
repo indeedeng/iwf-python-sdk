@@ -16,6 +16,7 @@ from iwf.registry import Registry
 from iwf.state_decision import _to_idl_state_decision
 from iwf.utils.iwf_typing import unset_to_none
 from iwf.workflow_context import _from_idl_context
+from iwf.workflow_state import get_input_type
 
 workflow_state_wait_until_api_path = "/api/v1/workflowState/start"
 workflow_state_execute_api_path = "/api/v1/workflowState/decide"
@@ -46,7 +47,7 @@ class WorkerService:
 
         context = _from_idl_context(request.context)
         _input = self._options.object_encoder.decode(
-            unset_to_none(request.state_input), state.get_input_type()
+            unset_to_none(request.state_input), get_input_type(state)
         )
         persistence = Persistence()
         communication = Communication()
@@ -66,7 +67,7 @@ class WorkerService:
         context = _from_idl_context(request.context)
 
         _input = self._options.object_encoder.decode(
-            unset_to_none(request.state_input), state.get_input_type()
+            unset_to_none(request.state_input), get_input_type(state)
         )
         persistence = Persistence()
         communication = Communication()

@@ -3,7 +3,6 @@ from iwf.command_results import CommandResults
 from iwf.communication import Communication
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
-from iwf.utils.iwf_typing import NoneType
 from iwf.workflow_context import WorkflowContext
 from iwf.workflow_state import (
     WorkflowState,
@@ -13,9 +12,6 @@ from iwf.workflow_state import (
 
 
 class DirectStateSkip(WorkflowState[None]):
-    def get_input_type(self) -> type[T]:
-        return NoneType
-
     def execute(
         self,
         ctx: WorkflowContext,
@@ -28,9 +24,6 @@ class DirectStateSkip(WorkflowState[None]):
 
 
 class DirectStateNotSkip(WorkflowState[int]):
-    def get_input_type(self) -> type[int]:
-        return int
-
     def wait_until(
         self,
         ctx: WorkflowContext,

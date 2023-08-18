@@ -1,5 +1,5 @@
-from abc import ABC, abstractmethod
-from typing import TypeVar, Generic
+from abc import ABC
+from typing import TypeVar, Generic, get_args
 
 from iwf.command_request import CommandRequest
 from iwf.command_results import CommandResults
@@ -17,10 +17,6 @@ not_implemented_error_msg = "This implementation shouldn't be invoked"
 
 class WorkflowState(ABC, Generic[T]):
     """WorkflowState is the interface to define a workflow state."""
-
-    @abstractmethod
-    def get_input_type(self) -> type[T]:
-        raise NotImplementedError(not_implemented_error_msg)
 
     def wait_until(
         self,
@@ -110,3 +106,11 @@ def should_skip_wait_until(state: WorkflowState) -> bool:
     func_name = state.wait_until.__name__
     parent_method = getattr(super(type(state), state), func_name)
     return parent_method == state.wait_until
+
+
+def get_input_type(state):
+    bases = state.__orig_bases__
+    for b in bases:
+        if b.__origin__ == WorkflowState:
+            return get_args(b)
+    return None
