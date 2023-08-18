@@ -1,6 +1,8 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 from enum import Enum
-from typing import Optional, List
+from typing import List
+from typing import Optional
 
 
 class CommunicationMethodType(Enum):
