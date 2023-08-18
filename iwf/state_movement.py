@@ -8,8 +8,6 @@ from iwf.errors import WorkflowDefinitionError
 if typing.TYPE_CHECKING:
     from iwf.workflow_state import (
         WorkflowState,
-        get_state_id_by_class,
-        should_skip_wait_until,
     )
     from iwf.registry import Registry
 
@@ -60,6 +58,10 @@ def state_movement(
     if isinstance(state, str):
         state_id = state
     else:
+        from iwf.workflow_state import (
+            get_state_id_by_class,
+        )
+
         state_id = get_state_id_by_class(state)
     if state_id.startswith(reserved_state_id_prefix):
         raise WorkflowDefinitionError("cannot use reserved stateId")
@@ -75,6 +77,10 @@ def _to_idl_state_movement(
     if not movement.state_id.startswith(reserved_state_id_prefix):
         state = registry.get_workflow_state_with_check(wf_type, movement.state_id)
         idl_state_options = _to_idl_state_options(state.get_state_options())
+        from iwf.workflow_state import (
+            should_skip_wait_until,
+        )
+
         if should_skip_wait_until(state):
             idl_state_options.skip_wait_until = True
         idl_movement.state_options = idl_state_options
