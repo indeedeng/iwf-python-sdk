@@ -33,9 +33,6 @@ from typing import (
 from iwf_api.models import EncodedObject
 from typing_extensions import Literal
 
-if sys.version_info < (3, 11):
-    # Python's datetime.fromisoformat doesn't support certain formats pre-3.11
-    from dateutil import parser  # type: ignore
 # StrEnum is available in 3.11+
 if sys.version_info >= (3, 11):
     from enum import StrEnum
@@ -47,9 +44,6 @@ if sys.version_info >= (3, 10):
 class PayloadConverter(ABC):
     """Base payload converter to/from payload/value."""
 
-    default: ClassVar[PayloadConverter]
-    """Default payload converter."""
-
     @abstractmethod
     def to_payload(
         self,
@@ -58,12 +52,10 @@ class PayloadConverter(ABC):
         """Encode values into payloads.
 
         Args:
-            values: Values to be converted.
+            value: value to be converted
 
         Returns:
-            Converted payloads. Note, this does not have to be the same number
-            as values given, but must be at least one and cannot be more than
-            was given.
+            Converted payload.
 
         Raises:
             Exception: Any issue during conversion.
@@ -79,15 +71,11 @@ class PayloadConverter(ABC):
         """Decode payloads into values.
 
         Args:
-            payloads: Payloads to convert to Python values.
-            type_hints: Types that are expected if any. This may not have any
-                types if there are no annotations on the target. If this is
-                present, it must have the exact same length as payloads even if
-                the values are just "object".
+            payload: Payload to convert to Python values.
+            type_hint: Type that are expected if any.
 
         Returns:
-            Collection of Python values. Note, this does not have to be the same
-            number as values given, but at least one must be present.
+            payload value
 
         Raises:
             Exception: Any issue during conversion.
@@ -96,7 +84,7 @@ class PayloadConverter(ABC):
 
 
 class EncodingPayloadConverter(ABC):
-    """Base converter for a known encoding for use in CompositePayloadConverter."""
+    """Base converter for a **known encoding** for use in CompositePayloadConverter."""
 
     @property
     @abstractmethod
@@ -204,6 +192,7 @@ class CompositePayloadConverter(PayloadConverter):
             RuntimeError: Error during decode
         """
         encoding = payload.encoding
+        assert isinstance(encoding, str)
         converter = self.converters.get(encoding)
         if converter is None:
             raise KeyError(f"Unknown payload encoding {encoding}")
@@ -256,7 +245,7 @@ class BinaryNullPayloadConverter(EncodingPayloadConverter):
         type_hint: Optional[Type] = None,
     ) -> Any:
         """See base class."""
-        if len(payload.data) > 0:
+        if isinstance(payload.data, str) and len(payload.data) > 0:
             raise RuntimeError("Expected empty data set for binary/null")
         return None
 
@@ -363,7 +352,8 @@ class JSONPlainPayloadConverter(EncodingPayloadConverter):
         # Check for pydantic then send warning
         if hasattr(value, "parse_obj"):
             warnings.warn(
-                "If you're using pydantic model, refer to https://github.com/temporalio/samples-python/tree/main/pydantic_converter for better support",
+                "If you're using pydantic model, refer to "
+                "https://github.com/temporalio/samples-python/tree/main/pydantic_converter for better support",
             )
         # We let JSON conversion errors be thrown to caller
         return EncodedObject(
@@ -383,10 +373,13 @@ class JSONPlainPayloadConverter(EncodingPayloadConverter):
     ) -> Any:
         """See base class."""
         try:
-            obj = json.loads(payload.data, cls=self._decoder)
-            if type_hint:
-                obj = value_to_type(type_hint, obj, self._custom_type_converters)
-            return obj
+            if isinstance(payload.data, str):
+                obj = json.loads(payload.data, cls=self._decoder)
+                if type_hint:
+                    obj = value_to_type(type_hint, obj, self._custom_type_converters)
+                return obj
+            else:
+                return None
         except json.JSONDecodeError as err:
             raise RuntimeError("Failed parsing") from err
 
@@ -431,7 +424,7 @@ class PayloadCodec(ABC):
     """
 
     @abstractmethod
-    async def encode(
+    def encode(
         self,
         payload: EncodedObject,
     ) -> EncodedObject:
@@ -448,7 +441,7 @@ class PayloadCodec(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def decode(
+    def decode(
         self,
         payload: EncodedObject,
     ) -> EncodedObject:
@@ -488,30 +481,28 @@ class ObjectEncoder:
     def __post_init__(self) -> None:  # noqa: D105
         object.__setattr__(self, "payload_converter", self.payload_converter_class())
 
-    async def encode(
+    def encode(
         self,
         value: Any,
     ) -> EncodedObject:
         """Encode values into payloads.
 
-        First converts values to payloads then encodes payloads using codec.
+        First converts values to payload then encodes payload using codec.
 
         Args:
             value: Values to be converted and encoded.
 
         Returns:
-            Converted and encoded payloads. Note, this does not have to be the
-            same number as values given, but must be at least one and cannot be
-            more than was given.
+            Converted and encoded payload.
         """
         payload = self.payload_converter.to_payload(value)
         if self.payload_codec:
-            payload = await self.payload_codec.encode(payload)
+            payload = self.payload_codec.encode(payload)
         return payload
 
-    async def decode(
+    def decode(
         self,
-        payload: EncodedObject,
+        payload: Optional[EncodedObject],
         type_hint: Optional[Type] = None,
     ) -> Any:
         """Decode payloads into values.
@@ -519,13 +510,16 @@ class ObjectEncoder:
         First decodes payloads using codec then converts payloads to values.
 
         Args:
-            payload: Payloads to be decoded and converted.
+            type_hint: type to decode to
+            payload: Payload to be decoded and converted.
 
         Returns:
-            Decoded and converted values.
+            Decoded and converted value.
         """
+        if payload is None:
+            return None
         if self.payload_codec:
-            payload = await self.payload_codec.decode(payload)
+            payload = self.payload_codec.decode(payload)
         return self.payload_converter.from_payload(payload, type_hint)
 
 
@@ -537,13 +531,11 @@ DefaultPayloadConverter.default_encoding_payload_converters = (
 
 ObjectEncoder.default = ObjectEncoder()
 
-PayloadConverter.default = ObjectEncoder.default.payload_converter
-
 
 def value_to_type(
     hint: Type,
     value: Any,
-    custom_converters: Sequence[JSONTypeConverter] = [],
+    custom_converters,
 ) -> Any:
     """Convert a given value to the given type hint.
 
@@ -565,6 +557,8 @@ def value_to_type(
         TypeError: Unable to convert to the given hint.
     """
     # Try custom converters
+    if custom_converters is None:
+        custom_converters = []
     for conv in custom_converters:
         ret = conv.to_typed_value(hint, value)
         if ret is not JSONTypeConverter.Unhandled:

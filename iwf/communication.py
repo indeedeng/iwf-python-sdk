@@ -1,0 +1,2 @@
+class Communication:
+    pass

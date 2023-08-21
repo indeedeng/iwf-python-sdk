@@ -11,11 +11,6 @@ repos:
   - id: check-toml
   - id: end-of-file-fixer
 
-- repo: https://github.com/asottile/add-trailing-comma
-  rev: v2.1.0
-  hooks:
-  - id: add-trailing-comma
-
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v2.1.0
   hooks:
@@ -32,7 +27,7 @@ repos:
     args: ["-a"]
 
 - repo: https://github.com/ambv/black
-  rev: 22.3.0
+  rev: 23.7.0
   hooks:
   - id: black
     language_version: python3
@@ -44,12 +39,6 @@ repos:
 
 - repo: local
   hooks:
-
-  - id: isort
-    name: isort
-    entry: poetry run isort
-    language: system
-    types: [python]
 
   - id: mypy
     name: Validate types with MyPy

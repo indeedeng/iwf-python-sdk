@@ -1,17 +1,18 @@
+from dataclasses import dataclass
 from typing import Optional
 
 from iwf_api.models import WorkflowResetType
-from pydantic.main import BaseModel
 
 
-class ResetWorkflowTypeAndOptions(BaseModel):
+@dataclass
+class ResetWorkflowTypeAndOptions:
     reset_type: WorkflowResetType
     reason: str
-    history_event_id: Optional[int]
-    history_event_time: Optional[str]
-    state_id: Optional[str]
-    state_execution_id: Optional[str]
-    skip_signal_reapply: Optional[bool]
+    history_event_id: Optional[int] = None
+    history_event_time: Optional[str] = None
+    state_id: Optional[str] = None
+    state_execution_id: Optional[str] = None
+    skip_signal_reapply: Optional[bool] = None
 
 
 def reset_to_beginning(reason: str) -> ResetWorkflowTypeAndOptions:
@@ -22,7 +23,7 @@ def reset_to_beginning(reason: str) -> ResetWorkflowTypeAndOptions:
 
 
 def reset_to_history_event_id(
-    history_event_id: str,
+    history_event_id: int,
     reason: str,
 ) -> ResetWorkflowTypeAndOptions:
     return ResetWorkflowTypeAndOptions(
