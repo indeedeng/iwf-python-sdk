@@ -37,8 +37,8 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] StateOption: WaitUntil(optional)/Execute API timeout and retry policy
 - [x] Get workflow with wait API
 - [x] Timer command
-- [x] InternalChannel command
 - [x] AnyCommandCompleted and AllCommandCompleted waitingType
+- [ ] InternalChannel command
 - [ ] DataAttribute
 - [ ] Support execute API failure policy
 - [ ] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
