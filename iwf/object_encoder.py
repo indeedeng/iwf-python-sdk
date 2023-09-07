@@ -31,6 +31,7 @@ from typing import (
 )
 
 from iwf_api.models import EncodedObject
+from iwf_api.types import Unset
 from typing_extensions import Literal
 
 # StrEnum is available in 3.11+
@@ -502,7 +503,7 @@ class ObjectEncoder:
 
     def decode(
         self,
-        payload: Optional[EncodedObject],
+        payload: Union[Optional[EncodedObject], Unset],
         type_hint: Optional[Type] = None,
     ) -> Any:
         """Decode payloads into values.
@@ -516,7 +517,7 @@ class ObjectEncoder:
         Returns:
             Decoded and converted value.
         """
-        if payload is None:
+        if payload is None or isinstance(payload, Unset):
             return None
         if self.payload_codec:
             payload = self.payload_codec.decode(payload)
