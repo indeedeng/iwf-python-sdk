@@ -5,14 +5,12 @@ from iwf.errors import InvalidArgumentError, WorkflowDefinitionError
 from iwf.workflow import ObjectWorkflow, get_workflow_type
 from iwf.workflow_state import WorkflowState, get_state_id
 
-TypeStore = dict[str, Optional[type]]
-
 
 class Registry:
     _workflow_store: dict[str, ObjectWorkflow]
     _starting_state_store: dict[str, WorkflowState]
     _state_store: dict[str, dict[str, WorkflowState]]
-    _internal_channel_type_store: dict[str, TypeStore]
+    _internal_channel_type_store: dict[str, dict[str, Optional[type]]]
 
     def __init__(self):
         self._workflow_store = dict()
@@ -51,7 +49,7 @@ class Registry:
             )
         return state
 
-    def get_internal_channel_types(self, wf_type: str) -> TypeStore:
+    def get_internal_channel_types(self, wf_type: str) -> dict[str, Optional[type]]:
         return self._internal_channel_type_store[wf_type]
 
     def _register_workflow_type(self, wf: ObjectWorkflow):
@@ -62,7 +60,7 @@ class Registry:
 
     def _register_internal_channels(self, wf: ObjectWorkflow):
         wf_type = get_workflow_type(wf)
-        types: TypeStore = {}
+        types: dict[str, Optional[type]] = {}
         for method in wf.get_communication_schema().communication_methods:
             if method.method_type == CommunicationMethodType.InternalChannel:
                 types[method.name] = method.value_type

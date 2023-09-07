@@ -1,3 +1,4 @@
+import typing
 from dataclasses import dataclass
 from typing import Any, Union
 
@@ -9,7 +10,6 @@ from iwf_api.models import (
 from iwf_api.types import Unset
 
 from iwf.object_encoder import ObjectEncoder
-from iwf.registry import TypeStore
 
 
 @dataclass
@@ -34,7 +34,7 @@ class CommandResults:
 
 def from_idl_command_results(
     idl_results: Union[Unset, IdlCommandResults],
-    internal_channel_types: TypeStore,
+    internal_channel_types: dict[str, typing.Optional[type]],
     object_encoder: ObjectEncoder,
 ) -> CommandResults:
     results = CommandResults(list(), list())

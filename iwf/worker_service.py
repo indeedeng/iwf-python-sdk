@@ -49,13 +49,18 @@ class WorkerService:
         state = self._registry.get_workflow_state_with_check(
             request.workflow_type, request.workflow_state_id
         )
+        internal_channel_types = self._registry.get_internal_channel_types(
+            request.workflow_type
+        )
 
         context = _from_idl_context(request.context)
         _input = self._options.object_encoder.decode(
             unset_to_none(request.state_input), get_input_type(state)
         )
         persistence = Persistence()
-        communication = Communication()
+        communication = Communication(
+            internal_channel_types, self._options.object_encoder
+        )
         command_request = state.wait_until(context, _input, persistence, communication)
 
         pubs = communication.get_to_publishing_internal_channel()
@@ -71,18 +76,23 @@ class WorkerService:
         state = self._registry.get_workflow_state_with_check(
             request.workflow_type, request.workflow_state_id
         )
-
+        internal_channel_types = self._registry.get_internal_channel_types(
+            request.workflow_type
+        )
         context = _from_idl_context(request.context)
 
         _input = self._options.object_encoder.decode(
             unset_to_none(request.state_input), get_input_type(state)
         )
+
         persistence = Persistence()
-        communication = Communication()
+        communication = Communication(
+            internal_channel_types, self._options.object_encoder
+        )
 
         command_results = from_idl_command_results(
             request.command_results,
-            self._registry.get_internal_channel_types(request.workflow_type),
+            internal_channel_types,
             self._options.object_encoder,
         )
         decision = state.execute(
