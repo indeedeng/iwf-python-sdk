@@ -4,11 +4,11 @@ from datetime import timedelta
 from typing import Optional, Union
 
 from iwf_api.models import CommandWaitingType
-from iwf_api.models.command_request import (
-    CommandRequest as IdlCommandRequest,
+from iwf_api.models.command_request import CommandRequest as IdlCommandRequest
+from iwf_api.models.inter_state_channel_command import (
     InterStateChannelCommand as IdlInternalChannelCommand,
-    TimerCommand as IdlTimerCommand,
 )
+from iwf_api.models.timer_command import TimerCommand as IdlTimerCommand
 
 
 @dataclass
@@ -55,6 +55,10 @@ class CommandRequest:
     def for_all_command_completed(cls, *commands: BaseCommand):
         bc = [c for c in commands]
         return CommandRequest(bc, CommandWaitingType.ALL_COMPLETED)
+
+    @classmethod
+    def empty(cls):
+        return CommandRequest(list(), CommandWaitingType.ALL_COMPLETED)
 
 
 def _to_idl_command_request(request: CommandRequest) -> IdlCommandRequest:

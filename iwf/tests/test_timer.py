@@ -40,7 +40,7 @@ class WaitState(WorkflowState[int]):
 
 class TimerWorkflow(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
-        return StateSchema.with_starting_state(WorkflowState())
+        return StateSchema.with_starting_state(WaitState())
 
 
 wf = TimerWorkflow()
@@ -52,7 +52,7 @@ def test_timer_workflow():
     wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
     client.start_workflow(TimerWorkflow, wf_id, 100, 5)
-    start_ms = time.time_ns() / 1000
+    start_ms = time.time_ns() / 1000000
     client.get_simple_workflow_result_with_wait(wf_id, None)
-    elapsed_ms = time.time_ns() / 1000 - start_ms
+    elapsed_ms = time.time_ns() / 1000000 - start_ms
     assert 4000 <= elapsed_ms <= 7000, f"expected 5000 ms timer, actual is {elapsed_ms}"
