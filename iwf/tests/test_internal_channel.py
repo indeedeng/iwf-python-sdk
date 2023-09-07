@@ -60,7 +60,7 @@ class WaitAnyWithPublishState(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        assert len(command_results.internal_channel_commands) == 0
+        assert len(command_results.internal_channel_commands) == 2
         assert command_results.internal_channel_commands[
             0
         ] == InternalChannelCommandResult(

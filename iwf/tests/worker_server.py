@@ -1,4 +1,3 @@
-import logging
 import traceback
 from threading import Thread
 
@@ -10,7 +9,7 @@ from iwf.worker_service import (
     WorkerService,
 )
 
-debug_mode = False
+debug_mode: bool = False
 
 registry = Registry()
 
@@ -40,7 +39,7 @@ def handle_execute():
 
 @_flask_app.errorhandler(Exception)
 def internal_error(exception):
-    logging.warning("500 error caught %s", exception)
+    # TODO: how to print to std in a different thread??
     response = exception.get_response()
     # replace the body with JSON
     response.data = traceback.format_exc()
