@@ -56,7 +56,7 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [ ] Support describe workflow API
 - [ ] Support RPC persistence locking policy 
 - [ ] Signal command
-- [ ] Signal workflow API 
+- [ ] Signal workflow API
 - [ ] SearchAttribute
 - [ ] Get workflow DataAttributes/SearchAttributes API
 - [ ] StateExecutionLocal
