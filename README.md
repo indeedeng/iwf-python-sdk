@@ -1,16 +1,86 @@
-# Indeed Open Source Repository Template
 
-A default template repository we can use to bootstrap new open source projects. Replace this text with an overview of your project and what it does.
+# iwf-python-sdk
 
-Your README.md should contain the following sections:
+Python SDK for [iWF workflow engine](https://github.com/indeedeng/iwf)
 
-## Getting Started
+TODO: samples
 
-How does a user get started using this project?
+## Requirements
 
-## Getting Help
+- Python 3.9+
 
-How does a user ask questions if they are stuck?
+## How to use
+
+TODO
+
+## Concepts
+
+To implement a workflow, the two most core interfaces are
+
+* [Workflow interface](https://github.com/indeedeng/iwf-python-sdk/blob/main/iwf/workflow.py)
+  defines the workflow definition
+
+* [WorkflowState interface](https://github.com/indeedeng/iwf-python-sdk/blob/main/iwf/workflow_state.py)
+  defines the workflow states for workflow definitions
+
+A workflow can contain any number of WorkflowStates.
+
+See more in https://github.com/indeedeng/iwf#what-is-iwf
+
+
+# Development Plan
+
+- [x] Start workflow API
+- [x] Executing `wait_until`/`execute` APIs and completing workflow
+- [x] Parallel execution of multiple states
+- [ ] Timer command
+- [ ] InternalChannel command
+- [ ] DataAttribute
+- [ ] StateExecutionLocal
+- [ ] Search workflow API
+- [ ] Cancel workflow API
+- [ ] Reset workflow API
+- [ ] AnyCommandCompleted waitingType
+- [ ] More workflow start options: IdReusePolicy, cron schedule, retry
+- [ ] StateOption: WaitUntil/Execute API timeout and retry policy
+- [ ] Reset workflow by stateId/StateExecutionId
+- [ ] New search attribute types: Double, Bool, Datetime, Keyword array, Text
+- [ ] Workflow start options: initial search attributes
+- [ ] Skip timer API for testing/operation
+- [ ] Decider trigger type: any command combination
+- [ ] Support failing workflow with results
+- [ ] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
+- [ ] Support PROCEED_ON_FAILURE 
+- [ ] Support workflow RPC
+- [ ] Support caching on persistence
+- [ ] Support atomic conditional complete workflow by checking signal/internal channel emptiness
+- [ ] Support dynamic data/search attributes and internal/signal channel definition
+- [ ] Support state options overridden dynamically
+- [ ] Support describe workflow API
+- [ ] Support execute API failure policy
+- [ ] Support RPC persistence locking policy 
+- [ ] Signal command
+- [ ] Signal workflow API
+- [ ] Get workflow API 
+- [ ] SearchAttribute
+- [ ] Get workflow DataAttributes/SearchAttributes API
+
+### Running iwf-server locally
+
+#### Option 1: use docker compose
+See [iwf README](https://github.com/indeedeng/iwf#using-docker-image--docker-compose)
+
+#### Option 2: VSCode Dev Container
+
+Dev Container is an easy way to get iwf-server running locally. Follow these steps to launch a dev container:
+- Install Docker, VSCode, and [VSCode Dev Container plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
+- Open the project in VSCode.
+    ```bash
+    cd iwf-python-sdk
+    code .
+    ```
+- Launch the Remote-Containers: Reopen in Container command from Command Palette (Ctrl + Shift + P). You can also click in the bottom left corner to access the remote container menu.
+- Once the dev container starts, iwf-server will be listening on port 8801.
 
 ## How To Contribute
 
@@ -27,22 +97,6 @@ To install requirements:
 ```bash
 poetry install
 ```
-
-### Running iwf-server locally
-
-#### VSCode Dev Container
-
-Dev Container is an easy way to get iwf-server running locally. Follow these steps to launch a dev container:
-- Install Docker, VSCode, and [VSCode Dev Container plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers).
-- Open the project in VSCode.
-    ```bash
-    cd iwf-python-sdk
-    code .
-    ```
-- Launch the Remote-Containers: Reopen in Container command from Command Palette (Ctrl + Shift + P). You can also click in the bottom left corner to access the remote container menu.
-- Once the dev container starts, iwf-server will be listening on port 8801.
-
-### Common Tasks
 
 #### Update IDL
 Initialize the IDL Git submodule
@@ -70,10 +124,6 @@ To run linting for this project:
 ```bash
 poetry run pre-commit run --show-diff-on-failure --color=always --all-files
 ```
-
-## Project Maintainers
-
-Who are the project maintainers, and how can they be reached?
 
 ## Code of Conduct
 This project is governed by the [Contributor Covenant v 1.4.1](CODE_OF_CONDUCT.md). (Review the Code of Conduct and remove this sentence before publishing your project.)
