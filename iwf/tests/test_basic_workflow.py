@@ -25,7 +25,7 @@ class State1(WorkflowState[Union[int, str]]):
     ) -> CommandRequest:
         if input != "input":
             raise RuntimeError("input is incorrect")
-        return CommandRequest()
+        return CommandRequest.empty()
 
     def execute(
         self,

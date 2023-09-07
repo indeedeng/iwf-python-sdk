@@ -30,40 +30,44 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 
 # Development Plan
 
+## 1.0
 - [x] Start workflow API
 - [x] Executing `wait_until`/`execute` APIs and completing workflow
 - [x] Parallel execution of multiple states
-- [ ] Timer command
+- [x] StateOption: WaitUntil(optional)/Execute API timeout and retry policy
+- [x] Get workflow with wait API
+- [x] Timer command
+- [x] AnyCommandCompleted and AllCommandCompleted waitingType
 - [ ] InternalChannel command
 - [ ] DataAttribute
+- [ ] Support execute API failure policy
+- [ ] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
+- [ ] Support workflow RPC
+- [ ] Stop workflow API
+
+## Future
+
+- [ ] Support wait_until API failure policy
+- [ ] More workflow start options: IdReusePolicy, cron schedule, retry
+- [ ] Support caching on persistence
+- [ ] Support atomic conditional complete workflow by checking signal/internal channel emptiness
+- [ ] Support dynamic data/search attributes and internal/signal channel definition
+- [ ] Support state options overridden dynamically
+- [ ] Support describe workflow API
+- [ ] Support RPC persistence locking policy
+- [ ] Signal command
+- [ ] Signal workflow API
+- [ ] SearchAttribute
+- [ ] Get workflow DataAttributes/SearchAttributes API
 - [ ] StateExecutionLocal
 - [ ] Search workflow API
-- [ ] Cancel workflow API
 - [ ] Reset workflow API
-- [ ] AnyCommandCompleted waitingType
-- [ ] More workflow start options: IdReusePolicy, cron schedule, retry
-- [ ] StateOption: WaitUntil/Execute API timeout and retry policy
 - [ ] Reset workflow by stateId/StateExecutionId
 - [ ] New search attribute types: Double, Bool, Datetime, Keyword array, Text
 - [ ] Workflow start options: initial search attributes
 - [ ] Skip timer API for testing/operation
 - [ ] Decider trigger type: any command combination
 - [ ] Support failing workflow with results
-- [ ] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
-- [ ] Support PROCEED_ON_FAILURE 
-- [ ] Support workflow RPC
-- [ ] Support caching on persistence
-- [ ] Support atomic conditional complete workflow by checking signal/internal channel emptiness
-- [ ] Support dynamic data/search attributes and internal/signal channel definition
-- [ ] Support state options overridden dynamically
-- [ ] Support describe workflow API
-- [ ] Support execute API failure policy
-- [ ] Support RPC persistence locking policy 
-- [ ] Signal command
-- [ ] Signal workflow API
-- [ ] Get workflow API 
-- [ ] SearchAttribute
-- [ ] Get workflow DataAttributes/SearchAttributes API
 
 ### Running iwf-server locally
 

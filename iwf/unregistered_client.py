@@ -15,12 +15,15 @@ from iwf_api.api.default import (
     post_api_v_1_workflow_get_with_wait,
 )
 from iwf_api.models import (
+    EncodedObject,
+    ErrorResponse,
     IDReusePolicy,
     SearchAttribute,
     SearchAttributeKeyAndType,
     WorkflowConfig,
     WorkflowGetDataObjectsRequest,
     WorkflowGetRequest,
+    WorkflowGetResponse,
     WorkflowGetSearchAttributesRequest,
     WorkflowGetSearchAttributesResponse,
     WorkflowResetRequest,
@@ -34,18 +37,15 @@ from iwf_api.models import (
     WorkflowStateOptions,
     WorkflowStatus,
     WorkflowStopRequest,
-    WorkflowGetResponse,
-    ErrorResponse,
-    EncodedObject,
 )
 from iwf_api.types import Response
 
 from iwf.client_options import ClientOptions
 from iwf.errors import (
-    process_http_error,
-    process_http_error_get_api,
     WorkflowAbnormalExitError,
     WorkflowDefinitionError,
+    process_http_error,
+    process_http_error_get_api,
 )
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
 from iwf.stop_workflow_options import StopWorkflowOptions
@@ -67,7 +67,7 @@ T = TypeVar("T")
 class UnregisteredClient:
     def __init__(self, client_options: ClientOptions):
         self.client_options = client_options
-        self.api_client = Client(base_url=client_options.server_url)
+        self.api_client = Client(base_url=client_options.server_url, timeout=60)
 
     def start_workflow(
         self,
