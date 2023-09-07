@@ -34,7 +34,7 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] Start workflow API
 - [x] Executing `wait_until`/`execute` APIs and completing workflow
 - [x] Parallel execution of multiple states
-- [x] StateOption: WaitUntil/Execute API timeout and retry policy
+- [x] StateOption: WaitUntil(optional)/Execute API timeout and retry policy
 - [x] Get workflow with wait API
 - [x] Timer command
 - [x] InternalChannel command
@@ -42,12 +42,12 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [ ] DataAttribute
 - [ ] Support execute API failure policy
 - [ ] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
-- [ ] Support PROCEED_ON_FAILURE 
 - [ ] Support workflow RPC
 - [ ] Stop workflow API
 
 ## Future
 
+- [ ] Support wait_until API failure policy
 - [ ] More workflow start options: IdReusePolicy, cron schedule, retry
 - [ ] Support caching on persistence
 - [ ] Support atomic conditional complete workflow by checking signal/internal channel emptiness
