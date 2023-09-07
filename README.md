@@ -54,7 +54,7 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [ ] Support dynamic data/search attributes and internal/signal channel definition
 - [ ] Support state options overridden dynamically
 - [ ] Support describe workflow API
-- [ ] Support RPC persistence locking policy 
+- [ ] Support RPC persistence locking policy
 - [ ] Signal command
 - [ ] Signal workflow API
 - [ ] SearchAttribute
