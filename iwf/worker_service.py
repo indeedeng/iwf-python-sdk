@@ -2,14 +2,14 @@ import typing
 from dataclasses import dataclass
 
 from iwf_api.models import (
-    WorkflowStateWaitUntilRequest,
-    WorkflowStateWaitUntilResponse,
     WorkflowStateExecuteRequest,
     WorkflowStateExecuteResponse,
+    WorkflowStateWaitUntilRequest,
+    WorkflowStateWaitUntilResponse,
 )
 
 from iwf.command_request import _to_idl_command_request
-from iwf.command_results import CommandResults
+from iwf.command_results import from_idl_command_results
 from iwf.communication import Communication
 from iwf.object_encoder import ObjectEncoder
 from iwf.persistence import Persistence
@@ -49,16 +49,24 @@ class WorkerService:
         state = self._registry.get_workflow_state_with_check(
             request.workflow_type, request.workflow_state_id
         )
+        internal_channel_types = self._registry.get_internal_channel_types(
+            request.workflow_type
+        )
 
         context = _from_idl_context(request.context)
         _input = self._options.object_encoder.decode(
             unset_to_none(request.state_input), get_input_type(state)
         )
         persistence = Persistence()
-        communication = Communication()
+        communication = Communication(
+            internal_channel_types, self._options.object_encoder
+        )
         command_request = state.wait_until(context, _input, persistence, communication)
+
+        pubs = communication.get_to_publishing_internal_channel()
         return WorkflowStateWaitUntilResponse(
-            command_request=_to_idl_command_request(command_request)
+            command_request=_to_idl_command_request(command_request),
+            publish_to_inter_state_channel=pubs,
         )
 
     def handle_workflow_state_execute(
@@ -68,23 +76,36 @@ class WorkerService:
         state = self._registry.get_workflow_state_with_check(
             request.workflow_type, request.workflow_state_id
         )
-
+        internal_channel_types = self._registry.get_internal_channel_types(
+            request.workflow_type
+        )
         context = _from_idl_context(request.context)
 
         _input = self._options.object_encoder.decode(
             unset_to_none(request.state_input), get_input_type(state)
         )
+
         persistence = Persistence()
-        communication = Communication()
-        command_results = CommandResults()
+        communication = Communication(
+            internal_channel_types, self._options.object_encoder
+        )
+
+        command_results = from_idl_command_results(
+            request.command_results,
+            internal_channel_types,
+            self._options.object_encoder,
+        )
         decision = state.execute(
             context, _input, command_results, persistence, communication
         )
+
+        pubs = communication.get_to_publishing_internal_channel()
         return WorkflowStateExecuteResponse(
             state_decision=_to_idl_state_decision(
                 decision,
                 request.workflow_type,
                 self._registry,
                 self._options.object_encoder,
-            )
+            ),
+            publish_to_inter_state_channel=pubs,
         )

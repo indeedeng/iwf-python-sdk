@@ -1,23 +1,27 @@
 from typing import Optional
 
-from iwf.errors import WorkflowDefinitionError, InvalidArgumentError
+from iwf.communication_schema import CommunicationMethodType
+from iwf.errors import InvalidArgumentError, WorkflowDefinitionError
 from iwf.workflow import ObjectWorkflow, get_workflow_type
-from iwf.workflow_state import get_state_id, WorkflowState
+from iwf.workflow_state import WorkflowState, get_state_id
 
 
 class Registry:
     _workflow_store: dict[str, ObjectWorkflow]
     _starting_state_store: dict[str, WorkflowState]
     _state_store: dict[str, dict[str, WorkflowState]]
+    _internal_channel_type_store: dict[str, dict[str, Optional[type]]]
 
     def __init__(self):
         self._workflow_store = dict()
         self._starting_state_store = dict()
         self._state_store = dict()
+        self._internal_channel_type_store = dict()
 
     def add_workflow(self, wf: ObjectWorkflow):
-        self._register_workflow(wf)
+        self._register_workflow_type(wf)
         self._register_workflow_state(wf)
+        self._register_internal_channels(wf)
 
     def add_workflows(self, *wfs: ObjectWorkflow):
         for wf in wfs:
@@ -45,11 +49,22 @@ class Registry:
             )
         return state
 
-    def _register_workflow(self, wf):
+    def get_internal_channel_types(self, wf_type: str) -> dict[str, Optional[type]]:
+        return self._internal_channel_type_store[wf_type]
+
+    def _register_workflow_type(self, wf: ObjectWorkflow):
         wf_type = get_workflow_type(wf)
         if wf_type in self._workflow_store:
             raise WorkflowDefinitionError("workflow type conflict: ", wf_type)
         self._workflow_store[wf_type] = wf
+
+    def _register_internal_channels(self, wf: ObjectWorkflow):
+        wf_type = get_workflow_type(wf)
+        types: dict[str, Optional[type]] = {}
+        for method in wf.get_communication_schema().communication_methods:
+            if method.method_type == CommunicationMethodType.InternalChannel:
+                types[method.name] = method.value_type
+        self._internal_channel_type_store[wf_type] = types
 
     def _register_workflow_state(self, wf):
         wf_type = get_workflow_type(wf)

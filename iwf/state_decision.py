@@ -41,8 +41,14 @@ class StateDecision:
         return StateDecision([StateMovement.create(state, state_input)])
 
     @classmethod
-    def multi_next_states(cls, next_states: List[StateMovement]) -> StateDecision:
-        return StateDecision(next_states)
+    def multi_next_states(
+        cls, *next_states: Union[type[WorkflowState], StateMovement]
+    ) -> StateDecision:
+        next_list = [
+            n if isinstance(n, StateMovement) else StateMovement.create(n)
+            for n in next_states
+        ]
+        return StateDecision(next_list)
 
 
 StateDecision.dead_end = StateDecision([StateMovement.dead_end])

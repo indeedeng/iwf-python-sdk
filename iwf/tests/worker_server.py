@@ -2,14 +2,14 @@ import traceback
 from threading import Thread
 
 from flask import Flask, request
-from iwf_api.models import WorkflowStateWaitUntilRequest, WorkflowStateExecuteRequest
+from iwf_api.models import WorkflowStateExecuteRequest, WorkflowStateWaitUntilRequest
 
 from iwf.registry import Registry
 from iwf.worker_service import (
     WorkerService,
 )
 
-debug_mode = False
+debug_mode: bool = False
 
 registry = Registry()
 
@@ -39,8 +39,7 @@ def handle_execute():
 
 @_flask_app.errorhandler(Exception)
 def internal_error(exception):
-    print("500 error caught")
-    print(traceback.format_exc())
+    # TODO: how to print to std in a different thread??
     response = exception.get_response()
     # replace the body with JSON
     response.data = traceback.format_exc()
