@@ -2,6 +2,7 @@ from typing import Optional
 
 from iwf.communication_schema import CommunicationMethodType
 from iwf.errors import InvalidArgumentError, WorkflowDefinitionError
+from iwf.persistence_schema import PersistenceFieldType
 from iwf.workflow import ObjectWorkflow, get_workflow_type
 from iwf.workflow_state import WorkflowState, get_state_id
 
@@ -11,17 +12,20 @@ class Registry:
     _starting_state_store: dict[str, WorkflowState]
     _state_store: dict[str, dict[str, WorkflowState]]
     _internal_channel_type_store: dict[str, dict[str, Optional[type]]]
+    _data_attribute_types: dict[str, dict[str, Optional[type]]]
 
     def __init__(self):
         self._workflow_store = dict()
         self._starting_state_store = dict()
         self._state_store = dict()
         self._internal_channel_type_store = dict()
+        self._data_attribute_types = dict()
 
     def add_workflow(self, wf: ObjectWorkflow):
         self._register_workflow_type(wf)
         self._register_workflow_state(wf)
         self._register_internal_channels(wf)
+        self._register_data_attributes(wf)
 
     def add_workflows(self, *wfs: ObjectWorkflow):
         for wf in wfs:
@@ -52,6 +56,9 @@ class Registry:
     def get_internal_channel_types(self, wf_type: str) -> dict[str, Optional[type]]:
         return self._internal_channel_type_store[wf_type]
 
+    def get_data_attribute_types(self, wf_type: str) -> dict[str, Optional[type]]:
+        return self._data_attribute_types[wf_type]
+
     def _register_workflow_type(self, wf: ObjectWorkflow):
         wf_type = get_workflow_type(wf)
         if wf_type in self._workflow_store:
@@ -65,6 +72,14 @@ class Registry:
             if method.method_type == CommunicationMethodType.InternalChannel:
                 types[method.name] = method.value_type
         self._internal_channel_type_store[wf_type] = types
+
+    def _register_data_attributes(self, wf: ObjectWorkflow):
+        wf_type = get_workflow_type(wf)
+        types: dict[str, Optional[type]] = {}
+        for field in wf.get_persistence_schema().persistence_fields:
+            if field.field_type == PersistenceFieldType.DataAttribute:
+                types[field.key] = field.value_type
+        self._data_attribute_types[wf_type] = types
 
     def _register_workflow_state(self, wf):
         wf_type = get_workflow_type(wf)

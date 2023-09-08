@@ -19,6 +19,11 @@ class Communication:
         self._to_publish_internal_channel = {}
 
     def publish_to_internal_channel(self, channel_name: str, value: Any):
+        if channel_name not in self._type_store:
+            raise WorkflowDefinitionError(
+                f"InternalChannel channel_name is not defined {channel_name}"
+            )
+
         registered_type = self._type_store.get(channel_name)
         if (
             value is not None

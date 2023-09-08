@@ -38,8 +38,8 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] Get workflow with wait API
 - [x] Timer command
 - [x] AnyCommandCompleted and AllCommandCompleted waitingType
-- [ ] InternalChannel command
-- [ ] DataAttribute
+- [x] InternalChannel command
+- [x] DataAttribute
 - [ ] Support execute API failure policy
 - [ ] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
 - [ ] Support workflow RPC
