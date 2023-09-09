@@ -52,6 +52,8 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [ ] Dynamic data/search attributes and internal/signal channel definition
 - [ ] State options overridden dynamically
 - [ ] Describe workflow API
+- [ ] TryGetWorkflowResults API
+- [ ] Consume N messages in a single command
 - [ ] SearchAttribute: keyword
 - [ ] New search attribute types: Double, Bool, Datetime, Keyword array, Text
 - [ ] Workflow start options: initial search attributes
