@@ -1,3 +1,6 @@
+import json as jsonlib
+
+from httpx._utils import guess_json_utf
 from iwf_api.models import (
     ErrorResponse,
     ErrorSubStatus,
@@ -40,15 +43,6 @@ class WorkflowAlreadyStartedError(ClientSideError):
 
 class WorkflowNotExistsError(ClientSideError):
     pass
-
-
-def process_http_error_get_api(status: int, err_resp: ErrorResponse) -> HttpError:
-    """
-    special handling for 420 for get API
-    """
-    if status == 420:
-        return WorkflowStillRunningError(status, err_resp)
-    return process_http_error(status, err_resp)
 
 
 def process_http_error(status: int, err_resp: ErrorResponse) -> HttpError:
@@ -102,3 +96,12 @@ def process_workflow_abnormal_exit_error(
     elif status == WorkflowStatus.TIMEOUT:
         return WorkflowTimeout(get_response)
     return WorkflowAbnormalExitError(get_response)
+
+
+def parse_unexpected_error(err) -> ErrorResponse:
+    encoding = guess_json_utf(err.content)
+    if encoding is not None:
+        err_dict = jsonlib.loads(err.content.decode(encoding))
+    else:
+        err_dict = jsonlib.loads(err.content)
+    return ErrorResponse.from_dict(err_dict)

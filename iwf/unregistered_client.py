@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any, List, Optional, Type, TypeVar
 
-from iwf_api import Client
+from iwf_api import Client, errors
 from iwf_api.api.default import (
     post_api_v1_workflow_dataobjects_get,
     post_api_v1_workflow_reset,
@@ -44,8 +44,9 @@ from iwf_api.types import Response
 from iwf.client_options import ClientOptions
 from iwf.errors import (
     WorkflowDefinitionError,
+    WorkflowStillRunningError,
+    parse_unexpected_error,
     process_http_error,
-    process_http_error_get_api,
     process_workflow_abnormal_exit_error,
 )
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
@@ -152,13 +153,22 @@ class UnregisteredClient:
             workflow_run_id=workflow_run_id,
             needs_results=True,
         )
-        response = post_api_v_1_workflow_get_with_wait.sync_detailed(
-            client=self.api_client,
-            json_body=request,
-        )
+
+        try:
+            response = post_api_v_1_workflow_get_with_wait.sync_detailed(
+                client=self.api_client,
+                json_body=request,
+            )
+        except errors.UnexpectedStatus as err:
+            err_resp = parse_unexpected_error(err)
+            if err.status_code == 420:
+                raise WorkflowStillRunningError(err.status_code, err_resp)
+            else:
+                raise RuntimeError(f"unknown error code {err.status_code}")
+
         if response.status_code != http.HTTPStatus.OK:
             assert isinstance(response.parsed, ErrorResponse)
-            raise process_http_error_get_api(response.status_code, response.parsed)
+            raise process_http_error(response.status_code, response.parsed)
 
         parsed = response.parsed
         assert isinstance(parsed, WorkflowGetResponse)
