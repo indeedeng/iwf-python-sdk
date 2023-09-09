@@ -9,6 +9,8 @@ from .context import Context
 from .encoded_object import EncodedObject
 from .error_response import ErrorResponse
 from .error_sub_status import ErrorSubStatus
+from .execute_api_failure_policy import ExecuteApiFailurePolicy
+from .health_info import HealthInfo
 from .id_reuse_policy import IDReusePolicy
 from .inter_state_channel_command import InterStateChannelCommand
 from .inter_state_channel_publishing import InterStateChannelPublishing
@@ -65,6 +67,8 @@ from .workflow_state_wait_until_response import WorkflowStateWaitUntilResponse
 from .workflow_status import WorkflowStatus
 from .workflow_stop_request import WorkflowStopRequest
 from .workflow_stop_type import WorkflowStopType
+from .workflow_wait_for_state_completion_request import WorkflowWaitForStateCompletionRequest
+from .workflow_wait_for_state_completion_response import WorkflowWaitForStateCompletionResponse
 from .workflow_worker_rpc_request import WorkflowWorkerRpcRequest
 from .workflow_worker_rpc_response import WorkflowWorkerRpcResponse
 
@@ -78,6 +82,8 @@ __all__ = (
     "EncodedObject",
     "ErrorResponse",
     "ErrorSubStatus",
+    "ExecuteApiFailurePolicy",
+    "HealthInfo",
     "IDReusePolicy",
     "InterStateChannelCommand",
     "InterStateChannelPublishing",
@@ -134,6 +140,8 @@ __all__ = (
     "WorkflowStatus",
     "WorkflowStopRequest",
     "WorkflowStopType",
+    "WorkflowWaitForStateCompletionRequest",
+    "WorkflowWaitForStateCompletionResponse",
     "WorkflowWorkerRpcRequest",
     "WorkflowWorkerRpcResponse",
 )

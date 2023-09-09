@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
+from ..models.execute_api_failure_policy import ExecuteApiFailurePolicy
 from ..models.wait_until_api_failure_policy import WaitUntilApiFailurePolicy
 from ..types import UNSET, Unset
 
@@ -24,6 +25,9 @@ class WorkflowStateOptions:
         wait_until_api_retry_policy (Union[Unset, RetryPolicy]):
         execute_api_retry_policy (Union[Unset, RetryPolicy]):
         wait_until_api_failure_policy (Union[Unset, WaitUntilApiFailurePolicy]):
+        execute_api_failure_policy (Union[Unset, ExecuteApiFailurePolicy]):
+        execute_api_failure_proceed_state_id (Union[Unset, str]):
+        execute_api_failure_proceed_state_options (Union[Unset, WorkflowStateOptions]):
         skip_wait_until (Union[Unset, bool]):
     """
 
@@ -34,6 +38,9 @@ class WorkflowStateOptions:
     wait_until_api_retry_policy: Union[Unset, "RetryPolicy"] = UNSET
     execute_api_retry_policy: Union[Unset, "RetryPolicy"] = UNSET
     wait_until_api_failure_policy: Union[Unset, WaitUntilApiFailurePolicy] = UNSET
+    execute_api_failure_policy: Union[Unset, ExecuteApiFailurePolicy] = UNSET
+    execute_api_failure_proceed_state_id: Union[Unset, str] = UNSET
+    execute_api_failure_proceed_state_options: Union[Unset, "WorkflowStateOptions"] = UNSET
     skip_wait_until: Union[Unset, bool] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
@@ -60,6 +67,15 @@ class WorkflowStateOptions:
         if not isinstance(self.wait_until_api_failure_policy, Unset):
             wait_until_api_failure_policy = self.wait_until_api_failure_policy.value
 
+        execute_api_failure_policy: Union[Unset, str] = UNSET
+        if not isinstance(self.execute_api_failure_policy, Unset):
+            execute_api_failure_policy = self.execute_api_failure_policy.value
+
+        execute_api_failure_proceed_state_id = self.execute_api_failure_proceed_state_id
+        execute_api_failure_proceed_state_options: Union[Unset, Dict[str, Any]] = UNSET
+        if not isinstance(self.execute_api_failure_proceed_state_options, Unset):
+            execute_api_failure_proceed_state_options = self.execute_api_failure_proceed_state_options.to_dict()
+
         skip_wait_until = self.skip_wait_until
 
         field_dict: Dict[str, Any] = {}
@@ -79,6 +95,12 @@ class WorkflowStateOptions:
             field_dict["executeApiRetryPolicy"] = execute_api_retry_policy
         if wait_until_api_failure_policy is not UNSET:
             field_dict["waitUntilApiFailurePolicy"] = wait_until_api_failure_policy
+        if execute_api_failure_policy is not UNSET:
+            field_dict["executeApiFailurePolicy"] = execute_api_failure_policy
+        if execute_api_failure_proceed_state_id is not UNSET:
+            field_dict["executeApiFailureProceedStateId"] = execute_api_failure_proceed_state_id
+        if execute_api_failure_proceed_state_options is not UNSET:
+            field_dict["executeApiFailureProceedStateOptions"] = execute_api_failure_proceed_state_options
         if skip_wait_until is not UNSET:
             field_dict["skipWaitUntil"] = skip_wait_until
 
@@ -129,6 +151,24 @@ class WorkflowStateOptions:
         else:
             wait_until_api_failure_policy = WaitUntilApiFailurePolicy(_wait_until_api_failure_policy)
 
+        _execute_api_failure_policy = d.pop("executeApiFailurePolicy", UNSET)
+        execute_api_failure_policy: Union[Unset, ExecuteApiFailurePolicy]
+        if isinstance(_execute_api_failure_policy, Unset):
+            execute_api_failure_policy = UNSET
+        else:
+            execute_api_failure_policy = ExecuteApiFailurePolicy(_execute_api_failure_policy)
+
+        execute_api_failure_proceed_state_id = d.pop("executeApiFailureProceedStateId", UNSET)
+
+        _execute_api_failure_proceed_state_options = d.pop("executeApiFailureProceedStateOptions", UNSET)
+        execute_api_failure_proceed_state_options: Union[Unset, WorkflowStateOptions]
+        if isinstance(_execute_api_failure_proceed_state_options, Unset):
+            execute_api_failure_proceed_state_options = UNSET
+        else:
+            execute_api_failure_proceed_state_options = WorkflowStateOptions.from_dict(
+                _execute_api_failure_proceed_state_options
+            )
+
         skip_wait_until = d.pop("skipWaitUntil", UNSET)
 
         workflow_state_options = cls(
@@ -139,6 +179,9 @@ class WorkflowStateOptions:
             wait_until_api_retry_policy=wait_until_api_retry_policy,
             execute_api_retry_policy=execute_api_retry_policy,
             wait_until_api_failure_policy=wait_until_api_failure_policy,
+            execute_api_failure_policy=execute_api_failure_policy,
+            execute_api_failure_proceed_state_id=execute_api_failure_proceed_state_id,
+            execute_api_failure_proceed_state_options=execute_api_failure_proceed_state_options,
             skip_wait_until=skip_wait_until,
         )
 
