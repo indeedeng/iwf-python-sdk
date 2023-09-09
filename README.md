@@ -40,34 +40,32 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] AnyCommandCompleted and AllCommandCompleted waitingType
 - [x] InternalChannel command
 - [x] DataAttribute
+- [x] Stop workflow API
+- [x] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
 - [ ] Support execute API failure policy
-- [ ] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
 - [ ] Support workflow RPC
-- [ ] Stop workflow API
-
-## Future
-
-- [ ] Support wait_until API failure policy
-- [ ] More workflow start options: IdReusePolicy, cron schedule, retry
-- [ ] Support caching on persistence
-- [ ] Support atomic conditional complete workflow by checking signal/internal channel emptiness
-- [ ] Support dynamic data/search attributes and internal/signal channel definition
-- [ ] Support state options overridden dynamically
-- [ ] Support describe workflow API
-- [ ] Support RPC persistence locking policy
 - [ ] Signal command
 - [ ] Signal workflow API
-- [ ] SearchAttribute
-- [ ] Get workflow DataAttributes/SearchAttributes API
-- [ ] StateExecutionLocal
-- [ ] Search workflow API
-- [ ] Reset workflow API
-- [ ] Reset workflow by stateId/StateExecutionId
+
+## Future
+- [ ] Atomic conditional complete workflow by checking signal/internal channel emptiness
+- [ ] Dynamic data/search attributes and internal/signal channel definition
+- [ ] State options overridden dynamically
+- [ ] Describe workflow API
+- [ ] TryGetWorkflowResults API
+- [ ] Consume N messages in a single command
+- [ ] SearchAttribute: keyword
 - [ ] New search attribute types: Double, Bool, Datetime, Keyword array, Text
 - [ ] Workflow start options: initial search attributes
+- [ ] Search workflow API
+- [ ] Reset workflow API
 - [ ] Skip timer API for testing/operation
 - [ ] Decider trigger type: any command combination
-- [ ] Support failing workflow with results
+- [ ] Failing workflow with results
+- [ ] Wait_until API failure policy
+- [ ] Caching on persistence
+- [ ] Get workflow DataAttributes/SearchAttributes API
+- [ ] StateExecutionLocal
 
 ### Running iwf-server locally
 
@@ -120,7 +118,7 @@ This project uses [openapi-python-client](https://github.com/openapi-generators/
 ```bash
 poetry run openapi-python-client update --path iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yaml
 ```
-
+Then update the version in `iwf-api/pyproject.toml` so that poetry can know that the local package is updated.
 #### Linting
 
 To run linting for this project:

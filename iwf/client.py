@@ -2,6 +2,7 @@ from typing import Any, Optional, Type, TypeVar
 
 from iwf.client_options import ClientOptions
 from iwf.registry import Registry
+from iwf.stop_workflow_options import StopWorkflowOptions
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
 from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
 from iwf.workflow_options import WorkflowOptions
@@ -93,3 +94,10 @@ class Client:
         return self._unregistered_client.get_simple_workflow_result_with_wait(
             workflow_id, "", type_hint
         )
+
+    def stop_workflow(
+        self,
+        workflow_id: str,
+        options: Optional[StopWorkflowOptions] = None,
+    ):
+        return self._unregistered_client.stop_workflow(workflow_id, "", options)

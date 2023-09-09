@@ -8,6 +8,7 @@ class ClientOptions:
     server_url: str
     worker_url: str
     object_encoder: ObjectEncoder
+    api_timeout: int = 60
 
     @classmethod
     def local_default(cls):

@@ -1,8 +1,9 @@
 import http
 from dataclasses import dataclass
+from http import HTTPStatus
 from typing import Any, List, Optional, Type, TypeVar
 
-from iwf_api import Client
+from iwf_api import Client, errors
 from iwf_api.api.default import (
     post_api_v1_workflow_dataobjects_get,
     post_api_v1_workflow_reset,
@@ -42,10 +43,11 @@ from iwf_api.types import Response
 
 from iwf.client_options import ClientOptions
 from iwf.errors import (
-    WorkflowAbnormalExitError,
     WorkflowDefinitionError,
+    WorkflowStillRunningError,
+    parse_unexpected_error,
     process_http_error,
-    process_http_error_get_api,
+    process_workflow_abnormal_exit_error,
 )
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
 from iwf.stop_workflow_options import StopWorkflowOptions
@@ -64,10 +66,36 @@ class UnregisteredWorkflowOptions:
 T = TypeVar("T")
 
 
+# from https://stackoverflow.com/questions/45028991/best-way-to-extend-httpstatus-with-custom-value
+# HERE BE DRAGONS!
+# DO NOT do this unless you absolutely have to.
+def add_http_status(name, value, phrase, description=""):
+    # call our new member factory, it's essentially the `HTTPStatus.__new__` method
+    new_status = HTTPStatus.__new_member__(HTTPStatus, value, phrase, description)
+    new_status._name_ = name  # store the enum's member internal name
+    new_status.__objclass__ = (
+        HTTPStatus.__class__
+    )  # store the enum's member parent class
+    setattr(HTTPStatus, name, new_status)  # add it to the global HTTPStatus namespace
+    HTTPStatus._member_map_[name] = new_status  #  add it to the name=>member map
+    HTTPStatus._member_names_.append(
+        name
+    )  # append the names so it appears in __members__
+    HTTPStatus._value2member_map_[value] = new_status  # add it to the value=>member map
+
+
+add_http_status("IWF_CUSTOM_ERROR_1", 420, "IWF_CUSTOM_ERROR_1")
+add_http_status("IWF_CUSTOM_ERROR_2", 450, "IWF_CUSTOM_ERROR_2")
+
+
 class UnregisteredClient:
     def __init__(self, client_options: ClientOptions):
         self.client_options = client_options
-        self.api_client = Client(base_url=client_options.server_url, timeout=60)
+        self.api_client = Client(
+            base_url=client_options.server_url,
+            timeout=client_options.api_timeout,
+            raise_on_unexpected_status=True,
+        )
 
     def start_workflow(
         self,
@@ -125,18 +153,27 @@ class UnregisteredClient:
             workflow_run_id=workflow_run_id,
             needs_results=True,
         )
-        response = post_api_v_1_workflow_get_with_wait.sync_detailed(
-            client=self.api_client,
-            json_body=request,
-        )
+
+        try:
+            response = post_api_v_1_workflow_get_with_wait.sync_detailed(
+                client=self.api_client,
+                json_body=request,
+            )
+        except errors.UnexpectedStatus as err:
+            err_resp = parse_unexpected_error(err)
+            if err.status_code == 420:
+                raise WorkflowStillRunningError(err.status_code, err_resp)
+            else:
+                raise RuntimeError(f"unknown error code {err.status_code}")
+
         if response.status_code != http.HTTPStatus.OK:
             assert isinstance(response.parsed, ErrorResponse)
-            raise process_http_error_get_api(response.status_code, response.parsed)
+            raise process_http_error(response.status_code, response.parsed)
 
         parsed = response.parsed
         assert isinstance(parsed, WorkflowGetResponse)
         if parsed.workflow_status != WorkflowStatus.COMPLETED:
-            raise WorkflowAbnormalExitError(parsed)
+            raise process_workflow_abnormal_exit_error(parsed)
 
         if not parsed.results or len(parsed.results) == 0:
             return None
