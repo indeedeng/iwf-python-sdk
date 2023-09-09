@@ -1,5 +1,6 @@
 import http
 from dataclasses import dataclass
+from http import HTTPStatus
 from typing import Any, List, Optional, Type, TypeVar
 
 from iwf_api import Client
@@ -64,10 +65,36 @@ class UnregisteredWorkflowOptions:
 T = TypeVar("T")
 
 
+# from https://stackoverflow.com/questions/45028991/best-way-to-extend-httpstatus-with-custom-value
+# HERE BE DRAGONS!
+# DO NOT do this unless you absolutely have to.
+def add_http_status(name, value, phrase, description=""):
+    # call our new member factory, it's essentially the `HTTPStatus.__new__` method
+    new_status = HTTPStatus.__new_member__(HTTPStatus, value, phrase, description)
+    new_status._name_ = name  # store the enum's member internal name
+    new_status.__objclass__ = (
+        HTTPStatus.__class__
+    )  # store the enum's member parent class
+    setattr(HTTPStatus, name, new_status)  # add it to the global HTTPStatus namespace
+    HTTPStatus._member_map_[name] = new_status  #  add it to the name=>member map
+    HTTPStatus._member_names_.append(
+        name
+    )  # append the names so it appears in __members__
+    HTTPStatus._value2member_map_[value] = new_status  # add it to the value=>member map
+
+
+add_http_status("IWF_CUSTOM_ERROR_1", 420, "IWF_CUSTOM_ERROR_1")
+add_http_status("IWF_CUSTOM_ERROR_2", 450, "IWF_CUSTOM_ERROR_2")
+
+
 class UnregisteredClient:
     def __init__(self, client_options: ClientOptions):
         self.client_options = client_options
-        self.api_client = Client(base_url=client_options.server_url, timeout=60)
+        self.api_client = Client(
+            base_url=client_options.server_url,
+            timeout=client_options.api_timeout,
+            raise_on_unexpected_status=True,
+        )
 
     def start_workflow(
         self,
