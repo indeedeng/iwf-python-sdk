@@ -48,22 +48,20 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [ ] Signal workflow API
 
 ## Future
-- [ ] More workflow start options: IdReusePolicy, cron schedule, retry
-- [ ] Support atomic conditional complete workflow by checking signal/internal channel emptiness
-- [ ] Support dynamic data/search attributes and internal/signal channel definition
-- [ ] Support state options overridden dynamically
-- [ ] Support describe workflow API
-- [ ] SearchAttribute
-- [ ] Search workflow API
-- [ ] Reset workflow API
-- [ ] Reset workflow by stateId/StateExecutionId
+- [ ] Atomic conditional complete workflow by checking signal/internal channel emptiness
+- [ ] Dynamic data/search attributes and internal/signal channel definition
+- [ ] State options overridden dynamically
+- [ ] Describe workflow API
+- [ ] SearchAttribute: keyword
 - [ ] New search attribute types: Double, Bool, Datetime, Keyword array, Text
 - [ ] Workflow start options: initial search attributes
+- [ ] Search workflow API
+- [ ] Reset workflow API
 - [ ] Skip timer API for testing/operation
 - [ ] Decider trigger type: any command combination
-- [ ] Support failing workflow with results
-- [ ] Support wait_until API failure policy
-- [ ] Support caching on persistence
+- [ ] Failing workflow with results
+- [ ] Wait_until API failure policy
+- [ ] Caching on persistence
 - [ ] Get workflow DataAttributes/SearchAttributes API
 - [ ] StateExecutionLocal
 
