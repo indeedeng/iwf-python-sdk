@@ -40,26 +40,20 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] AnyCommandCompleted and AllCommandCompleted waitingType
 - [x] InternalChannel command
 - [x] DataAttribute
+- [x] Stop workflow API
+- [x] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
 - [ ] Support execute API failure policy
-- [ ] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
 - [ ] Support workflow RPC
-- [ ] Stop workflow API
+- [ ] Signal command
+- [ ] Signal workflow API
 
 ## Future
-
-- [ ] Support wait_until API failure policy
 - [ ] More workflow start options: IdReusePolicy, cron schedule, retry
-- [ ] Support caching on persistence
 - [ ] Support atomic conditional complete workflow by checking signal/internal channel emptiness
 - [ ] Support dynamic data/search attributes and internal/signal channel definition
 - [ ] Support state options overridden dynamically
 - [ ] Support describe workflow API
-- [ ] Support RPC persistence locking policy
-- [ ] Signal command
-- [ ] Signal workflow API
 - [ ] SearchAttribute
-- [ ] Get workflow DataAttributes/SearchAttributes API
-- [ ] StateExecutionLocal
 - [ ] Search workflow API
 - [ ] Reset workflow API
 - [ ] Reset workflow by stateId/StateExecutionId
@@ -68,6 +62,10 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [ ] Skip timer API for testing/operation
 - [ ] Decider trigger type: any command combination
 - [ ] Support failing workflow with results
+- [ ] Support wait_until API failure policy
+- [ ] Support caching on persistence
+- [ ] Get workflow DataAttributes/SearchAttributes API
+- [ ] StateExecutionLocal
 
 ### Running iwf-server locally
 

@@ -9,8 +9,10 @@ from iwf.command_request import CommandRequest, InternalChannelCommand
 from iwf.command_results import CommandResults
 from iwf.communication import Communication
 from iwf.errors import (
+    WorkflowAlreadyStartedError,
     WorkflowCanceled,
     WorkflowFailed,
+    WorkflowNotExistsError,
     WorkflowStillRunningError,
     WorkflowTerminated,
     WorkflowTimeout,
@@ -66,6 +68,8 @@ class TestWorkflowErrors(unittest.TestCase):
         client.start_workflow(WaitWorkflow, wf_id, 1)
         with self.assertRaises(WorkflowTimeout):
             client.get_simple_workflow_result_with_wait(wf_id, str)
+        with self.assertRaises(WorkflowNotExistsError):
+            client.get_simple_workflow_result_with_wait("invalid_id", str)
 
     def test_workflow_still_running_when_wait(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
@@ -73,6 +77,10 @@ class TestWorkflowErrors(unittest.TestCase):
         # client_options.api_timeout = 5
         # TODO using a shorter api timeout will throw a different timeout eror, it's better to unify it
         client.start_workflow(WaitWorkflow, wf_id, 61)
+
+        with self.assertRaises(WorkflowAlreadyStartedError):
+            client.start_workflow(WaitWorkflow, wf_id, 61)
+
         with self.assertRaises(WorkflowStillRunningError):
             client.get_simple_workflow_result_with_wait(wf_id, str)
 
