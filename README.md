@@ -120,7 +120,7 @@ This project uses [openapi-python-client](https://github.com/openapi-generators/
 ```bash
 poetry run openapi-python-client update --path iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yaml
 ```
-
+Then update the version in `iwf-api/pyproject.toml` so that poetry can know that the local package is updated.
 #### Linting
 
 To run linting for this project:

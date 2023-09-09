@@ -1,4 +1,9 @@
-from iwf_api.models import ErrorResponse, WorkflowGetResponse
+from iwf_api.models import (
+    ErrorResponse,
+    ErrorSubStatus,
+    WorkflowGetResponse,
+    WorkflowStatus,
+)
 
 
 class WorkflowDefinitionError(Exception):
@@ -29,6 +34,14 @@ class WorkflowStillRunningError(ClientSideError):
     pass
 
 
+class WorkflowAlreadyStartedError(ClientSideError):
+    pass
+
+
+class WorkflowNotExistsError(ClientSideError):
+    pass
+
+
 def process_http_error_get_api(status: int, err_resp: ErrorResponse) -> HttpError:
     """
     special handling for 420 for get API
@@ -40,7 +53,12 @@ def process_http_error_get_api(status: int, err_resp: ErrorResponse) -> HttpErro
 
 def process_http_error(status: int, err_resp: ErrorResponse) -> HttpError:
     if 400 <= status < 500:
-        return ClientSideError(status, err_resp)
+        if err_resp.sub_status == ErrorSubStatus.WORKFLOW_ALREADY_STARTED_SUB_STATUS:
+            return WorkflowAlreadyStartedError(status, err_resp)
+        elif err_resp.sub_status == ErrorSubStatus.WORKFLOW_NOT_EXISTS_SUB_STATUS:
+            return WorkflowNotExistsError(status, err_resp)
+        else:
+            return ClientSideError(status, err_resp)
     else:
         return ServerSideError(status, err_resp)
 
@@ -53,3 +71,34 @@ class WorkflowAbnormalExitError(RuntimeError):
         self.error_message = get_response.error_message
         # TODO add methods to decode the state results into objects
         self._state_results = get_response.results
+
+
+class WorkflowFailed(WorkflowAbnormalExitError):
+    pass
+
+
+class WorkflowTimeout(WorkflowAbnormalExitError):
+    pass
+
+
+class WorkflowTerminated(WorkflowAbnormalExitError):
+    pass
+
+
+class WorkflowCanceled(WorkflowAbnormalExitError):
+    pass
+
+
+def process_workflow_abnormal_exit_error(
+    get_response: WorkflowGetResponse,
+) -> WorkflowAbnormalExitError:
+    status = get_response.workflow_status
+    if status == WorkflowStatus.CANCELED:
+        return WorkflowCanceled(get_response)
+    elif status == WorkflowStatus.FAILED:
+        return WorkflowFailed(get_response)
+    elif status == WorkflowStatus.TERMINATED:
+        return WorkflowTerminated(get_response)
+    elif status == WorkflowStatus.TIMEOUT:
+        return WorkflowTimeout(get_response)
+    return WorkflowAbnormalExitError(get_response)

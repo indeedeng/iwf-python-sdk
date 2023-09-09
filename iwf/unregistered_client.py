@@ -42,10 +42,10 @@ from iwf_api.types import Response
 
 from iwf.client_options import ClientOptions
 from iwf.errors import (
-    WorkflowAbnormalExitError,
     WorkflowDefinitionError,
     process_http_error,
     process_http_error_get_api,
+    process_workflow_abnormal_exit_error,
 )
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
 from iwf.stop_workflow_options import StopWorkflowOptions
@@ -136,7 +136,7 @@ class UnregisteredClient:
         parsed = response.parsed
         assert isinstance(parsed, WorkflowGetResponse)
         if parsed.workflow_status != WorkflowStatus.COMPLETED:
-            raise WorkflowAbnormalExitError(parsed)
+            raise process_workflow_abnormal_exit_error(parsed)
 
         if not parsed.results or len(parsed.results) == 0:
             return None
