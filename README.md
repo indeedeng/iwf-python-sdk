@@ -30,7 +30,7 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 
 # Development Plan
 
-## 1.0
+## 1.0 -- the basic and most frequently needed features
 - [x] Start workflow API
 - [x] Executing `wait_until`/`execute` APIs and completing workflow
 - [x] Parallel execution of multiple states
@@ -42,12 +42,12 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] DataAttribute
 - [x] Stop workflow API
 - [x] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
-- [ ] Support execute API failure policy
+- [x] Support execute API failure policy
 - [ ] Support workflow RPC
 - [ ] Signal command
 - [ ] Signal workflow API
 
-## Future
+## Future -- the advanced features that already supported in server. Contributions are welcome to implement them in this SDK!
 - [ ] Atomic conditional complete workflow by checking signal/internal channel emptiness
 - [ ] Dynamic data/search attributes and internal/signal channel definition
 - [ ] State options overridden dynamically
