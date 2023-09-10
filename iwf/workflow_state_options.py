@@ -9,8 +9,6 @@ from iwf_api.models import (
     WorkflowStateOptions as IdlWorkflowStateOptions,
 )
 
-from iwf.workflow_state import WorkflowState, get_state_id_by_class
-
 
 @dataclass
 class WorkflowStateOptions:
@@ -22,28 +20,27 @@ class WorkflowStateOptions:
     wait_until_api_retry_policy: Optional[RetryPolicy] = None
     execute_api_retry_policy: Optional[RetryPolicy] = None
     wait_until_api_failure_policy: Optional[WaitUntilApiFailurePolicy] = None
-    _execute_failure_handling_state: Optional[type[WorkflowState]] = None
-
-    def set_execute_failure_recovery(self, failure_handling_state: type[WorkflowState]):
-        """
+    """
         note that the failing handling state will take the same input as the failed state
-        Args:
-            failure_handling_state:
-
-        Returns:
-
-        """
-        self._execute_failure_handling_state = failure_handling_state
+        the type is Optional[type[WorkflowState]] but there is an issue with type hint...
+        TODO fix this type hint
+    """
+    execute_failure_handling_state: Any = None
 
 
 def _to_idl_state_options(
+    skip_wait_until: bool,
     options: Any,  # TODO this type was Optional[WorkflowStateOptions],
     # however, type hint is not working with recursive call...
-    state_store: dict[str, WorkflowState],
+    state_store: dict[str, Any],  # TODO this type should be dict[str, WorkflowState]
 ) -> IdlWorkflowStateOptions:
-    res = IdlWorkflowStateOptions()
+    res = IdlWorkflowStateOptions(
+        skip_wait_until=skip_wait_until,
+    )
     if options is None:
         return res
+    assert isinstance(options, WorkflowStateOptions)
+
     if options.search_attributes_loading_policy is not None:
         res.search_attributes_loading_policy = options.search_attributes_loading_policy
     if options.data_attributes_loading_policy is not None:
@@ -58,17 +55,24 @@ def _to_idl_state_options(
         res.execute_api_retry_policy = options.execute_api_retry_policy
     if options.execute_api_timeout_seconds is not None:
         res.execute_api_timeout_seconds = options.execute_api_timeout_seconds
-    if options._execute_failure_handling_state is not None:
+    if options.execute_failure_handling_state is not None:
+        assert isinstance(options.execute_failure_handling_state, type)
+
         res.execute_api_failure_policy = (
-            ExecuteApiFailurePolicy.FAIL_WORKFLOW_ON_EXECUTE_API_FAILURE
+            ExecuteApiFailurePolicy.PROCEED_TO_CONFIGURED_STATE
         )
+        from iwf.workflow_state import get_state_id_by_class
+
         res.execute_api_failure_proceed_state_id = get_state_id_by_class(
-            options._execute_failure_handling_state
+            options.execute_failure_handling_state
         )
         state = state_store[res.execute_api_failure_proceed_state_id]
         proceed_state_options = state.get_state_options()
+
+        from iwf.workflow_state import should_skip_wait_until
+
         proceed_state_idl_options = _to_idl_state_options(
-            proceed_state_options, state_store
+            should_skip_wait_until(state), proceed_state_options, state_store
         )
         res.execute_api_failure_proceed_state_options = proceed_state_idl_options
     return res
