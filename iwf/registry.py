@@ -53,6 +53,9 @@ class Registry:
             )
         return state
 
+    def get_state_store(self, wf_type: str) -> dict[str, WorkflowState]:
+        return self._state_store[wf_type]
+
     def get_internal_channel_types(self, wf_type: str) -> dict[str, Optional[type]]:
         return self._internal_channel_type_store[wf_type]
 
