@@ -78,7 +78,9 @@ def _to_idl_state_movement(
     )
     if not movement.state_id.startswith(reserved_state_id_prefix):
         state = registry.get_workflow_state_with_check(wf_type, movement.state_id)
-        idl_state_options = _to_idl_state_options(state.get_state_options())
+        idl_state_options = _to_idl_state_options(
+            state.get_state_options(), registry.get_state_store(wf_type)
+        )
         from iwf.workflow_state import (
             should_skip_wait_until,
         )

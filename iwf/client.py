@@ -60,6 +60,7 @@ class Client:
             starting_state_id = get_state_id(starting_state)
             starting_state_opts = _to_idl_state_options(
                 starting_state.get_state_options(),
+                self._registry.get_state_store(wf_type),
             )
 
             if should_skip_wait_until(starting_state):
