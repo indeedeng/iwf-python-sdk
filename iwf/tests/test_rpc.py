@@ -31,8 +31,6 @@ class TestRPCs(unittest.TestCase):
         wf = RPCWorkflow()
         registry.add_workflow(wf)
         cls.client = Client(registry)
-        infos = registry.get_rpc_infos("RPCWorkflow")
-        print("test")
 
     def test_rpc_registry(self):
         print("hello2")
