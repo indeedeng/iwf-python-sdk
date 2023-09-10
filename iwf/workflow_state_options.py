@@ -34,9 +34,10 @@ def _to_idl_state_options(
     # however, type hint is not working with recursive call...
     state_store: dict[str, Any],  # TODO this type should be dict[str, WorkflowState]
 ) -> IdlWorkflowStateOptions:
-    res = IdlWorkflowStateOptions(
-        skip_wait_until=skip_wait_until,
-    )
+    res = IdlWorkflowStateOptions()
+    if skip_wait_until:
+        res.skip_wait_until = True
+
     if options is None:
         return res
     assert isinstance(options, WorkflowStateOptions)
@@ -56,8 +57,6 @@ def _to_idl_state_options(
     if options.execute_api_timeout_seconds is not None:
         res.execute_api_timeout_seconds = options.execute_api_timeout_seconds
     if options.execute_failure_handling_state is not None:
-        assert isinstance(options.execute_failure_handling_state, type)
-
         res.execute_api_failure_policy = (
             ExecuteApiFailurePolicy.PROCEED_TO_CONFIGURED_STATE
         )
