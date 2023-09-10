@@ -34,6 +34,7 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] Start workflow API
 - [x] Executing `wait_until`/`execute` APIs and completing workflow
 - [x] Parallel execution of multiple states
+- [x] GetWorkflowResultsWithWait API
 - [x] StateOption: WaitUntil(optional)/Execute API timeout and retry policy
 - [x] Get workflow with wait API
 - [x] Timer command
@@ -45,7 +46,6 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] Support execute API failure policy
 - [ ] Support workflow RPC
 - [ ] Signal command
-- [ ] Signal workflow API
 
 ## Future -- the advanced features that already supported in server. Contributions are welcome to implement them in this SDK!
 - [ ] Atomic conditional complete workflow by checking signal/internal channel emptiness
@@ -54,18 +54,18 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [ ] Describe workflow API
 - [ ] TryGetWorkflowResults API
 - [ ] Consume N messages in a single command
-- [ ] SearchAttribute: keyword
-- [ ] New search attribute types: Double, Bool, Datetime, Keyword array, Text
-- [ ] Workflow start options: initial search attributes
-- [ ] Search workflow API
 - [ ] Reset workflow API
 - [ ] Skip timer API for testing/operation
 - [ ] Decider trigger type: any command combination
 - [ ] Failing workflow with results
 - [ ] Wait_until API failure policy
 - [ ] Caching on persistence
-- [ ] Get workflow DataAttributes/SearchAttributes API
 - [ ] StateExecutionLocal
+- [ ] SearchAttribute: keyword
+- [ ] New search attribute types: Double, Bool, Datetime, Keyword array, Text
+- [ ] Workflow start options: initial search attributes
+- [ ] Search workflow API
+- [ ] Get workflow DataAttributes/SearchAttributes API
 
 ### Running iwf-server locally
 
