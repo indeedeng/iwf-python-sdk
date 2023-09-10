@@ -25,7 +25,7 @@ class WorkflowStateOptions:
         the type is Optional[type[WorkflowState]] but there is an issue with type hint...
         TODO fix this type hint
     """
-    execute_failure_handling_state: Any = None
+    execute_failure_handling_state: Optional[type] = None
 
 
 def _to_idl_state_options(
