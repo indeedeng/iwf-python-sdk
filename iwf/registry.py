@@ -3,8 +3,17 @@ from typing import Optional
 from iwf.communication_schema import CommunicationMethodType
 from iwf.errors import InvalidArgumentError, WorkflowDefinitionError
 from iwf.persistence_schema import PersistenceFieldType
+from iwf.rpc import RPCInfo
 from iwf.workflow import ObjectWorkflow, get_workflow_type
 from iwf.workflow_state import WorkflowState, get_state_id
+
+
+def _is_decorated_by_rpc(func):
+    return getattr(func, "_is_iwf_rpc", False)
+
+
+def _get_rpc_info(func):
+    return RPCInfo(method_func=func, timeout_seconds=getattr(func, "_timeout_seconds"))
 
 
 class Registry:
@@ -13,6 +22,7 @@ class Registry:
     _state_store: dict[str, dict[str, WorkflowState]]
     _internal_channel_type_store: dict[str, dict[str, Optional[type]]]
     _data_attribute_types: dict[str, dict[str, Optional[type]]]
+    _rpc_infos: dict[str, dict[str, RPCInfo]]
 
     def __init__(self):
         self._workflow_store = dict()
@@ -20,12 +30,14 @@ class Registry:
         self._state_store = dict()
         self._internal_channel_type_store = dict()
         self._data_attribute_types = dict()
+        self._rpc_infos = dict()
 
     def add_workflow(self, wf: ObjectWorkflow):
         self._register_workflow_type(wf)
         self._register_workflow_state(wf)
         self._register_internal_channels(wf)
         self._register_data_attributes(wf)
+        self._register_workflow_rpcs(wf)
 
     def add_workflows(self, *wfs: ObjectWorkflow):
         for wf in wfs:
@@ -61,6 +73,9 @@ class Registry:
 
     def get_data_attribute_types(self, wf_type: str) -> dict[str, Optional[type]]:
         return self._data_attribute_types[wf_type]
+
+    def get_rpc_infos(self, wf_type: str) -> dict[str, RPCInfo]:
+        return self._rpc_infos[wf_type]
 
     def _register_workflow_type(self, wf: ObjectWorkflow):
         wf_type = get_workflow_type(wf)
@@ -104,3 +119,12 @@ class Registry:
                 starting_state = state_def.state
             self._state_store[wf_type] = state_map
             self._starting_state_store[wf_type] = starting_state
+
+    def _register_workflow_rpcs(self, wf):
+        wf_type = get_workflow_type(wf)
+        rpc_infos = {}
+        for method_name in dir(wf):
+            method = getattr(wf, method_name)
+            if callable(method) and _is_decorated_by_rpc(method):
+                rpc_infos[method_name] = _get_rpc_info(method)
+        self._rpc_infos[wf_type] = rpc_infos
