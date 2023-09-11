@@ -44,7 +44,7 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] Stop workflow API
 - [x] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
 - [x] Support execute API failure policy
-- [ ] Support workflow RPC
+- [x] Support workflow RPC
 - [ ] Signal command
 
 ## Future -- the advanced features that already supported in server. Contributions are welcome to implement them in this SDK!
