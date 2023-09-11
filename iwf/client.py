@@ -127,7 +127,7 @@ class Client:
             workflow_run_id="",
             rpc_name=rpc_name,
             timeout_seconds=rpc_info.timeout_seconds,
-            data_attribute_policy=rpc_info.persistence_loading_policy,
+            data_attribute_policy=rpc_info.data_attribute_loading_policy,
             all_defined_search_attribute_types=[],
             return_type_hint=return_type_hint,
         )
