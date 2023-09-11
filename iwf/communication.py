@@ -31,7 +31,7 @@ class Communication:
         movement = StateMovement.create(state, state_input)
         self._state_movements.append(movement)
 
-    def publish_to_internal_channel(self, channel_name: str, value: Any):
+    def publish_to_internal_channel(self, channel_name: str, value: Any = None):
         if channel_name not in self._type_store:
             raise WorkflowDefinitionError(
                 f"InternalChannel channel_name is not defined {channel_name}"
