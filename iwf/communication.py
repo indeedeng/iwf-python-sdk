@@ -1,15 +1,17 @@
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from iwf_api.models import EncodedObject, InterStateChannelPublishing
 
 from iwf.errors import WorkflowDefinitionError
 from iwf.object_encoder import ObjectEncoder
+from iwf.state_movement import StateMovement
 
 
 class Communication:
     _type_store: dict[str, Optional[type]]
     _object_encoder: ObjectEncoder
     _to_publish_internal_channel: dict[str, list[EncodedObject]]
+    _state_movements: list[StateMovement]
 
     def __init__(
         self, type_store: dict[str, Optional[type]], object_encoder: ObjectEncoder
@@ -17,6 +19,17 @@ class Communication:
         self._object_encoder = object_encoder
         self._type_store = type_store
         self._to_publish_internal_channel = {}
+        self._state_movements = []
+
+    def trigger_state_execution(self, state: Union[str, type], state_input: Any = None):
+        """
+
+        Args:
+            state: the workflowState TODO the type hint should be type[WorkflowState]
+            state_input: the input of the state
+        """
+        movement = StateMovement.create(state, state_input)
+        self._state_movements.append(movement)
 
     def publish_to_internal_channel(self, channel_name: str, value: Any):
         if channel_name not in self._type_store:
@@ -45,3 +58,6 @@ class Communication:
             for val in vals:
                 pubs.append(InterStateChannelPublishing(name, val))
         return pubs
+
+    def get_to_trigger_state_movements(self) -> list[StateMovement]:
+        return self._state_movements

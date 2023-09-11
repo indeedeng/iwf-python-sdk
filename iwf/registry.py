@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Callable, Optional
 
 from iwf.communication_schema import CommunicationMethodType
 from iwf.errors import InvalidArgumentError, WorkflowDefinitionError
@@ -6,14 +6,6 @@ from iwf.persistence_schema import PersistenceFieldType
 from iwf.rpc import RPCInfo
 from iwf.workflow import ObjectWorkflow, get_workflow_type
 from iwf.workflow_state import WorkflowState, get_state_id
-
-
-def _is_decorated_by_rpc(func):
-    return getattr(func, "_is_iwf_rpc", False)
-
-
-def _get_rpc_info(func):
-    return RPCInfo(method_func=func, timeout_seconds=getattr(func, "_timeout_seconds"))
 
 
 class Registry:
@@ -120,11 +112,21 @@ class Registry:
             self._state_store[wf_type] = state_map
             self._starting_state_store[wf_type] = starting_state
 
+    @staticmethod
+    def _is_decorated_by_rpc(func: Callable):
+        return getattr(func, "_is_iwf_rpc", False)
+
+    @staticmethod
+    def _get_rpc_info(func: Callable):
+        info = getattr(func, "_rpc_info")
+        assert isinstance(info, RPCInfo)
+        return info
+
     def _register_workflow_rpcs(self, wf):
         wf_type = get_workflow_type(wf)
         rpc_infos = {}
         for method_name in dir(wf):
             method = getattr(wf, method_name)
-            if callable(method) and _is_decorated_by_rpc(method):
-                rpc_infos[method_name] = _get_rpc_info(method)
+            if callable(method) and self._is_decorated_by_rpc(method):
+                rpc_infos[method_name] = self._get_rpc_info(method)
         self._rpc_infos[wf_type] = rpc_infos

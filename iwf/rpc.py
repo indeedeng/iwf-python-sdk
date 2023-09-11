@@ -12,6 +12,7 @@ from iwf.errors import WorkflowDefinitionError
 class RPCInfo:
     method_func: Callable
     timeout_seconds: int
+    input_type: Optional[type] = None
     data_attribute_loading_policy: Optional[PersistenceLoadingPolicy] = None
     params_order: Optional[
         list
@@ -36,8 +37,11 @@ def rpc(
             return func(*args, **kwargs)
 
         wrapper._is_iwf_rpc = True
-        wrapper._timeout_seconds = timeout_seconds
-        wrapper._data_attribute_loading_policy = data_attribute_loading_policy
+        rpc_info = RPCInfo(
+            method_func=func,
+            timeout_seconds=timeout_seconds,
+            data_attribute_loading_policy=data_attribute_loading_policy,
+        )
         params = signature(func).parameters
 
         from inspect import _empty  # ignored.
@@ -61,16 +65,18 @@ def rpc(
             if k != "self":
                 params_order.append(v.annotation)
             if k == "input":
+                rpc_info.input_type = v.annotation
                 continue
             if v.annotation == Persistence:
                 need_persistence = True
             if v.annotation not in valid_param_types:
                 raise rpc_definition_err
         if not need_persistence:
-            wrapper._data_attribute_loading_policy = PersistenceLoadingPolicy(
+            rpc_info.data_attribute_loading_policy = PersistenceLoadingPolicy(
                 persistence_loading_type=PersistenceLoadingType.LOAD_NONE
             )
-        wrapper._params_order = params_order
+        rpc_info.params_order = params_order
+        wrapper._rpc_info = rpc_info
         return wrapper
 
     return decorator
