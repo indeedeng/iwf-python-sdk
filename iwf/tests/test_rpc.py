@@ -1,3 +1,5 @@
+import inspect
+import time
 import unittest
 
 from iwf.client import Client
@@ -11,7 +13,7 @@ from iwf.workflow_context import WorkflowContext
 
 class RPCWorkflow(ObjectWorkflow):
     @rpc(timeout_seconds=100)
-    def test_wrong_rpc(self):
+    def test_simple_rpc(self):
         return 123
 
     @rpc(timeout_seconds=100)
@@ -32,5 +34,11 @@ class TestRPCs(unittest.TestCase):
         registry.add_workflow(wf)
         cls.client = Client(registry)
 
-    def test_rpc_registry(self):
-        print("hello2")
+    def test_simple_rpc(self):
+        wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
+        self.client.start_workflow(RPCWorkflow, wf_id, 10)
+        output = self.client.invoke_rpc(wf_id, RPCWorkflow.test_simple_rpc)
+        assert output == 123
+        wf = RPCWorkflow()
+        output = self.client.invoke_rpc(wf_id, wf.test_simple_rpc)
+        assert output == 123

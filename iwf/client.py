@@ -16,7 +16,7 @@ T = TypeVar("T")
 
 def get_workflow_type_by_rpc_method(meth) -> str:
     if inspect.ismethod(meth):
-        inspect.getmro(meth.__self__.__class__)[0].__name__
+        return inspect.getmro(meth.__self__.__class__)[0].__name__
     if inspect.isfunction(meth):
         return meth.__qualname__.split(".<locals>", 1)[0].rsplit(".", 1)[0]
     raise InvalidArgumentError(f"method {meth} is not a RPC method")
@@ -114,7 +114,7 @@ class Client:
         self,
         workflow_id: str,
         rpc: Callable,  # this can be a function: RPCWorkflow.rpc_method or a method: workflow_instance.rpc_method
-        input: Any,
+        input: Any = None,
         return_type_hint: Optional[Type[T]] = None,
     ) -> Optional[T]:
         wf_type = get_workflow_type_by_rpc_method(rpc)

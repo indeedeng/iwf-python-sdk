@@ -120,6 +120,8 @@ class Registry:
     def _get_rpc_info(func: Callable):
         info = getattr(func, "_rpc_info")
         assert isinstance(info, RPCInfo)
+        # NOTE: we have to override the method here so that it's associated the object
+        info.method_func = func
         return info
 
     def _register_workflow_rpcs(self, wf):

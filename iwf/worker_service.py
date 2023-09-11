@@ -82,9 +82,9 @@ class WorkerService:
                 if param_type == Persistence:
                     params.append(persistence)
                 elif param_type == Communication:
-                    params.append(communication)
+                    params.append(communication)  # TODO why mypy shows error here?
                 elif param_type == WorkflowContext:
-                    params.append(context)
+                    params.append(context)  # TODO why mypy shows error here?
                 else:
                     params.append(_input)
 
@@ -92,7 +92,7 @@ class WorkerService:
 
         pubs = communication.get_to_publishing_internal_channel()
         response = WorkflowWorkerRpcResponse(
-            output=output,
+            output=self._options.object_encoder.encode(output)
         )
 
         if len(pubs) > 0:
