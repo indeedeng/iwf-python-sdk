@@ -76,15 +76,15 @@ class WorkerService:
         communication = Communication(
             internal_channel_types, self._options.object_encoder
         )
-        params = []
+        params: typing.Any = []
         if rpc_info.params_order is not None:
             for param_type in rpc_info.params_order:
                 if param_type == Persistence:
                     params.append(persistence)
                 elif param_type == Communication:
-                    params.append(communication)  # TODO why mypy shows error here?
+                    params.append(communication)
                 elif param_type == WorkflowContext:
-                    params.append(context)  # TODO why mypy shows error here?
+                    params.append(context)
                 else:
                     params.append(_input)
 
