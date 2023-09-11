@@ -7,6 +7,7 @@ from iwf_api import Client, errors
 from iwf_api.api.default import (
     post_api_v1_workflow_dataobjects_get,
     post_api_v1_workflow_reset,
+    post_api_v1_workflow_rpc,
     post_api_v1_workflow_search,
     post_api_v1_workflow_searchattributes_get,
     post_api_v1_workflow_signal,
@@ -19,6 +20,7 @@ from iwf_api.models import (
     EncodedObject,
     ErrorResponse,
     IDReusePolicy,
+    PersistenceLoadingPolicy,
     SearchAttribute,
     SearchAttributeKeyAndType,
     WorkflowConfig,
@@ -29,6 +31,8 @@ from iwf_api.models import (
     WorkflowGetSearchAttributesResponse,
     WorkflowResetRequest,
     WorkflowRetryPolicy,
+    WorkflowRpcRequest,
+    WorkflowRpcResponse,
     WorkflowSearchRequest,
     WorkflowSearchResponse,
     WorkflowSignalRequest,
@@ -44,6 +48,8 @@ from iwf_api.types import Response
 from iwf.client_options import ClientOptions
 from iwf.errors import (
     WorkflowDefinitionError,
+    WorkflowRPCAcquiringLockFailure,
+    WorkflowRPCExecutionError,
     WorkflowStillRunningError,
     parse_unexpected_error,
     process_http_error,
@@ -193,6 +199,51 @@ class UnregisteredClient:
         return self.client_options.object_encoder.decode(
             result.completed_state_output,
             type_hint,
+        )
+
+    def invoke_rpc(
+        self,
+        input: Any,
+        workflow_id: str,
+        workflow_run_id: str,
+        rpc_name: str,
+        timeout_seconds: int,
+        data_attribute_policy: Optional[PersistenceLoadingPolicy],
+        all_defined_search_attribute_types: list[SearchAttributeKeyAndType],
+        return_type_hint: Optional[Type[T]] = None,
+    ) -> Optional[T]:
+        request = WorkflowRpcRequest(
+            input_=self.client_options.object_encoder.encode(input),
+            workflow_id=workflow_id,
+            workflow_run_id=workflow_run_id,
+            rpc_name=rpc_name,
+            timeout_seconds=timeout_seconds,
+            search_attributes=all_defined_search_attribute_types,
+        )
+        if data_attribute_policy is not None:
+            request.data_attributes_loading_policy = data_attribute_policy
+
+        try:
+            response = post_api_v1_workflow_rpc.sync_detailed(
+                client=self.api_client,
+                json_body=request,
+            )
+        except errors.UnexpectedStatus as err:
+            err_resp = parse_unexpected_error(err)
+            if err.status_code == 420:
+                raise WorkflowRPCExecutionError(err.status_code, err_resp)
+            if err.status_code == 450:
+                raise WorkflowRPCAcquiringLockFailure(err.status_code, err_resp)
+            else:
+                raise RuntimeError(f"unknown error code {err.status_code}")
+
+        if response.status_code != http.HTTPStatus.OK:
+            assert isinstance(response.parsed, ErrorResponse)
+            raise process_http_error(response.status_code, response.parsed)
+        assert isinstance(response.parsed, WorkflowRpcResponse)
+        return self.client_options.object_encoder.decode(
+            response.parsed.output,
+            return_type_hint,
         )
 
     def signal_workflow(

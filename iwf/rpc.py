@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 from functools import wraps
 from inspect import signature
-from typing import Any, Callable
+from typing import Any, Callable, Optional
+
+from iwf_api.models import PersistenceLoadingPolicy
 
 from iwf.errors import WorkflowDefinitionError
 
@@ -10,6 +12,10 @@ from iwf.errors import WorkflowDefinitionError
 class RPCInfo:
     method_func: Callable
     timeout_seconds: int
+    persistence_loading_policy: Optional[PersistenceLoadingPolicy] = None
+    params_order: Optional[
+        list
+    ] = None  # store this so that the rpc can be invoked with correct parameters
 
 
 rpc_definition_err = WorkflowDefinitionError(
@@ -18,7 +24,10 @@ rpc_definition_err = WorkflowDefinitionError(
 )
 
 
-def rpc(timeout_seconds: int = 10):
+def rpc(
+    timeout_seconds: int = 10,
+    persistence_loading_policy: Optional[PersistenceLoadingPolicy] = None,
+):
     def decorator(func):
         # preserve the properties of the original function.
         @wraps(func)
@@ -28,6 +37,7 @@ def rpc(timeout_seconds: int = 10):
 
         wrapper._is_iwf_rpc = True
         wrapper._timeout_seconds = timeout_seconds
+        wrapper._persistence_loading_policy = persistence_loading_policy
         params = signature(func).parameters
 
         from inspect import _empty  # ignored.
@@ -42,15 +52,19 @@ def rpc(timeout_seconds: int = 10):
             WorkflowContext: True,
             Communication: True,
         }
+        params_order = []
         if len(params) > 5:
             raise rpc_definition_err
 
         for k, v in params.items():
+            if k != "self":
+                params_order.append(v.annotation)
             if k == "input":
                 continue
             if v.annotation not in valid_param_types:
                 raise rpc_definition_err
 
+        wrapper._params_order = params_order
         return wrapper
 
     return decorator
