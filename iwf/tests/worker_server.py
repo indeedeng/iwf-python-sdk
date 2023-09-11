@@ -2,7 +2,11 @@ import traceback
 from threading import Thread
 
 from flask import Flask, request
-from iwf_api.models import WorkflowStateExecuteRequest, WorkflowStateWaitUntilRequest
+from iwf_api.models import (
+    WorkflowStateExecuteRequest,
+    WorkflowStateWaitUntilRequest,
+    WorkflowWorkerRpcRequest,
+)
 
 from iwf.registry import Registry
 from iwf.worker_service import (
@@ -37,9 +41,16 @@ def handle_execute():
     return resp.to_dict()
 
 
+@_flask_app.route(WorkerService.api_path_workflow_worker_rpc, methods=["POST"])
+def handle_rpc():
+    req = WorkflowWorkerRpcRequest.from_dict(request.json)
+    resp = _worker_service.handle_workflow_worker_rpc(req)
+    return resp.to_dict()
+
+
 @_flask_app.errorhandler(Exception)
 def internal_error(exception):
-    # TODO: how to print to std in a different thread??
+    # TODO: how to print to std ??
     response = exception.get_response()
     # replace the body with JSON
     response.data = traceback.format_exc()

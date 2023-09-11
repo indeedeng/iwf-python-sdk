@@ -8,6 +8,8 @@ from iwf_api.models import (
     WorkflowStateExecuteResponse,
     WorkflowStateWaitUntilRequest,
     WorkflowStateWaitUntilResponse,
+    WorkflowWorkerRpcRequest,
+    WorkflowWorkerRpcResponse,
 )
 from iwf_api.types import Unset
 
@@ -17,9 +19,9 @@ from iwf.communication import Communication
 from iwf.object_encoder import ObjectEncoder
 from iwf.persistence import Persistence
 from iwf.registry import Registry
-from iwf.state_decision import _to_idl_state_decision
+from iwf.state_decision import StateDecision, _to_idl_state_decision
 from iwf.utils.iwf_typing import assert_not_unset, unset_to_none
-from iwf.workflow_context import _from_idl_context
+from iwf.workflow_context import WorkflowContext, _from_idl_context
 from iwf.workflow_state import get_input_type
 
 
@@ -38,12 +40,78 @@ class WorkerService:
     api_path_workflow_state_execute: typing.ClassVar[
         str
     ] = "/api/v1/workflowState/decide"
+    api_path_workflow_worker_rpc: typing.ClassVar[str] = "/api/v1/workflowWorker/rpc"
 
     def __init__(
         self, registry: Registry, options: WorkerOptions = default_worker_options
     ):
         self._registry = registry
         self._options = options
+
+    def handle_workflow_worker_rpc(
+        self,
+        request: WorkflowWorkerRpcRequest,
+    ) -> WorkflowWorkerRpcResponse:
+        wf_type = request.workflow_type
+        rpc_info = self._registry.get_rpc_infos(wf_type)[request.rpc_name]
+
+        internal_channel_types = self._registry.get_internal_channel_types(wf_type)
+        data_attributes_types = self._registry.get_data_attribute_types(wf_type)
+
+        context = _from_idl_context(request.context)
+        _input = self._options.object_encoder.decode(
+            unset_to_none(request.input_), rpc_info.input_type
+        )
+
+        current_data_attributes: dict[str, typing.Union[EncodedObject, None]] = {}
+        if not isinstance(request.data_attributes, Unset):
+            current_data_attributes = {
+                assert_not_unset(attr.key): unset_to_none(attr.value)
+                for attr in request.data_attributes
+            }
+
+        persistence = Persistence(
+            data_attributes_types, self._options.object_encoder, current_data_attributes
+        )
+        communication = Communication(
+            internal_channel_types, self._options.object_encoder
+        )
+        params: typing.Any = []
+        if rpc_info.params_order is not None:
+            for param_type in rpc_info.params_order:
+                if param_type == Persistence:
+                    params.append(persistence)
+                elif param_type == Communication:
+                    params.append(communication)
+                elif param_type == WorkflowContext:
+                    params.append(context)
+                else:
+                    params.append(_input)
+
+        output = rpc_info.method_func(*params)
+
+        pubs = communication.get_to_publishing_internal_channel()
+        response = WorkflowWorkerRpcResponse(
+            output=self._options.object_encoder.encode(output)
+        )
+
+        if len(pubs) > 0:
+            response.publish_to_inter_state_channel = pubs
+        if len(persistence.get_updated_values_to_return()) > 0:
+            response.upsert_data_attributes = [
+                KeyValue(k, v)
+                for (k, v) in persistence.get_updated_values_to_return().items()
+            ]
+        if len(communication.get_to_trigger_state_movements()) > 0:
+            movements = communication.get_to_trigger_state_movements()
+            decision = StateDecision.multi_next_states(*movements)
+            response.state_decision = _to_idl_state_decision(
+                decision,
+                wf_type,
+                self._registry,
+                self._options.object_encoder,
+            )
+        return response
 
     def handle_workflow_state_wait_until(
         self,

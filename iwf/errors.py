@@ -37,6 +37,14 @@ class WorkflowStillRunningError(ClientSideError):
     pass
 
 
+class WorkflowRPCExecutionError(ClientSideError):
+    pass
+
+
+class WorkflowRPCAcquiringLockFailure(ClientSideError):
+    pass
+
+
 class WorkflowAlreadyStartedError(ClientSideError):
     pass
 

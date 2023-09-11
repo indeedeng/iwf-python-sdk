@@ -1,6 +1,8 @@
-from typing import Any, Optional, Type, TypeVar
+import inspect
+from typing import Any, Callable, Optional, Type, TypeVar
 
 from iwf.client_options import ClientOptions
+from iwf.errors import InvalidArgumentError
 from iwf.registry import Registry
 from iwf.stop_workflow_options import StopWorkflowOptions
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
@@ -10,6 +12,14 @@ from iwf.workflow_state import get_state_id, should_skip_wait_until
 from iwf.workflow_state_options import _to_idl_state_options
 
 T = TypeVar("T")
+
+
+def get_workflow_type_by_rpc_method(meth) -> str:
+    if inspect.ismethod(meth):
+        return inspect.getmro(meth.__self__.__class__)[0].__name__
+    if inspect.isfunction(meth):
+        return meth.__qualname__.split(".<locals>", 1)[0].rsplit(".", 1)[0]
+    raise InvalidArgumentError(f"method {meth} is not a RPC method")
 
 
 class Client:
@@ -99,3 +109,25 @@ class Client:
         options: Optional[StopWorkflowOptions] = None,
     ):
         return self._unregistered_client.stop_workflow(workflow_id, "", options)
+
+    def invoke_rpc(
+        self,
+        workflow_id: str,
+        rpc: Callable,  # this can be a function: RPCWorkflow.rpc_method or a method: workflow_instance.rpc_method
+        input: Any = None,
+        return_type_hint: Optional[Type[T]] = None,
+    ) -> Optional[T]:
+        wf_type = get_workflow_type_by_rpc_method(rpc)
+        rpc_name = rpc.__name__
+        rpc_info = self._registry.get_rpc_infos(wf_type)[rpc_name]
+
+        return self._unregistered_client.invoke_rpc(
+            input=input,
+            workflow_id=workflow_id,
+            workflow_run_id="",
+            rpc_name=rpc_name,
+            timeout_seconds=rpc_info.timeout_seconds,
+            data_attribute_policy=rpc_info.data_attribute_loading_policy,
+            all_defined_search_attribute_types=[],
+            return_type_hint=return_type_hint,
+        )
