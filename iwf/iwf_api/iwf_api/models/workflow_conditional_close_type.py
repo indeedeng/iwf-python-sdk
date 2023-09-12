@@ -1,0 +1,12 @@
+from enum import Enum
+
+
+class WorkflowConditionalCloseType(str, Enum):
+    FORCE_COMPLETE_ON_INTERNAL_CHANNEL_EMPTY = (
+        "FORCE_COMPLETE_ON_INTERNAL_CHANNEL_EMPTY"
+    )
+    FORCE_COMPLETE_ON_SIGNAL_CHANNEL_EMPTY = "FORCE_COMPLETE_ON_SIGNAL_CHANNEL_EMPTY"
+    GRACEFUL_COMPLETE_ON_ALL_CHANNELS_EMPTY = "GRACEFUL_COMPLETE_ON_ALL_CHANNELS_EMPTY"
+
+    def __str__(self) -> str:
+        return str(self.value)
