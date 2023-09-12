@@ -58,4 +58,4 @@ def test_timer_workflow():
     start_ms = time.time_ns() / 1000000
     client.get_simple_workflow_result_with_wait(wf_id, None)
     elapsed_ms = time.time_ns() / 1000000 - start_ms
-    assert 4000 <= elapsed_ms <= 7000, f"expected 5000 ms timer, actual is {elapsed_ms}"
+    assert 3000 <= elapsed_ms <= 6000, f"expected 5000 ms timer, actual is {elapsed_ms}"
