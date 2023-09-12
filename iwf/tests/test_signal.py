@@ -63,7 +63,7 @@ class WaitState(WorkflowState[None]):
         return StateDecision.graceful_complete_workflow(sig3.value)
 
 
-class WaitWorkflow(ObjectWorkflow):
+class WaitSignalWorkflow(ObjectWorkflow):
     def get_communication_schema(self) -> CommunicationSchema:
         return CommunicationSchema.create(
             CommunicationMethod.signal_channel_def(test_channel_int, int),
@@ -78,13 +78,13 @@ class WaitWorkflow(ObjectWorkflow):
 class TestSignal(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        wf = WaitWorkflow()
+        wf = WaitSignalWorkflow()
         registry.add_workflow(wf)
         cls.client = Client(registry)
 
     def test_signal(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
-        self.client.start_workflow(WaitWorkflow, wf_id, 1)
+        self.client.start_workflow(WaitSignalWorkflow, wf_id, 1)
         self.client.signal_workflow(wf_id, test_channel_int, 123)
         self.client.signal_workflow(wf_id, test_channel_str, "abc")
         self.client.signal_workflow(wf_id, test_channel_none)
