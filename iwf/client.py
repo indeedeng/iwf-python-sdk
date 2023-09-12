@@ -1,5 +1,5 @@
 import inspect
-from typing import Any, Callable, Optional, Type, TypeVar
+from typing import Any, Callable, Optional, Type, TypeVar, Union
 
 from iwf.client_options import ClientOptions
 from iwf.errors import InvalidArgumentError
@@ -9,7 +9,11 @@ from iwf.stop_workflow_options import StopWorkflowOptions
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
 from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
 from iwf.workflow_options import WorkflowOptions
-from iwf.workflow_state import get_state_id, should_skip_wait_until
+from iwf.workflow_state import (
+    get_state_id,
+    get_state_id_by_class,
+    should_skip_wait_until,
+)
 from iwf.workflow_state_options import _to_idl_state_options
 
 T = TypeVar("T")
@@ -133,12 +137,22 @@ class Client:
             return_type_hint=return_type_hint,
         )
 
+    def signal_workflow(
+        self,
+        workflow_id: str,
+        signal_channel_name: str,
+        signal_value: Optional[Any] = None,
+    ):
+        return self._unregistered_client.signal_workflow(
+            workflow_id, "", signal_channel_name, signal_value
+        )
+
     def reset_workflow(
         self,
         workflow_id: str,
         reset_workflow_type_and_options: ResetWorkflowTypeAndOptions,
     ):
-        self._unregistered_client.reset_workflow(
+        return self._unregistered_client.reset_workflow(
             workflow_id, "", reset_workflow_type_and_options
         )
 
@@ -149,7 +163,7 @@ class Client:
         timer_command_id: str,
         state_execution_number: int = 1,
     ):
-        self._unregistered_client.skip_timer_by_command_id(
+        return self._unregistered_client.skip_timer_by_command_id(
             workflow_id,
             "",
             workflow_state_id,
@@ -160,14 +174,18 @@ class Client:
     def skip_timer_at_command_index(
         self,
         workflow_id: str,
-        workflow_state_id: str,
+        workflow_state_id: Union[str, type],
         state_execution_number: int = 1,
         timer_command_index: int = 0,
     ):
+        if isinstance(workflow_state_id, type):
+            state_id = get_state_id_by_class(workflow_state_id)
+        else:
+            state_id = workflow_state_id
         return self._unregistered_client.skip_timer_at_command_index(
             workflow_id,
             "",
-            workflow_state_id,
+            state_id,
             state_execution_number,
             timer_command_index,
         )

@@ -24,7 +24,8 @@ class WaitState(WorkflowState[int]):
         communication: Communication,
     ) -> CommandRequest:
         return CommandRequest.for_all_command_completed(
-            TimerCommand.timer_command_by_duration(timedelta(seconds=input))
+            TimerCommand.timer_command_by_duration(timedelta(hours=input)),
+            TimerCommand.timer_command_by_duration(timedelta(seconds=input)),
         )
 
     def execute(
@@ -52,6 +53,8 @@ def test_timer_workflow():
     wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
     client.start_workflow(TimerWorkflow, wf_id, 100, 5)
+    time.sleep(1)
+    client.skip_timer_at_command_index(wf_id, WaitState)
     start_ms = time.time_ns() / 1000000
     client.get_simple_workflow_result_with_wait(wf_id, None)
     elapsed_ms = time.time_ns() / 1000000 - start_ms

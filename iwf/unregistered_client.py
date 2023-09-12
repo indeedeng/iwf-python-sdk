@@ -252,7 +252,7 @@ class UnregisteredClient:
         workflow_run_id: str,
         signal_channel_name: str,
         signal_value: Optional[Any],
-    ) -> None:
+    ):
         request = WorkflowSignalRequest(
             workflow_id=workflow_id,
             workflow_run_id=workflow_run_id,
@@ -264,7 +264,7 @@ class UnregisteredClient:
             client=self.api_client,
             json_body=request,
         )
-        return handler_error_and_return(response)
+        handler_error_and_return(response)
 
     def reset_workflow(
         self,
