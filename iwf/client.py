@@ -10,6 +10,7 @@ from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOpti
 from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import (
+    WorkflowState,
     get_state_id,
     get_state_id_by_class,
     should_skip_wait_until,
@@ -174,7 +175,7 @@ class Client:
     def skip_timer_at_command_index(
         self,
         workflow_id: str,
-        workflow_state_id: Union[str, type],
+        workflow_state_id: Union[str, type[WorkflowState]],
         state_execution_number: int = 1,
         timer_command_index: int = 0,
     ):
