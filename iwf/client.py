@@ -4,6 +4,7 @@ from typing import Any, Callable, Optional, Type, TypeVar
 from iwf.client_options import ClientOptions
 from iwf.errors import InvalidArgumentError
 from iwf.registry import Registry
+from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
 from iwf.stop_workflow_options import StopWorkflowOptions
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
 from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
@@ -130,4 +131,43 @@ class Client:
             data_attribute_policy=rpc_info.data_attribute_loading_policy,
             all_defined_search_attribute_types=[],
             return_type_hint=return_type_hint,
+        )
+
+    def reset_workflow(
+        self,
+        workflow_id: str,
+        reset_workflow_type_and_options: ResetWorkflowTypeAndOptions,
+    ):
+        self._unregistered_client.reset_workflow(
+            workflow_id, "", reset_workflow_type_and_options
+        )
+
+    def skip_timer_by_command_id(
+        self,
+        workflow_id: str,
+        workflow_state_id: str,
+        timer_command_id: str,
+        state_execution_number: int = 1,
+    ):
+        self._unregistered_client.skip_timer_by_command_id(
+            workflow_id,
+            "",
+            workflow_state_id,
+            timer_command_id=timer_command_id,
+            state_execution_number=state_execution_number,
+        )
+
+    def skip_timer_at_command_index(
+        self,
+        workflow_id: str,
+        workflow_state_id: str,
+        state_execution_number: int = 1,
+        timer_command_index: int = 0,
+    ):
+        return self._unregistered_client.skip_timer_at_command_index(
+            workflow_id,
+            "",
+            workflow_state_id,
+            state_execution_number,
+            timer_command_index,
         )

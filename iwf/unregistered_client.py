@@ -301,13 +301,13 @@ class UnregisteredClient:
         )
         return handler_error_and_return(response)
 
-    def skip_timer(
+    def skip_timer_by_command_id(
         self,
         workflow_id: str,
         workflow_run_id: str,
         workflow_state_id: str,
-        state_execution_number: int,
         timer_command_id: str,
+        state_execution_number: int,
     ):
         request = WorkflowSkipTimerRequest(
             workflow_id=workflow_id,
@@ -319,7 +319,7 @@ class UnregisteredClient:
             client=self.api_client,
             json_body=request,
         )
-        return handler_error_and_return(response)
+        handler_error_and_return(response)
 
     def skip_timer_at_command_index(
         self,
@@ -328,7 +328,7 @@ class UnregisteredClient:
         workflow_state_id: str,
         state_execution_number: int,
         timer_command_index: int,
-    ) -> None:
+    ):
         request = WorkflowSkipTimerRequest(
             workflow_id=workflow_id,
             workflow_run_id=workflow_run_id,
@@ -339,7 +339,7 @@ class UnregisteredClient:
             client=self.api_client,
             json_body=request,
         )
-        return handler_error_and_return(response)
+        handler_error_and_return(response)
 
     def stop_workflow(
         self,
