@@ -45,7 +45,9 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] Improve workflow uncompleted error return(canceled, failed, timeout, terminated)
 - [x] Support execute API failure policy
 - [x] Support workflow RPC
-- [ ] Signal command
+- [x] Signal command
+- [x] Reset workflow API
+- [x] Skip timer API for testing/operation
 
 ## Future -- the advanced features that already supported in server. Contributions are welcome to implement them in this SDK!
 - [ ] Atomic conditional complete workflow by checking signal/internal channel emptiness
@@ -54,8 +56,6 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [ ] Describe workflow API
 - [ ] TryGetWorkflowResults API
 - [ ] Consume N messages in a single command
-- [ ] Reset workflow API
-- [ ] Skip timer API for testing/operation
 - [ ] Decider trigger type: any command combination
 - [ ] Failing workflow with results
 - [ ] Wait_until API failure policy

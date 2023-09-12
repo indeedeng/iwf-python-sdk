@@ -163,6 +163,7 @@ class WorkerService:
             wf_type, request.workflow_state_id
         )
         internal_channel_types = self._registry.get_internal_channel_types(wf_type)
+        signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
         context = _from_idl_context(request.context)
 
@@ -187,6 +188,7 @@ class WorkerService:
         command_results = from_idl_command_results(
             request.command_results,
             internal_channel_types,
+            signal_channel_types,
             self._options.object_encoder,
         )
         decision = state.execute(

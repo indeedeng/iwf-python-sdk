@@ -13,6 +13,7 @@ class Registry:
     _starting_state_store: dict[str, WorkflowState]
     _state_store: dict[str, dict[str, WorkflowState]]
     _internal_channel_type_store: dict[str, dict[str, Optional[type]]]
+    _signal_channel_type_store: dict[str, dict[str, Optional[type]]]
     _data_attribute_types: dict[str, dict[str, Optional[type]]]
     _rpc_infos: dict[str, dict[str, RPCInfo]]
 
@@ -21,6 +22,7 @@ class Registry:
         self._starting_state_store = dict()
         self._state_store = dict()
         self._internal_channel_type_store = dict()
+        self._signal_channel_type_store = dict()
         self._data_attribute_types = dict()
         self._rpc_infos = dict()
 
@@ -28,6 +30,7 @@ class Registry:
         self._register_workflow_type(wf)
         self._register_workflow_state(wf)
         self._register_internal_channels(wf)
+        self._register_signal_channels(wf)
         self._register_data_attributes(wf)
         self._register_workflow_rpcs(wf)
 
@@ -63,6 +66,9 @@ class Registry:
     def get_internal_channel_types(self, wf_type: str) -> dict[str, Optional[type]]:
         return self._internal_channel_type_store[wf_type]
 
+    def get_signal_channel_types(self, wf_type: str) -> dict[str, Optional[type]]:
+        return self._signal_channel_type_store[wf_type]
+
     def get_data_attribute_types(self, wf_type: str) -> dict[str, Optional[type]]:
         return self._data_attribute_types[wf_type]
 
@@ -82,6 +88,14 @@ class Registry:
             if method.method_type == CommunicationMethodType.InternalChannel:
                 types[method.name] = method.value_type
         self._internal_channel_type_store[wf_type] = types
+
+    def _register_signal_channels(self, wf: ObjectWorkflow):
+        wf_type = get_workflow_type(wf)
+        types: dict[str, Optional[type]] = {}
+        for method in wf.get_communication_schema().communication_methods:
+            if method.method_type == CommunicationMethodType.SignalChannel:
+                types[method.name] = method.value_type
+        self._signal_channel_type_store[wf_type] = types
 
     def _register_data_attributes(self, wf: ObjectWorkflow):
         wf_type = get_workflow_type(wf)

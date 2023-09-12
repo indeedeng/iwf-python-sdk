@@ -8,6 +8,7 @@ from iwf_api.models.command_request import CommandRequest as IdlCommandRequest
 from iwf_api.models.inter_state_channel_command import (
     InterStateChannelCommand as IdlInternalChannelCommand,
 )
+from iwf_api.models.signal_command import SignalCommand as IdlSignalCommand
 from iwf_api.models.timer_command import TimerCommand as IdlTimerCommand
 
 
@@ -34,6 +35,18 @@ class InternalChannelCommand:
     @classmethod
     def by_name(cls, channel_name: str, command_id: Optional[str] = None):
         return InternalChannelCommand(
+            command_id if command_id is not None else "", channel_name
+        )
+
+
+@dataclass
+class SignalChannelCommand:
+    command_id: str
+    channel_name: str
+
+    @classmethod
+    def by_name(cls, channel_name: str, command_id: Optional[str] = None):
+        return SignalChannelCommand(
             command_id if command_id is not None else "", channel_name
         )
 
@@ -72,14 +85,22 @@ def _to_idl_command_request(request: CommandRequest) -> IdlCommandRequest:
         if isinstance(t, TimerCommand)
     ]
 
-    internal_channel_command = [
+    internal_channel_commands = [
         IdlInternalChannelCommand(i.command_id, i.channel_name)
         for i in request.commands
         if isinstance(i, InternalChannelCommand)
     ]
 
+    signal_commands = [
+        IdlSignalCommand(i.command_id, i.channel_name)
+        for i in request.commands
+        if isinstance(i, SignalChannelCommand)
+    ]
+
     if len(timer_commands) > 0:
         req.timer_commands = timer_commands
-    if len(internal_channel_command) > 0:
-        req.inter_state_channel_commands = internal_channel_command
+    if len(internal_channel_commands) > 0:
+        req.inter_state_channel_commands = internal_channel_commands
+    if len(signal_commands) > 0:
+        req.signal_commands = signal_commands
     return req
