@@ -30,6 +30,7 @@ class Registry:
         self._register_workflow_type(wf)
         self._register_workflow_state(wf)
         self._register_internal_channels(wf)
+        self._register_signal_channels(wf)
         self._register_data_attributes(wf)
         self._register_workflow_rpcs(wf)
 
