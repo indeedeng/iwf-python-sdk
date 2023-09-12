@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from functools import wraps
 from inspect import signature
-from typing import Any, Callable, Optional
+from typing import Callable, Optional
 
 from iwf_api.models import PersistenceLoadingPolicy, PersistenceLoadingType
 
@@ -21,7 +21,7 @@ class RPCInfo:
 
 rpc_definition_err = WorkflowDefinitionError(
     "an RPC must have at most 5 params: self, context:WorkflowContext, input:Any, persistence:Persistence, "
-    'communication:Communication, where input can be any type as long as the param name is "input" '
+    "communication:Communication, where input can be any type"
 )
 
 
@@ -49,9 +49,8 @@ def rpc(
         from iwf.workflow_context import WorkflowContext
         from iwf.communication import Communication
 
-        valid_param_types = {
+        valid_param_types_exclude_input = {
             _empty: True,
-            Any: True,
             Persistence: True,
             WorkflowContext: True,
             Communication: True,
@@ -61,16 +60,18 @@ def rpc(
         if len(params) > 5:
             raise rpc_definition_err
 
+        has_input = False
         for k, v in params.items():
             if k != "self":
                 params_order.append(v.annotation)
-            if k == "input":
-                rpc_info.input_type = v.annotation
-                continue
+
             if v.annotation == Persistence:
                 need_persistence = True
-            if v.annotation not in valid_param_types:
-                raise rpc_definition_err
+            if v.annotation not in valid_param_types_exclude_input:
+                if not has_input:
+                    has_input = True
+                else:
+                    raise rpc_definition_err
         if not need_persistence:
             rpc_info.data_attribute_loading_policy = PersistenceLoadingPolicy(
                 persistence_loading_type=PersistenceLoadingType.LOAD_NONE

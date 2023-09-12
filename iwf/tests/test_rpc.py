@@ -87,7 +87,8 @@ class RPCWorkflow(ObjectWorkflow):
         return pers.get_data_attribute(test_data_attribute)
 
     @rpc()
-    def test_rpc_trigger_state(self, com: Communication):
+    def test_rpc_trigger_state(self, pers: Persistence, com: Communication, i: int):
+        pers.set_data_attribute(test_data_attribute, i)
         com.trigger_state_execution(WaitState)
 
     @rpc()
@@ -117,7 +118,10 @@ class TestRPCs(unittest.TestCase):
         self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_persistence_write, 100)
         res = self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_persistence_read)
         assert res == 100
-        self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_trigger_state)
+        self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_trigger_state, 200)
+        res = self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_persistence_read)
+        assert res == 200
+
         self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_publish_channel)
         result = self.client.get_simple_workflow_result_with_wait(wf_id, str)
         assert result == "done"
