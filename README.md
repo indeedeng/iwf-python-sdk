@@ -7,18 +7,12 @@ Python SDK for [iWF workflow engine](https://github.com/indeedeng/iwf)
 pip install iwf-python-sdk==0.1.0
 ```
 
-See [documentation](https://github.com/indeedeng/iwf#what-is-iwf).
-
 See [samples](https://github.com/indeedeng/iwf-python-samples) for examples. 
 
 ## Requirements
 
 - Python 3.9+
 - [iWF server](https://github.com/indeedeng/iwf#using-docker-image--docker-compose)
-
-## How to use
-
-TODO
 
 ## Concepts
 
