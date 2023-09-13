@@ -9,7 +9,7 @@ from iwf.communication import Communication
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
-from iwf.tests.worker_server import registry
+from iwf.tests.worker_server import _registry
 from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
 from iwf.workflow_state import T, WorkflowState
@@ -45,8 +45,8 @@ class TimerWorkflow(ObjectWorkflow):
 
 
 wf = TimerWorkflow()
-registry.add_workflow(wf)
-client = Client(registry)
+_registry.add_workflow(wf)
+client = Client(_registry)
 
 
 def test_timer_workflow():

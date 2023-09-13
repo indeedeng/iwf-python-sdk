@@ -2,13 +2,12 @@ import typing
 from dataclasses import dataclass
 from typing import Any, Union
 
-from iwf_api.types import Unset
-
 from iwf.iwf_api.iwf_api.models import (
     ChannelRequestStatus,
     CommandResults as IdlCommandResults,
     TimerStatus,
 )
+from iwf.iwf_api.iwf_api.types import Unset
 from iwf.object_encoder import ObjectEncoder
 
 

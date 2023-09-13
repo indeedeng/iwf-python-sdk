@@ -12,7 +12,7 @@ from iwf.persistence_schema import PersistenceField, PersistenceSchema
 from iwf.rpc import rpc
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
-from iwf.tests.worker_server import registry
+from iwf.tests.worker_server import _registry
 from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
 from iwf.workflow_state import T, WorkflowState
@@ -100,8 +100,8 @@ class TestRPCs(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         wf = RPCWorkflow()
-        registry.add_workflow(wf)
-        cls.client = Client(registry)
+        _registry.add_workflow(wf)
+        cls.client = Client(_registry)
 
     def test_simple_rpc(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"

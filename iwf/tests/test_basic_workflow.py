@@ -9,7 +9,7 @@ from iwf.communication import Communication
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
-from iwf.tests.worker_server import registry
+from iwf.tests.worker_server import _registry, start_if_not_started
 from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
 from iwf.workflow_state import T, WorkflowState
@@ -57,12 +57,12 @@ class BasicWorkflow(ObjectWorkflow):
         return StateSchema.with_starting_state(State1(), State2())
 
 
-hello_wf = BasicWorkflow()
-registry.add_workflow(hello_wf)
-client = Client(registry)
-
-
 def test_basic_workflow():
+    registry = start_if_not_started()
+    hello_wf = BasicWorkflow()
+    registry.add_workflow(hello_wf)
+    client = Client(_registry)
+
     wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
     client.start_workflow(BasicWorkflow, wf_id, 100, "input")

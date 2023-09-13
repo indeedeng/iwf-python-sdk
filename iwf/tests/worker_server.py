@@ -15,11 +15,11 @@ from iwf.worker_service import (
 
 debug_mode: bool = False
 
-registry = Registry()
+_registry = Registry()
 
 _flask_app = Flask(__name__)
 
-_worker_service = WorkerService(registry)
+_worker_service = WorkerService(_registry)
 
 
 @_flask_app.route("/")
@@ -62,4 +62,15 @@ def internal_error(exception):
 _webApp = Thread(target=_flask_app.run, args=("0.0.0.0", 8802))
 # when debugging, keep the thread running so that we can see the error in history
 _webApp.setDaemon(not debug_mode)
-_webApp.start()
+
+_started = False
+
+
+def start_if_not_started() -> Registry:
+    global _started
+    global _registry
+    if _started:
+        return _registry
+    _started = True
+    _webApp.start()
+    return _registry
