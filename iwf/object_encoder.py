@@ -30,9 +30,10 @@ from typing import (
     get_type_hints,
 )
 
-from iwf_api.models import EncodedObject
 from iwf_api.types import Unset
 from typing_extensions import Literal
+
+from iwf.iwf_api.iwf_api.models import EncodedObject
 
 # StrEnum is available in 3.11+
 if sys.version_info >= (3, 11):

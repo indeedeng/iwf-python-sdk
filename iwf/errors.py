@@ -1,7 +1,8 @@
 import json as jsonlib
 
 from httpx._utils import guess_json_utf
-from iwf_api.models import (
+
+from iwf.iwf_api.iwf_api.models import (
     ErrorResponse,
     ErrorSubStatus,
     WorkflowGetResponse,

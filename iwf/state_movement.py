@@ -14,7 +14,7 @@ if typing.TYPE_CHECKING:
 from dataclasses import dataclass
 from typing import Any
 
-from iwf_api.models.state_movement import StateMovement as IdlStateMovement
+from iwf.iwf_api.iwf_api.models.state_movement import StateMovement as IdlStateMovement
 
 from iwf.object_encoder import ObjectEncoder
 

@@ -2,11 +2,10 @@ import inspect
 import time
 import unittest
 
-from iwf_api.models import RetryPolicy
-
 from iwf.client import Client
 from iwf.command_results import CommandResults
 from iwf.communication import Communication
+from iwf.iwf_api.iwf_api.models import RetryPolicy
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema

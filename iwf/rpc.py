@@ -3,9 +3,8 @@ from functools import wraps
 from inspect import signature
 from typing import Callable, Optional
 
-from iwf_api.models import PersistenceLoadingPolicy, PersistenceLoadingType
-
 from iwf.errors import WorkflowDefinitionError
+from iwf.iwf_api.iwf_api.models import PersistenceLoadingPolicy, PersistenceLoadingType
 
 
 @dataclass
