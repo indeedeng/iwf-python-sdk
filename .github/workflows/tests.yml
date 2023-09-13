@@ -32,7 +32,7 @@ jobs:
       env:
         POETRY_VIRTUALENVS_CREATE: false
     - name: Run pytest check # sleep 30s to wait for the server to be ready
-      run: sleep 30 && poetry run pytest -vv --cov="iwf" .
+      run: sleep 30 && poetry run pytest -vv --cov="iwf/*" .
     - name: Dump docker logs
       if: always()
       uses: jwalton/gh-docker-logs@v2
