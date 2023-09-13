@@ -3,11 +3,18 @@
 
 Python SDK for [iWF workflow engine](https://github.com/indeedeng/iwf)
 
-TODO: samples
+```
+pip install iwf-python-sdk==0.1.0
+```
+
+See [documentation](https://github.com/indeedeng/iwf#what-is-iwf).
+
+See [samples](https://github.com/indeedeng/iwf-python-samples) for examples. 
 
 ## Requirements
 
 - Python 3.9+
+- [iWF server](https://github.com/indeedeng/iwf#using-docker-image--docker-compose)
 
 ## How to use
 
@@ -113,11 +120,10 @@ git submodule update --remote --merge
 This project uses [openapi-python-client](https://github.com/openapi-generators/openapi-python-client) to generate an API client from the IDL. To update the generated client:
 
 ```bash
-poetry run openapi-python-client update --path iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yaml
+cd iwf && poetry run openapi-python-client update --path ../iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yam
 ```
-Then update the version in `iwf-api/pyproject.toml` so that poetry can know that the local path dependency package is updated.
 
-Then run `poetry update` to update the local path dependency.
+Then run `cd .. && poetry update` to update the local path dependency.
 #### Linting
 
 To run linting for this project:
