@@ -1,13 +1,12 @@
 import inspect
 import time
 
-from iwf_api.models import ChannelRequestStatus
-
 from iwf.client import Client
 from iwf.command_request import CommandRequest, InternalChannelCommand
 from iwf.command_results import CommandResults, InternalChannelCommandResult
 from iwf.communication import Communication
 from iwf.communication_schema import CommunicationMethod, CommunicationSchema
+from iwf.iwf_api.iwf_api.models import ChannelRequestStatus
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
