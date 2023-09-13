@@ -14,7 +14,7 @@ from iwf.iwf_api.iwf_api.models import ChannelRequestStatus
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
-from iwf.tests.worker_server import _registry
+from iwf.tests.worker_server import registry
 from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
 from iwf.workflow_state import T, WorkflowState
@@ -78,8 +78,8 @@ class TestSignal(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         wf = WaitSignalWorkflow()
-        _registry.add_workflow(wf)
-        cls.client = Client(_registry)
+        registry.add_workflow(wf)
+        cls.client = Client(registry)
 
     def test_signal(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
