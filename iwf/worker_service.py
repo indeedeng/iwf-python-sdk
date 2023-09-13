@@ -1,7 +1,10 @@
 import typing
 from dataclasses import dataclass
 
-from iwf_api.models import (
+from iwf.command_request import _to_idl_command_request
+from iwf.command_results import from_idl_command_results
+from iwf.communication import Communication
+from iwf.iwf_api.iwf_api.models import (
     EncodedObject,
     KeyValue,
     WorkflowStateExecuteRequest,
@@ -11,11 +14,7 @@ from iwf_api.models import (
     WorkflowWorkerRpcRequest,
     WorkflowWorkerRpcResponse,
 )
-from iwf_api.types import Unset
-
-from iwf.command_request import _to_idl_command_request
-from iwf.command_results import from_idl_command_results
-from iwf.communication import Communication
+from iwf.iwf_api.iwf_api.types import Unset
 from iwf.object_encoder import ObjectEncoder
 from iwf.persistence import Persistence
 from iwf.registry import Registry

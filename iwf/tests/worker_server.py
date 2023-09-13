@@ -2,12 +2,12 @@ import traceback
 from threading import Thread
 
 from flask import Flask, request
-from iwf_api.models import (
+
+from iwf.iwf_api.iwf_api.models import (
     WorkflowStateExecuteRequest,
     WorkflowStateWaitUntilRequest,
     WorkflowWorkerRpcRequest,
 )
-
 from iwf.registry import Registry
 from iwf.worker_service import (
     WorkerService,

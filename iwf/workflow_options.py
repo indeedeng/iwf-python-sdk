@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from iwf_api.models import IDReusePolicy, WorkflowRetryPolicy
+from iwf.iwf_api.iwf_api.models import IDReusePolicy, WorkflowRetryPolicy
 
 
 @dataclass

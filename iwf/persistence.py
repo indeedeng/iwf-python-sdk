@@ -1,8 +1,7 @@
 from typing import Any, Optional, Union
 
-from iwf_api.models import EncodedObject
-
 from iwf.errors import WorkflowDefinitionError
+from iwf.iwf_api.iwf_api.models import EncodedObject
 from iwf.object_encoder import ObjectEncoder
 
 
