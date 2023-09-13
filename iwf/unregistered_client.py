@@ -3,8 +3,6 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any, List, Optional, Type, TypeVar
 
-from iwf_api import Client, errors
-
 from iwf.client_options import ClientOptions
 from iwf.errors import (
     WorkflowDefinitionError,
@@ -15,6 +13,7 @@ from iwf.errors import (
     process_http_error,
     process_workflow_abnormal_exit_error,
 )
+from iwf.iwf_api.iwf_api import Client, errors
 from iwf.iwf_api.iwf_api.api.default import (
     post_api_v1_workflow_dataobjects_get,
     post_api_v1_workflow_reset,
