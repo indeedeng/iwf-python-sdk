@@ -48,15 +48,11 @@ def handle_rpc():
     return resp.to_dict()
 
 
+# this handler is extremely useful for debugging iWF
+# the WebUI will be able to show you the error with stacktrace
 @_flask_app.errorhandler(Exception)
 def internal_error(exception):
-    # TODO: how to print to std ??
-    response = exception.get_response()
-    # replace the body with JSON
-    response.data = traceback.format_exc()
-    response.content_type = "application/json"
-    response.status_code = 500
-    return response
+    return traceback.format_exc(), 500
 
 
 _webApp = Thread(target=_flask_app.run, args=("0.0.0.0", 8802))
