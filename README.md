@@ -117,7 +117,9 @@ This project uses [openapi-python-client](https://github.com/openapi-generators/
 cd iwf && poetry run openapi-python-client update --path ../iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yam
 ```
 
-Then run `cd .. && poetry update` to update the local path dependency.
+Then run `cd .. && cp -R iwf/iwf_api/iwf_api/* iwf/iwf_api && rm -R iwf/iwf_api/iwf_api && poetry update` to 
+* Fix the api package path
+* Update the local path dependency.
 #### Linting
 
 To run linting for this project:
