@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Optional
 
-from iwf.iwf_api.iwf_api.models import (
+from iwf.iwf_api.models import (
     ExecuteApiFailurePolicy,
     PersistenceLoadingPolicy,
     RetryPolicy,

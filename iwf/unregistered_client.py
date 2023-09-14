@@ -13,8 +13,8 @@ from iwf.errors import (
     process_http_error,
     process_workflow_abnormal_exit_error,
 )
-from iwf.iwf_api.iwf_api import Client, errors
-from iwf.iwf_api.iwf_api.api.default import (
+from iwf.iwf_api import Client, errors
+from iwf.iwf_api.api.default import (
     post_api_v1_workflow_dataobjects_get,
     post_api_v1_workflow_reset,
     post_api_v1_workflow_rpc,
@@ -26,7 +26,7 @@ from iwf.iwf_api.iwf_api.api.default import (
     post_api_v1_workflow_timer_skip,
     post_api_v_1_workflow_get_with_wait,
 )
-from iwf.iwf_api.iwf_api.models import (
+from iwf.iwf_api.models import (
     EncodedObject,
     ErrorResponse,
     IDReusePolicy,
@@ -53,7 +53,7 @@ from iwf.iwf_api.iwf_api.models import (
     WorkflowStatus,
     WorkflowStopRequest,
 )
-from iwf.iwf_api.iwf_api.types import Response
+from iwf.iwf_api.types import Response
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
 from iwf.stop_workflow_options import StopWorkflowOptions
 

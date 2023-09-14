@@ -15,7 +15,7 @@ from iwf.errors import (
     WorkflowTerminated,
     WorkflowTimeout,
 )
-from iwf.iwf_api.iwf_api.models import WorkflowStopType
+from iwf.iwf_api.models import WorkflowStopType
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema

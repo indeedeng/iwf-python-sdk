@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from iwf.iwf_api.iwf_api.models import WorkflowResetType
+from iwf.iwf_api.models import WorkflowResetType
 
 
 @dataclass

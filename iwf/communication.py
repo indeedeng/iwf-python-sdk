@@ -1,7 +1,7 @@
 from typing import Any, Optional, Union
 
 from iwf.errors import WorkflowDefinitionError
-from iwf.iwf_api.iwf_api.models import EncodedObject, InterStateChannelPublishing
+from iwf.iwf_api.models import EncodedObject, InterStateChannelPublishing
 from iwf.object_encoder import ObjectEncoder
 from iwf.state_movement import StateMovement
 

@@ -3,15 +3,15 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Optional, Union
 
-from iwf.iwf_api.iwf_api.models import CommandWaitingType
-from iwf.iwf_api.iwf_api.models.command_request import (
+from iwf.iwf_api.models import CommandWaitingType
+from iwf.iwf_api.models.command_request import (
     CommandRequest as IdlCommandRequest,
 )
-from iwf.iwf_api.iwf_api.models.inter_state_channel_command import (
+from iwf.iwf_api.models.inter_state_channel_command import (
     InterStateChannelCommand as IdlInternalChannelCommand,
 )
-from iwf.iwf_api.iwf_api.models.signal_command import SignalCommand as IdlSignalCommand
-from iwf.iwf_api.iwf_api.models.timer_command import TimerCommand as IdlTimerCommand
+from iwf.iwf_api.models.signal_command import SignalCommand as IdlSignalCommand
+from iwf.iwf_api.models.timer_command import TimerCommand as IdlTimerCommand
 
 
 @dataclass

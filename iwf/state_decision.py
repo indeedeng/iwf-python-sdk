@@ -9,7 +9,7 @@ if typing.TYPE_CHECKING:
 from dataclasses import dataclass
 from typing import Any, List, Union
 
-from iwf.iwf_api.iwf_api.models.state_decision import StateDecision as IdlStateDecision
+from iwf.iwf_api.models.state_decision import StateDecision as IdlStateDecision
 
 from iwf.object_encoder import ObjectEncoder
 

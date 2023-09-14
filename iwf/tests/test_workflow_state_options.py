@@ -1,4 +1,4 @@
-from iwf.iwf_api.iwf_api.models import (
+from iwf.iwf_api.models import (
     PersistenceLoadingPolicy,
     PersistenceLoadingType,
     WorkflowStateOptions as IdlWorkflowStateOptions,

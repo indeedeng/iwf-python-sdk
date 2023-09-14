@@ -3,7 +3,7 @@ from threading import Thread
 
 from flask import Flask, request
 
-from iwf.iwf_api.iwf_api.models import (
+from iwf.iwf_api.models import (
     WorkflowStateExecuteRequest,
     WorkflowStateWaitUntilRequest,
     WorkflowWorkerRpcRequest,

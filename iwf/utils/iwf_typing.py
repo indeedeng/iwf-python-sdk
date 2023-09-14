@@ -1,6 +1,6 @@
 from typing import Optional, TypeVar, Union
 
-from iwf.iwf_api.iwf_api.types import Unset
+from iwf.iwf_api.types import Unset
 
 T = TypeVar("T")
 
