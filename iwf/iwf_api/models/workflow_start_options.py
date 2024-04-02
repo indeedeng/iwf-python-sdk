@@ -20,6 +20,7 @@ class WorkflowStartOptions:
     Attributes:
         id_reuse_policy (Union[Unset, IDReusePolicy]):
         cron_schedule (Union[Unset, str]):
+        workflow_start_delay_seconds (Union[Unset, int]):
         retry_policy (Union[Unset, WorkflowRetryPolicy]):
         search_attributes (Union[Unset, List['SearchAttribute']]):
         workflow_config_override (Union[Unset, WorkflowConfig]):
@@ -28,6 +29,7 @@ class WorkflowStartOptions:
 
     id_reuse_policy: Union[Unset, IDReusePolicy] = UNSET
     cron_schedule: Union[Unset, str] = UNSET
+    workflow_start_delay_seconds: Union[Unset, int] = UNSET
     retry_policy: Union[Unset, "WorkflowRetryPolicy"] = UNSET
     search_attributes: Union[Unset, List["SearchAttribute"]] = UNSET
     workflow_config_override: Union[Unset, "WorkflowConfig"] = UNSET
@@ -40,6 +42,7 @@ class WorkflowStartOptions:
             id_reuse_policy = self.id_reuse_policy.value
 
         cron_schedule = self.cron_schedule
+        workflow_start_delay_seconds = self.workflow_start_delay_seconds
         retry_policy: Union[Unset, Dict[str, Any]] = UNSET
         if not isinstance(self.retry_policy, Unset):
             retry_policy = self.retry_policy.to_dict()
@@ -65,6 +68,8 @@ class WorkflowStartOptions:
             field_dict["idReusePolicy"] = id_reuse_policy
         if cron_schedule is not UNSET:
             field_dict["cronSchedule"] = cron_schedule
+        if workflow_start_delay_seconds is not UNSET:
+            field_dict["workflowStartDelaySeconds"] = workflow_start_delay_seconds
         if retry_policy is not UNSET:
             field_dict["retryPolicy"] = retry_policy
         if search_attributes is not UNSET:
@@ -91,6 +96,8 @@ class WorkflowStartOptions:
             id_reuse_policy = IDReusePolicy(_id_reuse_policy)
 
         cron_schedule = d.pop("cronSchedule", UNSET)
+
+        workflow_start_delay_seconds = d.pop("workflowStartDelaySeconds", UNSET)
 
         _retry_policy = d.pop("retryPolicy", UNSET)
         retry_policy: Union[Unset, WorkflowRetryPolicy]
@@ -122,6 +129,7 @@ class WorkflowStartOptions:
         workflow_start_options = cls(
             id_reuse_policy=id_reuse_policy,
             cron_schedule=cron_schedule,
+            workflow_start_delay_seconds=workflow_start_delay_seconds,
             retry_policy=retry_policy,
             search_attributes=search_attributes,
             workflow_config_override=workflow_config_override,
