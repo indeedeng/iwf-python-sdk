@@ -67,6 +67,8 @@ class Client:
             unreg_opts.workflow_id_reuse_policy = options.workflow_id_reuse_policy
             unreg_opts.workflow_retry_policy = options.workflow_retry_policy
             unreg_opts.cron_schedule = options.workflow_cron_schedule
+            unreg_opts.workflow_start_delay_seconds \
+                = options.workflow_start_delay_seconds
 
             # TODO: set initial search attributes here
 
