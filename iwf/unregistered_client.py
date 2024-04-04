@@ -62,6 +62,7 @@ from iwf.stop_workflow_options import StopWorkflowOptions
 class UnregisteredWorkflowOptions:
     workflow_id_reuse_policy: Optional[IDReusePolicy] = None
     cron_schedule: Optional[str] = None
+    workflow_start_delay_seconds: Optional[int] = None
     workflow_retry_policy: Optional[WorkflowRetryPolicy] = None
     start_state_options: Optional[WorkflowStateOptions] = None
     initial_search_attribute: Optional[List[SearchAttribute]] = None
@@ -130,6 +131,9 @@ class UnregisteredClient:
                 start_options.id_reuse_policy = options.workflow_id_reuse_policy
             if options.cron_schedule:
                 start_options.cron_schedule = options.cron_schedule
+            if options.workflow_start_delay_seconds:
+                start_options.workflow_start_delay_seconds \
+                    = options.workflow_start_delay_seconds
             if options.workflow_retry_policy:
                 start_options.retry_policy = options.workflow_retry_policy
 

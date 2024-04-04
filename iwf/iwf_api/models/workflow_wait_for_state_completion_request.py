@@ -1,6 +1,8 @@
-from typing import Any, Dict, List, Type, TypeVar
+from typing import Any, Dict, List, Type, TypeVar, Union
 
 import attr
+
+from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="WorkflowWaitForStateCompletionRequest")
 
@@ -11,15 +13,18 @@ class WorkflowWaitForStateCompletionRequest:
     Attributes:
         workflow_id (str):
         state_execution_id (str):
+        wait_time_seconds (Union[Unset, int]):
     """
 
     workflow_id: str
     state_execution_id: str
+    wait_time_seconds: Union[Unset, int] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         workflow_id = self.workflow_id
         state_execution_id = self.state_execution_id
+        wait_time_seconds = self.wait_time_seconds
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -29,6 +34,8 @@ class WorkflowWaitForStateCompletionRequest:
                 "stateExecutionId": state_execution_id,
             }
         )
+        if wait_time_seconds is not UNSET:
+            field_dict["waitTimeSeconds"] = wait_time_seconds
 
         return field_dict
 
@@ -39,9 +46,12 @@ class WorkflowWaitForStateCompletionRequest:
 
         state_execution_id = d.pop("stateExecutionId")
 
+        wait_time_seconds = d.pop("waitTimeSeconds", UNSET)
+
         workflow_wait_for_state_completion_request = cls(
             workflow_id=workflow_id,
             state_execution_id=state_execution_id,
+            wait_time_seconds=wait_time_seconds,
         )
 
         workflow_wait_for_state_completion_request.additional_properties = d

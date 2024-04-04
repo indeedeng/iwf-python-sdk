@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union, cast
 
 import attr
 
@@ -22,6 +22,7 @@ class WorkflowStartRequest:
         workflow_timeout_seconds (int):
         iwf_worker_url (str):
         start_state_id (Union[Unset, str]):
+        wait_for_completion_state_execution_ids (Union[Unset, List[str]]):
         state_input (Union[Unset, EncodedObject]):
         state_options (Union[Unset, WorkflowStateOptions]):
         workflow_start_options (Union[Unset, WorkflowStartOptions]):
@@ -32,6 +33,7 @@ class WorkflowStartRequest:
     workflow_timeout_seconds: int
     iwf_worker_url: str
     start_state_id: Union[Unset, str] = UNSET
+    wait_for_completion_state_execution_ids: Union[Unset, List[str]] = UNSET
     state_input: Union[Unset, "EncodedObject"] = UNSET
     state_options: Union[Unset, "WorkflowStateOptions"] = UNSET
     workflow_start_options: Union[Unset, "WorkflowStartOptions"] = UNSET
@@ -43,6 +45,12 @@ class WorkflowStartRequest:
         workflow_timeout_seconds = self.workflow_timeout_seconds
         iwf_worker_url = self.iwf_worker_url
         start_state_id = self.start_state_id
+        wait_for_completion_state_execution_ids: Union[Unset, List[str]] = UNSET
+        if not isinstance(self.wait_for_completion_state_execution_ids, Unset):
+            wait_for_completion_state_execution_ids = (
+                self.wait_for_completion_state_execution_ids
+            )
+
         state_input: Union[Unset, Dict[str, Any]] = UNSET
         if not isinstance(self.state_input, Unset):
             state_input = self.state_input.to_dict()
@@ -67,6 +75,10 @@ class WorkflowStartRequest:
         )
         if start_state_id is not UNSET:
             field_dict["startStateId"] = start_state_id
+        if wait_for_completion_state_execution_ids is not UNSET:
+            field_dict[
+                "waitForCompletionStateExecutionIds"
+            ] = wait_for_completion_state_execution_ids
         if state_input is not UNSET:
             field_dict["stateInput"] = state_input
         if state_options is not UNSET:
@@ -92,6 +104,10 @@ class WorkflowStartRequest:
         iwf_worker_url = d.pop("iwfWorkerUrl")
 
         start_state_id = d.pop("startStateId", UNSET)
+
+        wait_for_completion_state_execution_ids = cast(
+            List[str], d.pop("waitForCompletionStateExecutionIds", UNSET)
+        )
 
         _state_input = d.pop("stateInput", UNSET)
         state_input: Union[Unset, EncodedObject]
@@ -122,6 +138,7 @@ class WorkflowStartRequest:
             workflow_timeout_seconds=workflow_timeout_seconds,
             iwf_worker_url=iwf_worker_url,
             start_state_id=start_state_id,
+            wait_for_completion_state_execution_ids=wait_for_completion_state_execution_ids,
             state_input=state_input,
             state_options=state_options,
             workflow_start_options=workflow_start_options,
