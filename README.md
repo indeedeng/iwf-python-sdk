@@ -50,21 +50,6 @@ See more in https://github.com/indeedeng/iwf#what-is-iwf
 - [x] Reset workflow API
 - [x] Skip timer API for testing/operation
 
-## Future -- the advanced features that already supported in server. Contributions are welcome to implement them in this SDK!
-- [ ] [Atomic conditional complete workflow by checking signal/internal channel emptiness](https://github.com/indeedeng/iwf-python-sdk/issues/19)
-- [ ] [Dynamic data/search attributes and internal/signal channel definition](https://github.com/indeedeng/iwf-python-sdk/issues/20)
-- [ ] [State options overridden dynamically](https://github.com/indeedeng/iwf-python-sdk/issues/21)
-- [ ] [Describe workflow API](https://github.com/indeedeng/iwf-python-sdk/issues/22)
-- [ ] [TryGetWorkflowResults API](https://github.com/indeedeng/iwf-python-sdk/issues/23)
-- [ ] [Consume N messages in a single command](https://github.com/indeedeng/iwf-python-sdk/issues/24)
-- [ ] [Decider trigger type: any command combination](https://github.com/indeedeng/iwf-python-sdk/issues/25)
-- [ ] [Wait_until API failure policy](https://github.com/indeedeng/iwf-python-sdk/issues/26)
-- [ ] [Caching on persistence](https://github.com/indeedeng/iwf-python-sdk/issues/27)
-- [ ] [StateExecutionLocal and recordEvents API](https://github.com/indeedeng/iwf-python-sdk/issues/28)
-- [ ] [SearchAttribute: Keyword, Double, Bool, Datetime, Keyword array, Text](https://github.com/indeedeng/iwf-python-sdk/issues/29)
-- [ ] [Workflow start options: initial search attributes](https://github.com/indeedeng/iwf-python-sdk/issues/30)
-- [ ] [Get workflow DataAttributes/SearchAttributes API](https://github.com/indeedeng/iwf-python-sdk/issues/31)
-
 ### Running iwf-server locally
 
 #### Option 1: use docker compose
