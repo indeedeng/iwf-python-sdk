@@ -132,8 +132,9 @@ class UnregisteredClient:
             if options.cron_schedule:
                 start_options.cron_schedule = options.cron_schedule
             if options.workflow_start_delay_seconds:
-                start_options.workflow_start_delay_seconds \
-                    = options.workflow_start_delay_seconds
+                start_options.workflow_start_delay_seconds = (
+                    options.workflow_start_delay_seconds
+                )
             if options.workflow_retry_policy:
                 start_options.retry_policy = options.workflow_retry_policy
 
