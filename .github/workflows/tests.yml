@@ -29,10 +29,12 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: '3.9'
-    - name: Install deps
+    - name: Install Poetry
       uses: snok/install-poetry@v1
       with:
         virtualenvs-create: false
+    - name: Install Dependencies
+      run: poetry install
     - name: Run pytest check # sleep 30s to wait for the server to be ready
       run: echo "[run]">>.coveragerc && echo "omit = iwf/iwf_api/">>.coveragerc && sleep 30 && poetry run pytest -vv --cov-config=.coveragerc --cov="iwf/" .
     - name: Dump docker logs
