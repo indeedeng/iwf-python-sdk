@@ -291,7 +291,7 @@ class AdvancedJSONEncoder(json.JSONEncoder):
         See :py:meth:`json.JSONEncoder.default`.
         """
         # Dataclass support
-        if dataclasses.is_dataclass(o):
+        if dataclasses.is_dataclass(o) and not isinstance(o, type):
             return dataclasses.asdict(o)
         # Support for models with "dict" function like Pydantic
         dict_fn = getattr(o, "dict", None)
