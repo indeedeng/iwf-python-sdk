@@ -53,8 +53,8 @@ class TestAbnormalWorkflow(unittest.TestCase):
     def test_abnormal_exit_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
         startOptions = WorkflowOptions(
-                           workflow_id_reuse_policy=IDReusePolicy.ALLOW_IF_PREVIOUS_EXITS_ABNORMALLY
-                       )
+           workflow_id_reuse_policy=IDReusePolicy.ALLOW_IF_PREVIOUS_EXITS_ABNORMALLY
+       )
 
         client.start_workflow(AbnormalExitWorkflow, wf_id, 100, "input", startOptions)
         with self.assertRaises(WorkflowFailed):
