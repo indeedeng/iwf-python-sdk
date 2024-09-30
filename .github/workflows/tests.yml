@@ -14,7 +14,7 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1
     - name: Install Dependencies
-      run: poetry install
+      run: poetry install --no-interaction --no-root
     - name: Run linters
       uses: pre-commit/action@v3.0.0
   pytest:
@@ -30,7 +30,7 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1
     - name: Install Dependencies
-      run: poetry install
+      run: poetry install --no-interaction --no-root
     - name: Run pytest check # sleep 30s to wait for the server to be ready
       run: echo "[run]">>.coveragerc && echo "omit = iwf/iwf_api/">>.coveragerc && sleep 30 && poetry run pytest -vv --cov-config=.coveragerc --cov="iwf/" .
     - name: Dump docker logs
