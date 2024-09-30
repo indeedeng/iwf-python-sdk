@@ -42,7 +42,7 @@ repos:
 
   - id: mypy
     name: Validate types with MyPy
-    entry: poetry run mypy .
+    entry: poetry run mypy
     language: system
     types: [python]
     pass_filenames: false
