@@ -7,7 +7,7 @@ Python SDK for [iWF workflow engine](https://github.com/indeedeng/iwf)
 pip install iwf-python-sdk==0.1.2
 ```
 
-See [samples](https://github.com/indeedeng/iwf-python-samples) for use case examples. 
+See [samples](https://github.com/indeedeng/iwf-python-samples) for use case examples.
 
 ## Requirements
 
@@ -102,7 +102,7 @@ This project uses [openapi-python-client](https://github.com/openapi-generators/
 cd iwf && poetry run openapi-python-client update --path ../iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yaml
 ```
 
-Then run `cd .. && cp -R iwf/iwf_api/iwf_api/* iwf/iwf_api && rm -R iwf/iwf_api/iwf_api && poetry update` to 
+Then run `cd .. && cp -R iwf/iwf_api/iwf_api/* iwf/iwf_api && rm -R iwf/iwf_api/iwf_api && poetry update` to
 * Fix the api package path
 * Update the local path dependency.
 #### Linting
