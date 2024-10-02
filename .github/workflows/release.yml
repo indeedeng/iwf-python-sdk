@@ -3,6 +3,7 @@ name: release-to-pypi
 on:
   release:
     types: [ published ]
+  pull_request:
 
 jobs:
   publish-iwf-python-sdk:
