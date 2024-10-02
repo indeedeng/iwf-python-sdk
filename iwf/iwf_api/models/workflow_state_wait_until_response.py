@@ -18,6 +18,7 @@ T = TypeVar("T", bound="WorkflowStateWaitUntilResponse")
 class WorkflowStateWaitUntilResponse:
     """
     Attributes:
+        local_activity_input (Union[Unset, str]):
         upsert_search_attributes (Union[Unset, List['SearchAttribute']]):
         upsert_data_objects (Union[Unset, List['KeyValue']]):
         command_request (Union[Unset, CommandRequest]):
@@ -26,6 +27,7 @@ class WorkflowStateWaitUntilResponse:
         publish_to_inter_state_channel (Union[Unset, List['InterStateChannelPublishing']]):
     """
 
+    local_activity_input: Union[Unset, str] = UNSET
     upsert_search_attributes: Union[Unset, List["SearchAttribute"]] = UNSET
     upsert_data_objects: Union[Unset, List["KeyValue"]] = UNSET
     command_request: Union[Unset, "CommandRequest"] = UNSET
@@ -37,6 +39,7 @@ class WorkflowStateWaitUntilResponse:
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
+        local_activity_input = self.local_activity_input
         upsert_search_attributes: Union[Unset, List[Dict[str, Any]]] = UNSET
         if not isinstance(self.upsert_search_attributes, Unset):
             upsert_search_attributes = []
@@ -92,6 +95,8 @@ class WorkflowStateWaitUntilResponse:
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
+        if local_activity_input is not UNSET:
+            field_dict["localActivityInput"] = local_activity_input
         if upsert_search_attributes is not UNSET:
             field_dict["upsertSearchAttributes"] = upsert_search_attributes
         if upsert_data_objects is not UNSET:
@@ -115,6 +120,8 @@ class WorkflowStateWaitUntilResponse:
         from ..models.search_attribute import SearchAttribute
 
         d = src_dict.copy()
+        local_activity_input = d.pop("localActivityInput", UNSET)
+
         upsert_search_attributes = []
         _upsert_search_attributes = d.pop("upsertSearchAttributes", UNSET)
         for upsert_search_attributes_item_data in _upsert_search_attributes or []:
@@ -164,6 +171,7 @@ class WorkflowStateWaitUntilResponse:
             publish_to_inter_state_channel.append(publish_to_inter_state_channel_item)
 
         workflow_state_wait_until_response = cls(
+            local_activity_input=local_activity_input,
             upsert_search_attributes=upsert_search_attributes,
             upsert_data_objects=upsert_data_objects,
             command_request=command_request,

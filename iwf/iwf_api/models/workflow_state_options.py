@@ -40,9 +40,9 @@ class WorkflowStateOptions:
     wait_until_api_failure_policy: Union[Unset, WaitUntilApiFailurePolicy] = UNSET
     execute_api_failure_policy: Union[Unset, ExecuteApiFailurePolicy] = UNSET
     execute_api_failure_proceed_state_id: Union[Unset, str] = UNSET
-    execute_api_failure_proceed_state_options: Union[
-        Unset, "WorkflowStateOptions"
-    ] = UNSET
+    execute_api_failure_proceed_state_options: Union[Unset, "WorkflowStateOptions"] = (
+        UNSET
+    )
     skip_wait_until: Union[Unset, bool] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
@@ -90,9 +90,9 @@ class WorkflowStateOptions:
         field_dict.update(self.additional_properties)
         field_dict.update({})
         if search_attributes_loading_policy is not UNSET:
-            field_dict[
-                "searchAttributesLoadingPolicy"
-            ] = search_attributes_loading_policy
+            field_dict["searchAttributesLoadingPolicy"] = (
+                search_attributes_loading_policy
+            )
         if data_attributes_loading_policy is not UNSET:
             field_dict["dataAttributesLoadingPolicy"] = data_attributes_loading_policy
         if wait_until_api_timeout_seconds is not UNSET:
@@ -108,13 +108,13 @@ class WorkflowStateOptions:
         if execute_api_failure_policy is not UNSET:
             field_dict["executeApiFailurePolicy"] = execute_api_failure_policy
         if execute_api_failure_proceed_state_id is not UNSET:
-            field_dict[
-                "executeApiFailureProceedStateId"
-            ] = execute_api_failure_proceed_state_id
+            field_dict["executeApiFailureProceedStateId"] = (
+                execute_api_failure_proceed_state_id
+            )
         if execute_api_failure_proceed_state_options is not UNSET:
-            field_dict[
-                "executeApiFailureProceedStateOptions"
-            ] = execute_api_failure_proceed_state_options
+            field_dict["executeApiFailureProceedStateOptions"] = (
+                execute_api_failure_proceed_state_options
+            )
         if skip_wait_until is not UNSET:
             field_dict["skipWaitUntil"] = skip_wait_until
 

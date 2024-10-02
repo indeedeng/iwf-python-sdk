@@ -30,6 +30,7 @@ from .state_movement import StateMovement
 from .timer_command import TimerCommand
 from .timer_result import TimerResult
 from .timer_status import TimerStatus
+from .trigger_continue_as_new_request import TriggerContinueAsNewRequest
 from .wait_until_api_failure_policy import WaitUntilApiFailurePolicy
 from .worker_error_response import WorkerErrorResponse
 from .workflow_conditional_close import WorkflowConditionalClose
@@ -107,6 +108,7 @@ __all__ = (
     "TimerCommand",
     "TimerResult",
     "TimerStatus",
+    "TriggerContinueAsNewRequest",
     "WaitUntilApiFailurePolicy",
     "WorkerErrorResponse",
     "WorkflowConditionalClose",

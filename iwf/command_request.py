@@ -17,7 +17,7 @@ from iwf.iwf_api.models.timer_command import TimerCommand as IdlTimerCommand
 @dataclass
 class TimerCommand:
     command_id: str
-    firing_unix_timestamp_seconds: int
+    duration_seconds: int
 
     @classmethod
     def timer_command_by_duration(
@@ -25,7 +25,7 @@ class TimerCommand:
     ):
         return TimerCommand(
             command_id if command_id is not None else "",
-            int(time.time()) + int(duration.total_seconds()),
+            int(duration.total_seconds()),
         )
 
 
@@ -82,19 +82,19 @@ def _to_idl_command_request(request: CommandRequest) -> IdlCommandRequest:
     )
 
     timer_commands = [
-        IdlTimerCommand(t.command_id, t.firing_unix_timestamp_seconds)
+        IdlTimerCommand(t.duration_seconds, t.command_id)
         for t in request.commands
         if isinstance(t, TimerCommand)
     ]
 
     internal_channel_commands = [
-        IdlInternalChannelCommand(i.command_id, i.channel_name)
+        IdlInternalChannelCommand(i.channel_name, i.command_id)
         for i in request.commands
         if isinstance(i, InternalChannelCommand)
     ]
 
     signal_commands = [
-        IdlSignalCommand(i.command_id, i.channel_name)
+        IdlSignalCommand(i.channel_name, i.command_id)
         for i in request.commands
         if isinstance(i, SignalChannelCommand)
     ]

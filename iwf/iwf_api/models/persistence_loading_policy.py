@@ -15,11 +15,13 @@ class PersistenceLoadingPolicy:
         persistence_loading_type (Union[Unset, PersistenceLoadingType]):
         partial_loading_keys (Union[Unset, List[str]]):
         locking_keys (Union[Unset, List[str]]):
+        use_key_as_prefix (Union[Unset, bool]):
     """
 
     persistence_loading_type: Union[Unset, PersistenceLoadingType] = UNSET
     partial_loading_keys: Union[Unset, List[str]] = UNSET
     locking_keys: Union[Unset, List[str]] = UNSET
+    use_key_as_prefix: Union[Unset, bool] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -35,6 +37,8 @@ class PersistenceLoadingPolicy:
         if not isinstance(self.locking_keys, Unset):
             locking_keys = self.locking_keys
 
+        use_key_as_prefix = self.use_key_as_prefix
+
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -44,6 +48,8 @@ class PersistenceLoadingPolicy:
             field_dict["partialLoadingKeys"] = partial_loading_keys
         if locking_keys is not UNSET:
             field_dict["lockingKeys"] = locking_keys
+        if use_key_as_prefix is not UNSET:
+            field_dict["useKeyAsPrefix"] = use_key_as_prefix
 
         return field_dict
 
@@ -61,10 +67,13 @@ class PersistenceLoadingPolicy:
 
         locking_keys = cast(List[str], d.pop("lockingKeys", UNSET))
 
+        use_key_as_prefix = d.pop("useKeyAsPrefix", UNSET)
+
         persistence_loading_policy = cls(
             persistence_loading_type=persistence_loading_type,
             partial_loading_keys=partial_loading_keys,
             locking_keys=locking_keys,
+            use_key_as_prefix=use_key_as_prefix,
         )
 
         persistence_loading_policy.additional_properties = d

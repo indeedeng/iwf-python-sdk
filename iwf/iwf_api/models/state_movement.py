@@ -19,11 +19,13 @@ class StateMovement:
         state_id (str):
         state_input (Union[Unset, EncodedObject]):
         state_options (Union[Unset, WorkflowStateOptions]):
+        wait_for_key (Union[Unset, str]):
     """
 
     state_id: str
     state_input: Union[Unset, "EncodedObject"] = UNSET
     state_options: Union[Unset, "WorkflowStateOptions"] = UNSET
+    wait_for_key: Union[Unset, str] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -36,6 +38,8 @@ class StateMovement:
         if not isinstance(self.state_options, Unset):
             state_options = self.state_options.to_dict()
 
+        wait_for_key = self.wait_for_key
+
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -47,6 +51,8 @@ class StateMovement:
             field_dict["stateInput"] = state_input
         if state_options is not UNSET:
             field_dict["stateOptions"] = state_options
+        if wait_for_key is not UNSET:
+            field_dict["waitForKey"] = wait_for_key
 
         return field_dict
 
@@ -72,10 +78,13 @@ class StateMovement:
         else:
             state_options = WorkflowStateOptions.from_dict(_state_options)
 
+        wait_for_key = d.pop("waitForKey", UNSET)
+
         state_movement = cls(
             state_id=state_id,
             state_input=state_input,
             state_options=state_options,
+            wait_for_key=wait_for_key,
         )
 
         state_movement.additional_properties = d

@@ -4,51 +4,51 @@ import attr
 
 from ..types import UNSET, Unset
 
-T = TypeVar("T", bound="TimerCommand")
+T = TypeVar("T", bound="TriggerContinueAsNewRequest")
 
 
 @attr.s(auto_attribs=True)
-class TimerCommand:
+class TriggerContinueAsNewRequest:
     """
     Attributes:
-        duration_seconds (int):
-        command_id (Union[Unset, str]):
+        workflow_id (str):
+        workflow_run_id (Union[Unset, str]):
     """
 
-    duration_seconds: int
-    command_id: Union[Unset, str] = UNSET
+    workflow_id: str
+    workflow_run_id: Union[Unset, str] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        duration_seconds = self.duration_seconds
-        command_id = self.command_id
+        workflow_id = self.workflow_id
+        workflow_run_id = self.workflow_run_id
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "durationSeconds": duration_seconds,
+                "workflowId": workflow_id,
             }
         )
-        if command_id is not UNSET:
-            field_dict["commandId"] = command_id
+        if workflow_run_id is not UNSET:
+            field_dict["workflowRunId"] = workflow_run_id
 
         return field_dict
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-        duration_seconds = d.pop("durationSeconds")
+        workflow_id = d.pop("workflowId")
 
-        command_id = d.pop("commandId", UNSET)
+        workflow_run_id = d.pop("workflowRunId", UNSET)
 
-        timer_command = cls(
-            duration_seconds=duration_seconds,
-            command_id=command_id,
+        trigger_continue_as_new_request = cls(
+            workflow_id=workflow_id,
+            workflow_run_id=workflow_run_id,
         )
 
-        timer_command.additional_properties = d
-        return timer_command
+        trigger_continue_as_new_request.additional_properties = d
+        return trigger_continue_as_new_request
 
     @property
     def additional_keys(self) -> List[str]:

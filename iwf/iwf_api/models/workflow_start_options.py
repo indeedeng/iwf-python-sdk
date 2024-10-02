@@ -6,6 +6,7 @@ from ..models.id_reuse_policy import IDReusePolicy
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
+    from ..models.key_value import KeyValue
     from ..models.search_attribute import SearchAttribute
     from ..models.workflow_config import WorkflowConfig
     from ..models.workflow_retry_policy import WorkflowRetryPolicy
@@ -23,6 +24,7 @@ class WorkflowStartOptions:
         workflow_start_delay_seconds (Union[Unset, int]):
         retry_policy (Union[Unset, WorkflowRetryPolicy]):
         search_attributes (Union[Unset, List['SearchAttribute']]):
+        data_attributes (Union[Unset, List['KeyValue']]):
         workflow_config_override (Union[Unset, WorkflowConfig]):
         use_memo_for_data_attributes (Union[Unset, bool]):
     """
@@ -32,6 +34,7 @@ class WorkflowStartOptions:
     workflow_start_delay_seconds: Union[Unset, int] = UNSET
     retry_policy: Union[Unset, "WorkflowRetryPolicy"] = UNSET
     search_attributes: Union[Unset, List["SearchAttribute"]] = UNSET
+    data_attributes: Union[Unset, List["KeyValue"]] = UNSET
     workflow_config_override: Union[Unset, "WorkflowConfig"] = UNSET
     use_memo_for_data_attributes: Union[Unset, bool] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
@@ -55,6 +58,14 @@ class WorkflowStartOptions:
 
                 search_attributes.append(search_attributes_item)
 
+        data_attributes: Union[Unset, List[Dict[str, Any]]] = UNSET
+        if not isinstance(self.data_attributes, Unset):
+            data_attributes = []
+            for data_attributes_item_data in self.data_attributes:
+                data_attributes_item = data_attributes_item_data.to_dict()
+
+                data_attributes.append(data_attributes_item)
+
         workflow_config_override: Union[Unset, Dict[str, Any]] = UNSET
         if not isinstance(self.workflow_config_override, Unset):
             workflow_config_override = self.workflow_config_override.to_dict()
@@ -74,6 +85,8 @@ class WorkflowStartOptions:
             field_dict["retryPolicy"] = retry_policy
         if search_attributes is not UNSET:
             field_dict["searchAttributes"] = search_attributes
+        if data_attributes is not UNSET:
+            field_dict["dataAttributes"] = data_attributes
         if workflow_config_override is not UNSET:
             field_dict["workflowConfigOverride"] = workflow_config_override
         if use_memo_for_data_attributes is not UNSET:
@@ -83,6 +96,7 @@ class WorkflowStartOptions:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.key_value import KeyValue
         from ..models.search_attribute import SearchAttribute
         from ..models.workflow_config import WorkflowConfig
         from ..models.workflow_retry_policy import WorkflowRetryPolicy
@@ -115,6 +129,13 @@ class WorkflowStartOptions:
 
             search_attributes.append(search_attributes_item)
 
+        data_attributes = []
+        _data_attributes = d.pop("dataAttributes", UNSET)
+        for data_attributes_item_data in _data_attributes or []:
+            data_attributes_item = KeyValue.from_dict(data_attributes_item_data)
+
+            data_attributes.append(data_attributes_item)
+
         _workflow_config_override = d.pop("workflowConfigOverride", UNSET)
         workflow_config_override: Union[Unset, WorkflowConfig]
         if isinstance(_workflow_config_override, Unset):
@@ -132,6 +153,7 @@ class WorkflowStartOptions:
             workflow_start_delay_seconds=workflow_start_delay_seconds,
             retry_policy=retry_policy,
             search_attributes=search_attributes,
+            data_attributes=data_attributes,
             workflow_config_override=workflow_config_override,
             use_memo_for_data_attributes=use_memo_for_data_attributes,
         )
