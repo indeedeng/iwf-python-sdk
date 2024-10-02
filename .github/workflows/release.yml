@@ -2,7 +2,7 @@ name: release-to-pypi
 
 on:
   release:
-    types: [ published ]
+    types: [published]
 
 jobs:
   publish-iwf-python-sdk:
