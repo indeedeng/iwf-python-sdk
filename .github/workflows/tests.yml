@@ -1,6 +1,9 @@
 name: Testing iwf-python-sdk
 
-on: push
+on:
+  release:
+    types: [ published ]
+  pull_request:
 
 jobs:
   lint:
