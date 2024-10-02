@@ -1,0 +1,21 @@
+name: release-to-pypi
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-iwf-python-sdk:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+    - name: set tokens
+      run: poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
+    - name: build and publish
+      run: poetry publish --build
