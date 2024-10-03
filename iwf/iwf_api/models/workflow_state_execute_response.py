@@ -18,6 +18,7 @@ T = TypeVar("T", bound="WorkflowStateExecuteResponse")
 class WorkflowStateExecuteResponse:
     """
     Attributes:
+        local_activity_input (Union[Unset, str]):
         state_decision (Union[Unset, StateDecision]):
         upsert_search_attributes (Union[Unset, List['SearchAttribute']]):
         upsert_data_objects (Union[Unset, List['KeyValue']]):
@@ -26,6 +27,7 @@ class WorkflowStateExecuteResponse:
         publish_to_inter_state_channel (Union[Unset, List['InterStateChannelPublishing']]):
     """
 
+    local_activity_input: Union[Unset, str] = UNSET
     state_decision: Union[Unset, "StateDecision"] = UNSET
     upsert_search_attributes: Union[Unset, List["SearchAttribute"]] = UNSET
     upsert_data_objects: Union[Unset, List["KeyValue"]] = UNSET
@@ -37,6 +39,7 @@ class WorkflowStateExecuteResponse:
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
+        local_activity_input = self.local_activity_input
         state_decision: Union[Unset, Dict[str, Any]] = UNSET
         if not isinstance(self.state_decision, Unset):
             state_decision = self.state_decision.to_dict()
@@ -92,6 +95,8 @@ class WorkflowStateExecuteResponse:
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
+        if local_activity_input is not UNSET:
+            field_dict["localActivityInput"] = local_activity_input
         if state_decision is not UNSET:
             field_dict["stateDecision"] = state_decision
         if upsert_search_attributes is not UNSET:
@@ -115,6 +120,8 @@ class WorkflowStateExecuteResponse:
         from ..models.state_decision import StateDecision
 
         d = src_dict.copy()
+        local_activity_input = d.pop("localActivityInput", UNSET)
+
         _state_decision = d.pop("stateDecision", UNSET)
         state_decision: Union[Unset, StateDecision]
         if isinstance(_state_decision, Unset):
@@ -164,6 +171,7 @@ class WorkflowStateExecuteResponse:
             publish_to_inter_state_channel.append(publish_to_inter_state_channel_item)
 
         workflow_state_execute_response = cls(
+            local_activity_input=local_activity_input,
             state_decision=state_decision,
             upsert_search_attributes=upsert_search_attributes,
             upsert_data_objects=upsert_data_objects,

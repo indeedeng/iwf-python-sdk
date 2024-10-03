@@ -44,9 +44,9 @@ class RetryPolicy:
         if maximum_attempts is not UNSET:
             field_dict["maximumAttempts"] = maximum_attempts
         if maximum_attempts_duration_seconds is not UNSET:
-            field_dict[
-                "maximumAttemptsDurationSeconds"
-            ] = maximum_attempts_duration_seconds
+            field_dict["maximumAttemptsDurationSeconds"] = (
+                maximum_attempts_duration_seconds
+            )
 
         return field_dict
 

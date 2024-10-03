@@ -1,6 +1,8 @@
-from typing import Any, Dict, List, Type, TypeVar
+from typing import Any, Dict, List, Type, TypeVar, Union
 
 import attr
+
+from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="InterStateChannelCommand")
 
@@ -9,39 +11,56 @@ T = TypeVar("T", bound="InterStateChannelCommand")
 class InterStateChannelCommand:
     """
     Attributes:
-        command_id (str):
         channel_name (str):
+        command_id (Union[Unset, str]):
+        at_least (Union[Unset, int]):
+        at_most (Union[Unset, int]):
     """
 
-    command_id: str
     channel_name: str
+    command_id: Union[Unset, str] = UNSET
+    at_least: Union[Unset, int] = UNSET
+    at_most: Union[Unset, int] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        command_id = self.command_id
         channel_name = self.channel_name
+        command_id = self.command_id
+        at_least = self.at_least
+        at_most = self.at_most
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "commandId": command_id,
                 "channelName": channel_name,
             }
         )
+        if command_id is not UNSET:
+            field_dict["commandId"] = command_id
+        if at_least is not UNSET:
+            field_dict["atLeast"] = at_least
+        if at_most is not UNSET:
+            field_dict["atMost"] = at_most
 
         return field_dict
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-        command_id = d.pop("commandId")
-
         channel_name = d.pop("channelName")
 
+        command_id = d.pop("commandId", UNSET)
+
+        at_least = d.pop("atLeast", UNSET)
+
+        at_most = d.pop("atMost", UNSET)
+
         inter_state_channel_command = cls(
-            command_id=command_id,
             channel_name=channel_name,
+            command_id=command_id,
+            at_least=at_least,
+            at_most=at_most,
         )
 
         inter_state_channel_command.additional_properties = d

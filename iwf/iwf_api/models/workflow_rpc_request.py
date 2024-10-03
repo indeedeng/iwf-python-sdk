@@ -82,9 +82,9 @@ class WorkflowRpcRequest:
         if input_ is not UNSET:
             field_dict["input"] = input_
         if search_attributes_loading_policy is not UNSET:
-            field_dict[
-                "searchAttributesLoadingPolicy"
-            ] = search_attributes_loading_policy
+            field_dict["searchAttributesLoadingPolicy"] = (
+                search_attributes_loading_policy
+            )
         if data_attributes_loading_policy is not UNSET:
             field_dict["dataAttributesLoadingPolicy"] = data_attributes_loading_policy
         if timeout_seconds is not UNSET:
