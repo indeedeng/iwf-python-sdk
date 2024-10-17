@@ -42,6 +42,7 @@ class WorkflowStateOptions:
         PersistenceLoadingPolicy
     ] = None
 
+
 def _to_idl_state_options(
     skip_wait_until: bool,
     options: Any,  # TODO this type was Optional[WorkflowStateOptions],
