@@ -13,7 +13,11 @@ from iwf.iwf_api.models import (
 @dataclass
 class WorkflowStateOptions:
     state_id: Optional[str] = None
+    wait_until_api_search_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
+    execute_api_search_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
     search_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
+    wait_until_api_data_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
+    execute_api_data_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
     data_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
     wait_until_api_timeout_seconds: Optional[int] = None
     execute_api_timeout_seconds: Optional[int] = None
@@ -42,8 +46,16 @@ def _to_idl_state_options(
         return res
     assert isinstance(options, WorkflowStateOptions)
 
+    if options.wait_until_api_search_attributes_loading_policy is not None:
+        res.wait_until_api_search_attributes_loading_policy = options.wait_until_api_search_attributes_loading_policy
+    if options.execute_api_search_attributes_loading_policy is not None:
+        res.execute_api_search_attributes_loading_policy = options.execute_api_search_attributes_loading_policy
     if options.search_attributes_loading_policy is not None:
         res.search_attributes_loading_policy = options.search_attributes_loading_policy
+    if options.wait_until_api_data_attributes_loading_policy is not None:
+        res.wait_until_api_data_attributes_loading_policy = options.wait_until_api_data_attributes_loading_policy
+    if options.execute_api_data_attributes_loading_policy is not None:
+        res.execute_api_data_attributes_loading_policy = options.execute_api_data_attributes_loading_policy
     if options.data_attributes_loading_policy is not None:
         res.data_attributes_loading_policy = options.data_attributes_loading_policy
     if options.wait_until_api_failure_policy is not None:
