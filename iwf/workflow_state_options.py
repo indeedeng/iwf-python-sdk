@@ -13,32 +13,35 @@ from iwf.iwf_api.models import (
 @dataclass
 class WorkflowStateOptions:
     state_id: Optional[str] = None
-    wait_until_api_search_attributes_loading_policy: Optional[
-        PersistenceLoadingPolicy
-    ] = None
-    execute_api_search_attributes_loading_policy: Optional[
-        PersistenceLoadingPolicy
-    ] = None
+    # apply for both waitUntil and execute API
+    data_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
+    # apply for both waitUntil and execute API
     search_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
+    # below are wait_until API specific options:
+    wait_until_api_timeout_seconds: Optional[int] = None
+    wait_until_api_retry_policy: Optional[RetryPolicy] = None
+    wait_until_api_failure_policy: Optional[WaitUntilApiFailurePolicy] = None
     wait_until_api_data_attributes_loading_policy: Optional[
         PersistenceLoadingPolicy
     ] = None
-    execute_api_data_attributes_loading_policy: Optional[
+    wait_until_api_search_attributes_loading_policy: Optional[
         PersistenceLoadingPolicy
     ] = None
-    data_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
-    wait_until_api_timeout_seconds: Optional[int] = None
+    # below are execute API specific options:
     execute_api_timeout_seconds: Optional[int] = None
-    wait_until_api_retry_policy: Optional[RetryPolicy] = None
     execute_api_retry_policy: Optional[RetryPolicy] = None
-    wait_until_api_failure_policy: Optional[WaitUntilApiFailurePolicy] = None
     """
         note that the failing handling state will take the same input as the failed state
         the type is Optional[type[WorkflowState]] but there is an issue with type hint...
         TODO fix this type hint
     """
     execute_failure_handling_state: Optional[type] = None
-
+    execute_api_data_attributes_loading_policy: Optional[
+        PersistenceLoadingPolicy
+    ] = None
+    execute_api_search_attributes_loading_policy: Optional[
+        PersistenceLoadingPolicy
+    ] = None
 
 def _to_idl_state_options(
     skip_wait_until: bool,
