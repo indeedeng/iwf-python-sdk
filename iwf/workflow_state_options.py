@@ -15,7 +15,6 @@ class WorkflowStateOptions:
     state_id: Optional[str] = None
     # apply for both waitUntil and execute API
     data_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
-    # apply for both waitUntil and execute API
     search_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = None
     # below are wait_until API specific options:
     wait_until_api_timeout_seconds: Optional[int] = None
