@@ -36,6 +36,7 @@ from .worker_error_response import WorkerErrorResponse
 from .workflow_conditional_close import WorkflowConditionalClose
 from .workflow_conditional_close_type import WorkflowConditionalCloseType
 from .workflow_config import WorkflowConfig
+from .workflow_config_executing_state_id_mode import WorkflowConfigExecutingStateIdMode
 from .workflow_config_update_request import WorkflowConfigUpdateRequest
 from .workflow_dump_request import WorkflowDumpRequest
 from .workflow_dump_response import WorkflowDumpResponse
@@ -114,6 +115,7 @@ __all__ = (
     "WorkflowConditionalClose",
     "WorkflowConditionalCloseType",
     "WorkflowConfig",
+    "WorkflowConfigExecutingStateIdMode",
     "WorkflowConfigUpdateRequest",
     "WorkflowDumpRequest",
     "WorkflowDumpResponse",
