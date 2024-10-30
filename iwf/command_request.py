@@ -91,7 +91,7 @@ def _to_idl_command_request(request: CommandRequest) -> IdlCommandRequest:
         elif isinstance(t, SignalChannelCommand):
             signal_commands.append(IdlSignalCommand(t.channel_name, t.command_id))
         else:
-            raise WorkflowDefinitionError(f"unknown command {t.__class__.__name__}")
+            raise WorkflowDefinitionError(f"unknown command {t.__class__.__qualname__}")
 
     if len(timer_commands) > 0:
         req.timer_commands = timer_commands
