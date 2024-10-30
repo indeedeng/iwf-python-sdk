@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from datetime import timedelta
 from typing import Optional, Union
 
+from iwf.errors import WorkflowDefinitionError
 from iwf.iwf_api.models import CommandWaitingType
 from iwf.iwf_api.models.command_request import (
     CommandRequest as IdlCommandRequest,
@@ -19,12 +19,10 @@ class TimerCommand:
     duration_seconds: int
 
     @classmethod
-    def timer_command_by_duration(
-        cls, duration: timedelta, command_id: Optional[str] = None
-    ):
+    def by_seconds(cls, duration_seconds: int, command_id: Optional[str] = None):
         return TimerCommand(
             command_id if command_id is not None else "",
-            int(duration.total_seconds()),
+            duration_seconds,
         )
 
 
@@ -52,7 +50,7 @@ class SignalChannelCommand:
         )
 
 
-BaseCommand = Union[TimerCommand, InternalChannelCommand]
+BaseCommand = Union[TimerCommand, InternalChannelCommand, SignalChannelCommand]
 
 
 @dataclass
@@ -80,23 +78,20 @@ def _to_idl_command_request(request: CommandRequest) -> IdlCommandRequest:
         command_waiting_type=request.command_waiting_type,
     )
 
-    timer_commands = [
-        IdlTimerCommand(t.duration_seconds, t.command_id)
-        for t in request.commands
-        if isinstance(t, TimerCommand)
-    ]
-
-    internal_channel_commands = [
-        IdlInternalChannelCommand(i.channel_name, i.command_id)
-        for i in request.commands
-        if isinstance(i, InternalChannelCommand)
-    ]
-
-    signal_commands = [
-        IdlSignalCommand(i.channel_name, i.command_id)
-        for i in request.commands
-        if isinstance(i, SignalChannelCommand)
-    ]
+    timer_commands = []
+    internal_channel_commands = []
+    signal_commands = []
+    for t in request.commands:
+        if isinstance(t, TimerCommand):
+            timer_commands.append(IdlTimerCommand(t.duration_seconds, t.command_id))
+        elif isinstance(t, InternalChannelCommand):
+            internal_channel_commands.append(
+                IdlInternalChannelCommand(t.channel_name, t.command_id)
+            )
+        elif isinstance(t, SignalChannelCommand):
+            signal_commands.append(IdlSignalCommand(t.channel_name, t.command_id))
+        else:
+            raise WorkflowDefinitionError(f"unknown command {t.__class__.__name__}")
 
     if len(timer_commands) > 0:
         req.timer_commands = timer_commands

@@ -1,6 +1,5 @@
 import inspect
 import time
-from datetime import timedelta
 
 from iwf.client import Client
 from iwf.command_request import CommandRequest, TimerCommand
@@ -24,8 +23,8 @@ class WaitState(WorkflowState[int]):
         communication: Communication,
     ) -> CommandRequest:
         return CommandRequest.for_all_command_completed(
-            TimerCommand.timer_command_by_duration(timedelta(hours=input)),
-            TimerCommand.timer_command_by_duration(timedelta(seconds=input)),
+            TimerCommand.by_seconds(input * 3600),
+            TimerCommand.by_seconds(input),
         )
 
     def execute(
