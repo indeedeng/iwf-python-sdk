@@ -21,6 +21,8 @@ test_channel_name2 = "test-internal-channel-2"
 test_channel_name3 = "test-internal-channel-3"
 test_channel_name4 = "test-internal-channel-4"
 
+test_channel_name_prefix = "test-internal-channel-prefix-"
+
 
 class InitState(WorkflowState[None]):
     def execute(
@@ -46,6 +48,9 @@ class WaitAnyWithPublishState(WorkflowState[None]):
     ) -> CommandRequest:
         communication.publish_to_internal_channel(test_channel_name3, 123)
         communication.publish_to_internal_channel(test_channel_name4, "str-value")
+        communication.publish_to_internal_channel(
+            test_channel_name_prefix + "abc", "str-value-for-prefix"
+        )
         return CommandRequest.for_any_command_completed(
             InternalChannelCommand.by_name(test_channel_name1),
             InternalChannelCommand.by_name(test_channel_name2),
@@ -90,6 +95,7 @@ class WaitAllThenPublishState(WorkflowState[None]):
         return CommandRequest.for_all_command_completed(
             InternalChannelCommand.by_name(test_channel_name3),
             InternalChannelCommand.by_name(test_channel_name4),
+            InternalChannelCommand.by_name(test_channel_name_prefix + "abc"),
         )
 
     def execute(
@@ -116,6 +122,9 @@ class InternalChannelWorkflow(ObjectWorkflow):
             CommunicationMethod.internal_channel_def(test_channel_name2, type(None)),
             CommunicationMethod.internal_channel_def(test_channel_name3, int),
             CommunicationMethod.internal_channel_def(test_channel_name4, str),
+            CommunicationMethod.internal_channel_def_by_prefix(
+                test_channel_name_prefix, str
+            ),
         )
 
 

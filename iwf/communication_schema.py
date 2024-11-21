@@ -13,17 +13,24 @@ class CommunicationMethod:
     name: str
     method_type: CommunicationMethodType
     value_type: Optional[type]
+    is_prefix: bool
 
     @classmethod
     def signal_channel_def(cls, name: str, value_type: type):
         return CommunicationMethod(
-            name, CommunicationMethodType.SignalChannel, value_type
+            name, CommunicationMethodType.SignalChannel, value_type, False
         )
 
     @classmethod
     def internal_channel_def(cls, name: str, value_type: type):
         return CommunicationMethod(
-            name, CommunicationMethodType.InternalChannel, value_type
+            name, CommunicationMethodType.InternalChannel, value_type, False
+        )
+
+    @classmethod
+    def internal_channel_def_by_prefix(cls, name_prefix: str, value_type: type):
+        return CommunicationMethod(
+            name_prefix, CommunicationMethodType.InternalChannel, value_type, True
         )
 
 

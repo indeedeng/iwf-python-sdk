@@ -2,6 +2,7 @@ import typing
 from dataclasses import dataclass
 from typing import Any, Union
 
+from iwf.errors import WorkflowDefinitionError
 from iwf.iwf_api.models import (
     ChannelRequestStatus,
     CommandResults as IdlCommandResults,
@@ -57,12 +58,25 @@ def from_idl_command_results(
 
     if not isinstance(idl_results.inter_state_channel_results, Unset):
         for inter in idl_results.inter_state_channel_results:
+            val_type = internal_channel_types.get(inter.channel_name)
+            if val_type is None:
+                # fallback to assume it's prefix
+                # TODO use is_prefix to implement like Java SDK
+                for name, t in internal_channel_types.items():
+                    if inter.channel_name.startswith(name):
+                        val_type = t
+                        break
+            if val_type is None:
+                raise WorkflowDefinitionError(
+                    "internal channel is not registered :" + inter.channel_name
+                )
+
+            encoded = object_encoder.decode(inter.value, val_type)
+
             results.internal_channel_commands.append(
                 InternalChannelCommandResult(
                     inter.channel_name,
-                    object_encoder.decode(
-                        inter.value, internal_channel_types.get(inter.channel_name)
-                    ),
+                    encoded,
                     inter.request_status,
                     inter.command_id,
                 )
