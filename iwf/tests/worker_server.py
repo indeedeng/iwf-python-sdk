@@ -52,6 +52,7 @@ def handle_rpc():
 # the WebUI will be able to show you the error with stacktrace
 @_flask_app.errorhandler(Exception)
 def internal_error(exception):
+    print("encounter errors:", exception)
     return traceback.format_exc(), 500
 
 

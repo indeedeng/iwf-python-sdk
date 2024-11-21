@@ -4,8 +4,6 @@ import typing
 
 from iwf_api.models import WorkflowConditionalClose, WorkflowConditionalCloseType
 
-from iwf.errors import WorkflowDefinitionError
-
 if typing.TYPE_CHECKING:
     from iwf.registry import Registry
     from iwf.workflow_state import WorkflowState
@@ -76,14 +74,20 @@ class StateDecision:
     # ensure only the State APIs are not executed in parallel.
     @classmethod
     def force_complete_if_internal_channel_empty_or_else(
-        cls, internal_channel_name: str, output: Any = None
+        cls,
+        internal_channel_name: str,
+        workflow_complete_output: Any = None,  # if channel is empty, complete the workflow with the output
+        or_else_state: Union[
+            str, type[WorkflowState]
+        ] = None,  # if channel is NOT empty, go to this state with the state input
+        state_input: Any = None,
     ) -> StateDecision:
         return StateDecision(
-            [],
+            [StateMovement.create(or_else_state, state_input)],
             InternalConditionalClose(
                 WorkflowConditionalCloseType.FORCE_COMPLETE_ON_INTERNAL_CHANNEL_EMPTY,
                 internal_channel_name,
-                output,
+                workflow_complete_output,
             ),
         )
 
@@ -93,14 +97,20 @@ class StateDecision:
     # execution of state APIs.
     @classmethod
     def force_complete_if_signal_channel_empty_or_else(
-        cls, signal_channel_name: str, output: Any = None
+        cls,
+        signal_channel_name: str,
+        workflow_complete_output: Any = None,  # if channel is empty, complete the workflow with the output
+        or_else_state: Union[
+            str, type[WorkflowState]
+        ] = None,  # if channel is NOT empty, go to this state with the state input
+        state_input: Any = None,
     ) -> StateDecision:
         return StateDecision(
-            [],
+            [StateMovement.create(or_else_state, state_input)],
             InternalConditionalClose(
                 WorkflowConditionalCloseType.FORCE_COMPLETE_ON_SIGNAL_CHANNEL_EMPTY,
                 signal_channel_name,
-                output,
+                workflow_complete_output,
             ),
         )
 
@@ -111,23 +121,16 @@ StateDecision.dead_end = StateDecision([StateMovement.dead_end])
 def _to_idl_state_decision(
     decision: StateDecision, wf_type: str, registry: Registry, encoder: ObjectEncoder
 ) -> IdlStateDecision:
+    idl_decision = IdlStateDecision()
     if len(decision.next_states) > 0:
-        return IdlStateDecision(
-            [
-                _to_idl_state_movement(movement, wf_type, registry, encoder)
-                for movement in decision.next_states
-            ]
+        idl_decision.next_states = [
+            _to_idl_state_movement(movement, wf_type, registry, encoder)
+            for movement in decision.next_states
+        ]
+    if decision.conditional_close is not None:
+        idl_decision.conditional_close = WorkflowConditionalClose(
+            conditional_close_type=decision.conditional_close.conditional_close_type,
+            channel_name=decision.conditional_close.channel_name,
+            close_input=encoder.encode(decision.conditional_close.close_input),
         )
-    else:
-        internal_conditional_close = decision.conditional_close
-        if internal_conditional_close is None:
-            raise WorkflowDefinitionError(
-                "must have either next states or conditional close"
-            )
-
-        conditional_close = WorkflowConditionalClose(
-            conditional_close_type=internal_conditional_close.conditional_close_type,
-            channel_name=internal_conditional_close.channel_name,
-            close_input=encoder.encode(internal_conditional_close.close_input),
-        )
-        return IdlStateDecision([], conditional_close)
+    return idl_decision
