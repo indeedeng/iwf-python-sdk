@@ -51,7 +51,7 @@ class WorkerService:
     @staticmethod
     def handle_worker_error(exception: Exception):
         """
-        handle the exception/error of worker.
+        Handle the exception/error of worker so that Temporal/Cadence WebUI can show the error nicely.
         Example usage (in Flask):
             @_flask_app.errorhandler(Exception)
             def internal_error(exception):
