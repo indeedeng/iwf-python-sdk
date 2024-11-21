@@ -79,7 +79,7 @@ class StateDecision:
         workflow_complete_output: Any = None,  # if channel is empty, complete the workflow with the output
         or_else_state: Union[
             str, type[WorkflowState]
-        ] = None,  # if channel is NOT empty, go to this state with the state input
+        ] = "",  # required not empty -- if channel is NOT empty, go to this state with the state input
         state_input: Any = None,
     ) -> StateDecision:
         return StateDecision(
@@ -102,7 +102,7 @@ class StateDecision:
         workflow_complete_output: Any = None,  # if channel is empty, complete the workflow with the output
         or_else_state: Union[
             str, type[WorkflowState]
-        ] = None,  # if channel is NOT empty, go to this state with the state input
+        ] = "",  # required not empty-- if channel is NOT empty, go to this state with the state input
         state_input: Any = None,
     ) -> StateDecision:
         return StateDecision(

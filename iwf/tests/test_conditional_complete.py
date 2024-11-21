@@ -98,11 +98,15 @@ class TestConditionalComplete(unittest.TestCase):
         registry.add_workflow(wf)
         cls.client = Client(registry)
 
-    def test_signal_conditional_complete(self):
-        self.do_test_conditional_workflow(True)
-
-    def do_test_conditional_workflow(self, use_signal: bool):
+    def test_internal_channel_conditional_complete(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
+        self.do_test_conditional_workflow(wf_id, False)
+
+    def test_signal_channel_conditional_complete(self):
+        wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
+        self.do_test_conditional_workflow(wf_id, True)
+
+    def do_test_conditional_workflow(self, wf_id: str, use_signal: bool):
         self.client.start_workflow(ConditionalCompleteWorkflow, wf_id, 10, use_signal)
 
         for x in range(3):
