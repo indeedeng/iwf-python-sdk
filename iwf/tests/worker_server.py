@@ -1,4 +1,3 @@
-import traceback
 from threading import Thread
 
 from flask import Flask, request
@@ -13,6 +12,8 @@ from iwf.worker_service import (
     WorkerService,
 )
 
+# NOTE: set this to true when debugging(using breakpoints)
+# so that it keep the thread running so that we can see the error in history
 debug_mode: bool = False
 
 registry = Registry()
@@ -52,8 +53,7 @@ def handle_rpc():
 # the WebUI will be able to show you the error with stacktrace
 @_flask_app.errorhandler(Exception)
 def internal_error(exception):
-    print("encounter errors:", exception)
-    return traceback.format_exc(), 500
+    return _worker_service.handle_worker_error(exception), 500
 
 
 _webApp = Thread(target=_flask_app.run, args=("0.0.0.0", 8802))
