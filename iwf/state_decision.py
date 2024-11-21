@@ -2,7 +2,7 @@ from __future__ import annotations  # <-- Additional import.
 
 import typing
 
-from iwf_api.models import WorkflowConditionalClose, WorkflowConditionalCloseType
+from iwf.iwf_api.models import WorkflowConditionalClose, WorkflowConditionalCloseType
 
 if typing.TYPE_CHECKING:
     from iwf.registry import Registry
