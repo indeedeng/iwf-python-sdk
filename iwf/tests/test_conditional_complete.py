@@ -41,7 +41,7 @@ class WaitState(WorkflowState[bool]):
             )
         else:
             return CommandRequest.for_all_command_completed(
-                InternalChannelCommand.by_name(test_signal_channel),
+                InternalChannelCommand.by_name(test_internal_channel),
             )
 
     def execute(
