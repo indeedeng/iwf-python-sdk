@@ -4,7 +4,7 @@
 Python SDK for [iWF workflow engine](https://github.com/indeedeng/iwf)
 
 ```
-pip install iwf-python-sdk==0.1.2
+pip install iwf-python-sdk==0.2.0
 ```
 
 See [samples](https://github.com/indeedeng/iwf-python-samples) for use case examples.
