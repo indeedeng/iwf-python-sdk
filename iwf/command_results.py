@@ -68,7 +68,7 @@ def from_idl_command_results(
                         break
             if val_type is None:
                 raise WorkflowDefinitionError(
-                    "internal channel is not registered :" + inter.channel_name
+                    "internal channel is not registered: " + inter.channel_name
                 )
 
             encoded = object_encoder.decode(inter.value, val_type)
