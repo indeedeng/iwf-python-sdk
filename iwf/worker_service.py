@@ -1,3 +1,4 @@
+import traceback
 import typing
 from dataclasses import dataclass
 
@@ -46,6 +47,21 @@ class WorkerService:
     ):
         self._registry = registry
         self._options = options
+
+    @staticmethod
+    def handle_worker_error(exception: Exception):
+        """
+        Handle the exception/error of worker so that Temporal/Cadence WebUI can show the error nicely.
+        Example usage (in Flask):
+            @_flask_app.errorhandler(Exception)
+            def internal_error(exception):
+                return _worker_service.handle_worker_error(exception), 500
+        """
+        stacktrace = traceback.format_exc()
+        index = stacktrace.index("iwf-python-sdk/iwf/worker_service.py")
+        return "WorkerExecutionError: {0}; StackTrace:{1}".format(
+            exception, stacktrace[index:]
+        )
 
     def handle_workflow_worker_rpc(
         self,
