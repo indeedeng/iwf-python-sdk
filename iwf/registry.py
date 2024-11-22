@@ -87,6 +87,8 @@ class Registry:
         for method in wf.get_communication_schema().communication_methods:
             if method.method_type == CommunicationMethodType.InternalChannel:
                 types[method.name] = method.value_type
+                # TODO use is_prefix to implement like Java SDK
+        #
         self._internal_channel_type_store[wf_type] = types
 
     def _register_signal_channels(self, wf: ObjectWorkflow):

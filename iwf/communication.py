@@ -31,12 +31,18 @@ class Communication:
         self._state_movements.append(movement)
 
     def publish_to_internal_channel(self, channel_name: str, value: Any = None):
-        if channel_name not in self._type_store:
+        registered_type = self._type_store.get(channel_name)
+
+        if registered_type is None:
+            for name, t in self._type_store.items():
+                if channel_name.startswith(name):
+                    registered_type = t
+
+        if registered_type is None:
             raise WorkflowDefinitionError(
                 f"InternalChannel channel_name is not defined {channel_name}"
             )
 
-        registered_type = self._type_store.get(channel_name)
         if (
             value is not None
             and registered_type is not None
