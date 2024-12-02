@@ -8,6 +8,7 @@ from ..types import UNSET, Unset
 if TYPE_CHECKING:
     from ..models.key_value import KeyValue
     from ..models.search_attribute import SearchAttribute
+    from ..models.workflow_already_started_options import WorkflowAlreadyStartedOptions
     from ..models.workflow_config import WorkflowConfig
     from ..models.workflow_retry_policy import WorkflowRetryPolicy
 
@@ -27,6 +28,7 @@ class WorkflowStartOptions:
         data_attributes (Union[Unset, List['KeyValue']]):
         workflow_config_override (Union[Unset, WorkflowConfig]):
         use_memo_for_data_attributes (Union[Unset, bool]):
+        workflow_already_started_options (Union[Unset, WorkflowAlreadyStartedOptions]):
     """
 
     id_reuse_policy: Union[Unset, IDReusePolicy] = UNSET
@@ -37,6 +39,9 @@ class WorkflowStartOptions:
     data_attributes: Union[Unset, List["KeyValue"]] = UNSET
     workflow_config_override: Union[Unset, "WorkflowConfig"] = UNSET
     use_memo_for_data_attributes: Union[Unset, bool] = UNSET
+    workflow_already_started_options: Union[Unset, "WorkflowAlreadyStartedOptions"] = (
+        UNSET
+    )
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -71,6 +76,11 @@ class WorkflowStartOptions:
             workflow_config_override = self.workflow_config_override.to_dict()
 
         use_memo_for_data_attributes = self.use_memo_for_data_attributes
+        workflow_already_started_options: Union[Unset, Dict[str, Any]] = UNSET
+        if not isinstance(self.workflow_already_started_options, Unset):
+            workflow_already_started_options = (
+                self.workflow_already_started_options.to_dict()
+            )
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -91,6 +101,10 @@ class WorkflowStartOptions:
             field_dict["workflowConfigOverride"] = workflow_config_override
         if use_memo_for_data_attributes is not UNSET:
             field_dict["useMemoForDataAttributes"] = use_memo_for_data_attributes
+        if workflow_already_started_options is not UNSET:
+            field_dict["workflowAlreadyStartedOptions"] = (
+                workflow_already_started_options
+            )
 
         return field_dict
 
@@ -98,6 +112,9 @@ class WorkflowStartOptions:
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         from ..models.key_value import KeyValue
         from ..models.search_attribute import SearchAttribute
+        from ..models.workflow_already_started_options import (
+            WorkflowAlreadyStartedOptions,
+        )
         from ..models.workflow_config import WorkflowConfig
         from ..models.workflow_retry_policy import WorkflowRetryPolicy
 
@@ -147,6 +164,17 @@ class WorkflowStartOptions:
 
         use_memo_for_data_attributes = d.pop("useMemoForDataAttributes", UNSET)
 
+        _workflow_already_started_options = d.pop(
+            "workflowAlreadyStartedOptions", UNSET
+        )
+        workflow_already_started_options: Union[Unset, WorkflowAlreadyStartedOptions]
+        if isinstance(_workflow_already_started_options, Unset):
+            workflow_already_started_options = UNSET
+        else:
+            workflow_already_started_options = WorkflowAlreadyStartedOptions.from_dict(
+                _workflow_already_started_options
+            )
+
         workflow_start_options = cls(
             id_reuse_policy=id_reuse_policy,
             cron_schedule=cron_schedule,
@@ -156,6 +184,7 @@ class WorkflowStartOptions:
             data_attributes=data_attributes,
             workflow_config_override=workflow_config_override,
             use_memo_for_data_attributes=use_memo_for_data_attributes,
+            workflow_already_started_options=workflow_already_started_options,
         )
 
         workflow_start_options.additional_properties = d

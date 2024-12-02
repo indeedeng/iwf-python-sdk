@@ -6,12 +6,14 @@ from iwf.client import Client
 from iwf.command_request import CommandRequest
 from iwf.command_results import CommandResults
 from iwf.communication import Communication
+from iwf.iwf_api.models import WorkflowConfig
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
 from iwf.tests.worker_server import registry
 from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
+from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import T, WorkflowState
 
 
@@ -65,6 +67,7 @@ client = Client(registry)
 def test_basic_workflow():
     wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-    client.start_workflow(BasicWorkflow, wf_id, 100, "input")
+    # TODO: Add an override and verify with WebUI
+    client.start_workflow(BasicWorkflow, wf_id, 100, "input", WorkflowOptions(workflow_config_override=WorkflowConfig()))
     res = client.get_simple_workflow_result_with_wait(wf_id, str)
     assert res == "done"

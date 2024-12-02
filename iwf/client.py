@@ -70,6 +70,12 @@ class Client:
             unreg_opts.workflow_start_delay_seconds = (
                 options.workflow_start_delay_seconds
             )
+            unreg_opts.workflow_already_started_options = (
+                options.workflow_already_started_options
+            )
+            unreg_opts.initial_data_attributes = options.initial_data_attributes
+
+            unreg_opts.workflow_config_override = options.workflow_config_override
 
             # TODO: set initial search attributes here
 

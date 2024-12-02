@@ -17,6 +17,7 @@ from iwf.workflow_state import T, WorkflowState
 test_da_1 = "test_da_1"
 test_da_2 = "test_da_2"
 
+# TODO: Add a test for initial data attributes
 
 class DataAttributeRWState(WorkflowState[None]):
     def wait_until(

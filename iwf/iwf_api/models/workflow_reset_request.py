@@ -21,6 +21,7 @@ class WorkflowResetRequest:
         state_id (Union[Unset, str]):
         state_execution_id (Union[Unset, str]):
         skip_signal_reapply (Union[Unset, bool]):
+        skip_update_reapply (Union[Unset, bool]):
     """
 
     workflow_id: str
@@ -32,6 +33,7 @@ class WorkflowResetRequest:
     state_id: Union[Unset, str] = UNSET
     state_execution_id: Union[Unset, str] = UNSET
     skip_signal_reapply: Union[Unset, bool] = UNSET
+    skip_update_reapply: Union[Unset, bool] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -45,6 +47,7 @@ class WorkflowResetRequest:
         state_id = self.state_id
         state_execution_id = self.state_execution_id
         skip_signal_reapply = self.skip_signal_reapply
+        skip_update_reapply = self.skip_update_reapply
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -68,6 +71,8 @@ class WorkflowResetRequest:
             field_dict["stateExecutionId"] = state_execution_id
         if skip_signal_reapply is not UNSET:
             field_dict["skipSignalReapply"] = skip_signal_reapply
+        if skip_update_reapply is not UNSET:
+            field_dict["skipUpdateReapply"] = skip_update_reapply
 
         return field_dict
 
@@ -92,6 +97,8 @@ class WorkflowResetRequest:
 
         skip_signal_reapply = d.pop("skipSignalReapply", UNSET)
 
+        skip_update_reapply = d.pop("skipUpdateReapply", UNSET)
+
         workflow_reset_request = cls(
             workflow_id=workflow_id,
             reset_type=reset_type,
@@ -102,6 +109,7 @@ class WorkflowResetRequest:
             state_id=state_id,
             state_execution_id=state_execution_id,
             skip_signal_reapply=skip_signal_reapply,
+            skip_update_reapply=skip_update_reapply,
         )
 
         workflow_reset_request.additional_properties = d

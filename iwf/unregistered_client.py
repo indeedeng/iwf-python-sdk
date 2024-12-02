@@ -51,7 +51,7 @@ from iwf.iwf_api.models import (
     WorkflowStartRequest,
     WorkflowStateOptions,
     WorkflowStatus,
-    WorkflowStopRequest,
+    WorkflowStopRequest, WorkflowAlreadyStartedOptions, KeyValue,
 )
 from iwf.iwf_api.types import Response
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
@@ -65,8 +65,9 @@ class UnregisteredWorkflowOptions:
     workflow_start_delay_seconds: Optional[int] = None
     workflow_retry_policy: Optional[WorkflowRetryPolicy] = None
     start_state_options: Optional[WorkflowStateOptions] = None
-    initial_search_attribute: Optional[List[SearchAttribute]] = None
     workflow_config_override: Optional[WorkflowConfig] = None
+    workflow_already_started_options: Optional[WorkflowAlreadyStartedOptions] = None
+    initial_data_attributes: Optional[dict[str, Any]] = None
 
 
 T = TypeVar("T")
@@ -142,6 +143,20 @@ class UnregisteredClient:
                 start_options.workflow_config_override = (
                     options.workflow_config_override
                 )
+
+            if options.workflow_already_started_options:
+                    start_options.workflow_already_started_options = (
+                        options.workflow_already_started_options
+                    )
+
+            if options.initial_data_attributes:
+                das = []
+                for key, value in options.initial_data_attributes.items():
+                    das.append(
+                        KeyValue(key, self.client_options.object_encoder.encode(value))
+                    )
+                start_options.data_attributes = das
+
             request.workflow_start_options = start_options
 
         response = post_api_v1_workflow_start.sync_detailed(

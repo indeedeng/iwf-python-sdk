@@ -10,6 +10,7 @@ from .encoded_object import EncodedObject
 from .error_response import ErrorResponse
 from .error_sub_status import ErrorSubStatus
 from .execute_api_failure_policy import ExecuteApiFailurePolicy
+from .executing_state_id_mode import ExecutingStateIdMode
 from .health_info import HealthInfo
 from .id_reuse_policy import IDReusePolicy
 from .inter_state_channel_command import InterStateChannelCommand
@@ -33,10 +34,10 @@ from .timer_status import TimerStatus
 from .trigger_continue_as_new_request import TriggerContinueAsNewRequest
 from .wait_until_api_failure_policy import WaitUntilApiFailurePolicy
 from .worker_error_response import WorkerErrorResponse
+from .workflow_already_started_options import WorkflowAlreadyStartedOptions
 from .workflow_conditional_close import WorkflowConditionalClose
 from .workflow_conditional_close_type import WorkflowConditionalCloseType
 from .workflow_config import WorkflowConfig
-from .workflow_config_executing_state_id_mode import WorkflowConfigExecutingStateIdMode
 from .workflow_config_update_request import WorkflowConfigUpdateRequest
 from .workflow_dump_request import WorkflowDumpRequest
 from .workflow_dump_response import WorkflowDumpResponse
@@ -56,6 +57,8 @@ from .workflow_rpc_response import WorkflowRpcResponse
 from .workflow_search_request import WorkflowSearchRequest
 from .workflow_search_response import WorkflowSearchResponse
 from .workflow_search_response_entry import WorkflowSearchResponseEntry
+from .workflow_set_data_objects_request import WorkflowSetDataObjectsRequest
+from .workflow_set_search_attributes_request import WorkflowSetSearchAttributesRequest
 from .workflow_signal_request import WorkflowSignalRequest
 from .workflow_skip_timer_request import WorkflowSkipTimerRequest
 from .workflow_start_options import WorkflowStartOptions
@@ -89,6 +92,7 @@ __all__ = (
     "ErrorResponse",
     "ErrorSubStatus",
     "ExecuteApiFailurePolicy",
+    "ExecutingStateIdMode",
     "HealthInfo",
     "IDReusePolicy",
     "InterStateChannelCommand",
@@ -112,10 +116,10 @@ __all__ = (
     "TriggerContinueAsNewRequest",
     "WaitUntilApiFailurePolicy",
     "WorkerErrorResponse",
+    "WorkflowAlreadyStartedOptions",
     "WorkflowConditionalClose",
     "WorkflowConditionalCloseType",
     "WorkflowConfig",
-    "WorkflowConfigExecutingStateIdMode",
     "WorkflowConfigUpdateRequest",
     "WorkflowDumpRequest",
     "WorkflowDumpResponse",
@@ -135,6 +139,8 @@ __all__ = (
     "WorkflowSearchRequest",
     "WorkflowSearchResponse",
     "WorkflowSearchResponseEntry",
+    "WorkflowSetDataObjectsRequest",
+    "WorkflowSetSearchAttributesRequest",
     "WorkflowSignalRequest",
     "WorkflowSkipTimerRequest",
     "WorkflowStartOptions",
