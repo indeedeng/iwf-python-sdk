@@ -1,4 +1,5 @@
 import inspect
+import warnings
 from typing import Any, Callable, Optional, Type, TypeVar, Union
 
 from iwf.client_options import ClientOptions
@@ -88,7 +89,7 @@ class Client:
             wf_type, wf_id, starting_state_id, timeout_seconds, input, unreg_opts
         )
 
-    def get_simple_workflow_result_with_wait(
+    def wait_for_workflow_completion(
         self,
         workflow_id: str,
         type_hint: Optional[Type[T]] = None,
@@ -108,6 +109,16 @@ class Client:
             ClientSideError for non-retryable error
             ServerSideError for server error
         """
+        return self._unregistered_client.get_simple_workflow_result_with_wait(
+            workflow_id, "", type_hint
+        )
+
+    @warnings.deprecated("use wait_for_workflow_completion instead")
+    def get_simple_workflow_result_with_wait(
+        self,
+        workflow_id: str,
+        type_hint: Optional[Type[T]] = None,
+    ) -> Optional[T]:
         return self._unregistered_client.get_simple_workflow_result_with_wait(
             workflow_id, "", type_hint
         )
