@@ -34,12 +34,12 @@ default_worker_options = WorkerOptions(ObjectEncoder.default)
 
 
 class WorkerService:
-    api_path_workflow_state_wait_until: typing.ClassVar[
-        str
-    ] = "/api/v1/workflowState/start"
-    api_path_workflow_state_execute: typing.ClassVar[
-        str
-    ] = "/api/v1/workflowState/decide"
+    api_path_workflow_state_wait_until: typing.ClassVar[str] = (
+        "/api/v1/workflowState/start"
+    )
+    api_path_workflow_state_execute: typing.ClassVar[str] = (
+        "/api/v1/workflowState/decide"
+    )
     api_path_workflow_worker_rpc: typing.ClassVar[str] = "/api/v1/workflowWorker/rpc"
 
     def __init__(

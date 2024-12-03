@@ -68,6 +68,12 @@ def test_basic_workflow():
     wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
     # TODO: Add an override and verify with WebUI
-    client.start_workflow(BasicWorkflow, wf_id, 100, "input", WorkflowOptions(workflow_config_override=WorkflowConfig()))
+    client.start_workflow(
+        BasicWorkflow,
+        wf_id,
+        100,
+        "input",
+        WorkflowOptions(workflow_config_override=WorkflowConfig()),
+    )
     res = client.get_simple_workflow_result_with_wait(wf_id, str)
     assert res == "done"

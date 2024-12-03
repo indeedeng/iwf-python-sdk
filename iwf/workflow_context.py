@@ -26,5 +26,7 @@ def _from_idl_context(idl_context: Context) -> WorkflowContext:
             idl_context.first_attempt_timestamp,
         ),
         attempt=unset_to_none(idl_context.attempt),
-        child_workflow_request_id=unset_to_none(idl_context.workflow_run_id)+ "-" + unset_to_none(idl_context.state_execution_id)
+        child_workflow_request_id=unset_to_none(idl_context.workflow_run_id)
+        + "-"
+        + unset_to_none(idl_context.state_execution_id),
     )

@@ -31,7 +31,6 @@ from iwf.iwf_api.models import (
     ErrorResponse,
     IDReusePolicy,
     PersistenceLoadingPolicy,
-    SearchAttribute,
     SearchAttributeKeyAndType,
     WorkflowConfig,
     WorkflowGetDataObjectsRequest,
@@ -51,7 +50,9 @@ from iwf.iwf_api.models import (
     WorkflowStartRequest,
     WorkflowStateOptions,
     WorkflowStatus,
-    WorkflowStopRequest, WorkflowAlreadyStartedOptions, KeyValue,
+    WorkflowStopRequest,
+    WorkflowAlreadyStartedOptions,
+    KeyValue,
 )
 from iwf.iwf_api.types import Response
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
@@ -145,9 +146,9 @@ class UnregisteredClient:
                 )
 
             if options.workflow_already_started_options:
-                    start_options.workflow_already_started_options = (
-                        options.workflow_already_started_options
-                    )
+                start_options.workflow_already_started_options = (
+                    options.workflow_already_started_options
+                )
 
             if options.initial_data_attributes:
                 das = []

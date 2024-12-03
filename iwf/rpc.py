@@ -13,9 +13,9 @@ class RPCInfo:
     timeout_seconds: int
     input_type: Optional[type] = None
     data_attribute_loading_policy: Optional[PersistenceLoadingPolicy] = None
-    params_order: Optional[
-        list
-    ] = None  # store this so that the rpc can be invoked with correct parameters
+    params_order: Optional[list] = (
+        None  # store this so that the rpc can be invoked with correct parameters
+    )
 
 
 rpc_definition_err = WorkflowDefinitionError(

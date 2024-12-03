@@ -1,8 +1,12 @@
 from dataclasses import dataclass
 from typing import Any, Optional
 
-from iwf.iwf_api.models import (IDReusePolicy, WorkflowRetryPolicy,
-                                WorkflowAlreadyStartedOptions, WorkflowConfig)
+from iwf.iwf_api.models import (
+    IDReusePolicy,
+    WorkflowRetryPolicy,
+    WorkflowAlreadyStartedOptions,
+    WorkflowConfig,
+)
 
 
 @dataclass

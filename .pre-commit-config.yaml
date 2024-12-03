@@ -4,7 +4,7 @@ exclude: ^iwf/iwf_api/
 
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.4.0
+  rev: v5.0.0
   hooks:
   - id: check-ast
   - id: trailing-whitespace
@@ -12,7 +12,7 @@ repos:
   - id: end-of-file-fixer
 
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: v2.1.0
+  rev: v2.14.0
   hooks:
   - id: pretty-format-yaml
     args:
@@ -21,19 +21,19 @@ repos:
     - --indent=2
 
 - repo: https://github.com/hadialqattan/pycln
-  rev: v1.1.0
+  rev: v2.4.0
   hooks:
   - id: pycln
     args: ["-a"]
 
 - repo: https://github.com/ambv/black
-  rev: 23.7.0
+  rev: 24.10.0
   hooks:
   - id: black
     language_version: python3
 
 - repo: https://github.com/charliermarsh/ruff-pre-commit
-  rev: "v0.0.267"
+  rev: "v0.8.1"
   hooks:
   - id: ruff
 
