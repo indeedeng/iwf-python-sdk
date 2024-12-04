@@ -4,7 +4,7 @@ import unittest
 from typing import Union
 
 from iwf.client import Client
-from iwf.command_request import CommandRequest
+from iwf.command_request import CommandRequest, TimerCommand
 from iwf.command_results import CommandResults
 from iwf.communication import Communication
 from iwf.errors import WorkflowAlreadyStartedError
@@ -29,7 +29,9 @@ class State1(WorkflowState[Union[int, str]]):
     ) -> CommandRequest:
         if input != "input":
             raise RuntimeError("input is incorrect")
-        return CommandRequest.empty()
+        return CommandRequest.for_all_command_completed(
+            TimerCommand.by_seconds(1),
+        )
 
     def execute(
         self,
