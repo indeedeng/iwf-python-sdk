@@ -2,9 +2,7 @@ from typing import Any, Dict, List, Type, TypeVar, Union
 
 import attr
 
-from ..models.workflow_config_executing_state_id_mode import (
-    WorkflowConfigExecutingStateIdMode,
-)
+from ..models.executing_state_id_mode import ExecutingStateIdMode
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="WorkflowConfig")
@@ -14,22 +12,19 @@ T = TypeVar("T", bound="WorkflowConfig")
 class WorkflowConfig:
     """
     Attributes:
-        disable_system_search_attribute (Union[Unset, bool]):
-        executing_state_id_mode (Union[Unset, WorkflowConfigExecutingStateIdMode]):
+        executing_state_id_mode (Union[Unset, ExecutingStateIdMode]):
         continue_as_new_threshold (Union[Unset, int]):
         continue_as_new_page_size_in_bytes (Union[Unset, int]):
         optimize_activity (Union[Unset, bool]):
     """
 
-    disable_system_search_attribute: Union[Unset, bool] = UNSET
-    executing_state_id_mode: Union[Unset, WorkflowConfigExecutingStateIdMode] = UNSET
+    executing_state_id_mode: Union[Unset, ExecutingStateIdMode] = UNSET
     continue_as_new_threshold: Union[Unset, int] = UNSET
     continue_as_new_page_size_in_bytes: Union[Unset, int] = UNSET
     optimize_activity: Union[Unset, bool] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
-        disable_system_search_attribute = self.disable_system_search_attribute
         executing_state_id_mode: Union[Unset, str] = UNSET
         if not isinstance(self.executing_state_id_mode, Unset):
             executing_state_id_mode = self.executing_state_id_mode.value
@@ -41,8 +36,6 @@ class WorkflowConfig:
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
-        if disable_system_search_attribute is not UNSET:
-            field_dict["disableSystemSearchAttribute"] = disable_system_search_attribute
         if executing_state_id_mode is not UNSET:
             field_dict["executingStateIdMode"] = executing_state_id_mode
         if continue_as_new_threshold is not UNSET:
@@ -59,16 +52,12 @@ class WorkflowConfig:
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
-        disable_system_search_attribute = d.pop("disableSystemSearchAttribute", UNSET)
-
         _executing_state_id_mode = d.pop("executingStateIdMode", UNSET)
-        executing_state_id_mode: Union[Unset, WorkflowConfigExecutingStateIdMode]
+        executing_state_id_mode: Union[Unset, ExecutingStateIdMode]
         if isinstance(_executing_state_id_mode, Unset):
             executing_state_id_mode = UNSET
         else:
-            executing_state_id_mode = WorkflowConfigExecutingStateIdMode(
-                _executing_state_id_mode
-            )
+            executing_state_id_mode = ExecutingStateIdMode(_executing_state_id_mode)
 
         continue_as_new_threshold = d.pop("continueAsNewThreshold", UNSET)
 
@@ -79,7 +68,6 @@ class WorkflowConfig:
         optimize_activity = d.pop("optimizeActivity", UNSET)
 
         workflow_config = cls(
-            disable_system_search_attribute=disable_system_search_attribute,
             executing_state_id_mode=executing_state_id_mode,
             continue_as_new_threshold=continue_as_new_threshold,
             continue_as_new_page_size_in_bytes=continue_as_new_page_size_in_bytes,

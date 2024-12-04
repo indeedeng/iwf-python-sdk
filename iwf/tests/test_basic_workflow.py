@@ -1,17 +1,21 @@
 import inspect
 import time
+import unittest
 from typing import Union
 
 from iwf.client import Client
-from iwf.command_request import CommandRequest
+from iwf.command_request import CommandRequest, TimerCommand
 from iwf.command_results import CommandResults
 from iwf.communication import Communication
+from iwf.errors import WorkflowAlreadyStartedError
+from iwf.iwf_api.models import WorkflowAlreadyStartedOptions
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
 from iwf.tests.worker_server import registry
 from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
+from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import T, WorkflowState
 
 
@@ -25,7 +29,9 @@ class State1(WorkflowState[Union[int, str]]):
     ) -> CommandRequest:
         if input != "input":
             raise RuntimeError("input is incorrect")
-        return CommandRequest.empty()
+        return CommandRequest.for_all_command_completed(
+            TimerCommand.by_seconds(1),
+        )
 
     def execute(
         self,
@@ -62,9 +68,39 @@ registry.add_workflow(hello_wf)
 client = Client(registry)
 
 
-def test_basic_workflow():
-    wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
+class TestWorkflowErrors(unittest.TestCase):
+    def test_basic_workflow(self):
+        original_request_id = "1"
+        later_request_id = "2"
 
-    client.start_workflow(BasicWorkflow, wf_id, 100, "input")
-    res = client.get_simple_workflow_result_with_wait(wf_id, str)
-    assert res == "done"
+        wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
+
+        workflow_already_started_options_1 = WorkflowAlreadyStartedOptions(
+            ignore_already_started_error=True
+        )
+        workflow_already_started_options_1.request_id = original_request_id
+
+        start_options_1 = WorkflowOptions()
+        start_options_1.workflow_already_started_options = (
+            workflow_already_started_options_1
+        )
+
+        client.start_workflow(BasicWorkflow, wf_id, 100, "input", start_options_1)
+
+        client.start_workflow(BasicWorkflow, wf_id, 100, "input", start_options_1)
+
+        workflow_already_started_options_2 = WorkflowAlreadyStartedOptions(
+            ignore_already_started_error=True
+        )
+        workflow_already_started_options_2.request_id = later_request_id
+
+        start_options_2 = WorkflowOptions()
+        start_options_2.workflow_already_started_option = (
+            workflow_already_started_options_2
+        )
+
+        with self.assertRaises(WorkflowAlreadyStartedError):
+            client.start_workflow(BasicWorkflow, wf_id, 100, "input", start_options_2)
+
+        res = client.get_simple_workflow_result_with_wait(wf_id, str)
+        assert res == "done"

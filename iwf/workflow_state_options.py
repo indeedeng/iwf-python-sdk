@@ -35,12 +35,12 @@ class WorkflowStateOptions:
         TODO fix this type hint
     """
     execute_failure_handling_state: Optional[type] = None
-    execute_api_data_attributes_loading_policy: Optional[
-        PersistenceLoadingPolicy
-    ] = None
-    execute_api_search_attributes_loading_policy: Optional[
-        PersistenceLoadingPolicy
-    ] = None
+    execute_api_data_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = (
+        None
+    )
+    execute_api_search_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = (
+        None
+    )
 
 
 def _to_idl_state_options(
