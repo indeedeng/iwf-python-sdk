@@ -103,5 +103,7 @@ class TestSignal(unittest.TestCase):
         self.client.signal_workflow(wf_id, test_idle_channel_none)
         self.client.signal_workflow(wf_id, test_idle_channel_none)
         self.client.signal_workflow(wf_id, test_idle_channel_none)
-        res = self.client.invoke_rpc(wf_id, WaitSignalWorkflow.get_idle_signal_channel_size)
+        res = self.client.invoke_rpc(
+            wf_id, WaitSignalWorkflow.get_idle_signal_channel_size
+        )
         assert res == 3
