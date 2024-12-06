@@ -19,6 +19,7 @@ from iwf.workflow_state import T, WorkflowState
 
 test_data_attribute = "test-1"
 channel_name = "test-2"
+idle_channel_name = "test-3"
 
 
 class WaitState(WorkflowState[None]):
@@ -64,7 +65,8 @@ class RPCWorkflow(ObjectWorkflow):
 
     def get_communication_schema(self) -> CommunicationSchema:
         return CommunicationSchema.create(
-            CommunicationMethod.internal_channel_def(channel_name, type(None))
+            CommunicationMethod.internal_channel_def(channel_name, type(None)),
+            CommunicationMethod.internal_channel_def(idle_channel_name, str),
         )
 
     def get_workflow_states(self) -> StateSchema:
@@ -95,6 +97,11 @@ class RPCWorkflow(ObjectWorkflow):
     def test_rpc_publish_channel(self, com: Communication):
         com.publish_to_internal_channel(channel_name)
 
+    @rpc()
+    def test_rpc_publish_to_idle_channel(self, com: Communication, data: str):
+        com.publish_to_internal_channel(idle_channel_name, data)
+        return com.get_internal_channel_size(idle_channel_name)
+
 
 class TestRPCs(unittest.TestCase):
     @classmethod
@@ -121,6 +128,18 @@ class TestRPCs(unittest.TestCase):
         self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_trigger_state, 200)
         res = self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_persistence_read)
         assert res == 200
+
+        res1 = self.client.invoke_rpc(
+            wf_id, RPCWorkflow.test_rpc_publish_to_idle_channel, "input-1"
+        )
+        # Channel Size should be 1
+        assert res1 == 1
+
+        res2 = self.client.invoke_rpc(
+            wf_id, RPCWorkflow.test_rpc_publish_to_idle_channel, "input-2"
+        )
+        # Channel Size should be 2
+        assert res2 == 2
 
         self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_publish_channel)
         result = self.client.get_simple_workflow_result_with_wait(wf_id, str)

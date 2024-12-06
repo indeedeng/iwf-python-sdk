@@ -99,10 +99,12 @@ git submodule update --remote --merge
 This project uses [openapi-python-client](https://github.com/openapi-generators/openapi-python-client) to generate an API client from the IDL. To update the generated client:
 
 ```bash
+mkdir iwf/iwf_api/iwf_api
 cd iwf && poetry run openapi-python-client update --path ../iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yaml
+cd .. && cp -R iwf/iwf_api/iwf_api/* iwf/iwf_api && rm -R iwf/iwf_api/iwf_api && poetry update
 ```
 
-Then run `cd .. && cp -R iwf/iwf_api/iwf_api/* iwf/iwf_api && rm -R iwf/iwf_api/iwf_api && poetry update` to
+The last command will:
 * Fix the api package path
 * Update the local path dependency.
 #### Linting
