@@ -1,5 +1,6 @@
 """ Contains all the data models used in inputs/outputs """
 
+from .channel_info import ChannelInfo
 from .channel_request_status import ChannelRequestStatus
 from .command_combination import CommandCombination
 from .command_request import CommandRequest
@@ -79,9 +80,16 @@ from .workflow_wait_for_state_completion_response import (
     WorkflowWaitForStateCompletionResponse,
 )
 from .workflow_worker_rpc_request import WorkflowWorkerRpcRequest
+from .workflow_worker_rpc_request_internal_channel_infos import (
+    WorkflowWorkerRpcRequestInternalChannelInfos,
+)
+from .workflow_worker_rpc_request_signal_channel_infos import (
+    WorkflowWorkerRpcRequestSignalChannelInfos,
+)
 from .workflow_worker_rpc_response import WorkflowWorkerRpcResponse
 
 __all__ = (
+    "ChannelInfo",
     "ChannelRequestStatus",
     "CommandCombination",
     "CommandRequest",
@@ -157,5 +165,7 @@ __all__ = (
     "WorkflowWaitForStateCompletionRequest",
     "WorkflowWaitForStateCompletionResponse",
     "WorkflowWorkerRpcRequest",
+    "WorkflowWorkerRpcRequestInternalChannelInfos",
+    "WorkflowWorkerRpcRequestSignalChannelInfos",
     "WorkflowWorkerRpcResponse",
 )
