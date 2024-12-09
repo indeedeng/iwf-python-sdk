@@ -12,7 +12,8 @@ from iwf.state_movement import StateMovement
 
 
 class Communication:
-    _type_store: dict[str, Optional[type]]
+    _internal_channel_type_store: dict[str, Optional[type]]
+    _signal_channel_type_store: dict[str, Optional[type]]
     _object_encoder: ObjectEncoder
     _to_publish_internal_channel: dict[str, list[EncodedObject]]
     _state_movements: list[StateMovement]
@@ -21,13 +22,15 @@ class Communication:
 
     def __init__(
         self,
-        type_store: dict[str, Optional[type]],
+        internal_channel_type_store: dict[str, Optional[type]],
+        signal_channel_type_store: dict[str, Optional[type]],
         object_encoder: ObjectEncoder,
         internal_channel_infos: Optional[WorkflowWorkerRpcRequestInternalChannelInfos],
         signal_channel_infos: Optional[WorkflowWorkerRpcRequestSignalChannelInfos],
     ):
         self._object_encoder = object_encoder
-        self._type_store = type_store
+        self._internal_channel_type_store = internal_channel_type_store
+        self._signal_channel_type_store = signal_channel_type_store
         self._to_publish_internal_channel = {}
         self._state_movements = []
         self._internal_channel_infos = internal_channel_infos
@@ -44,10 +47,10 @@ class Communication:
         self._state_movements.append(movement)
 
     def publish_to_internal_channel(self, channel_name: str, value: Any = None):
-        registered_type = self._type_store.get(channel_name)
+        registered_type = self._internal_channel_type_store.get(channel_name)
 
         if registered_type is None:
-            for name, t in self._type_store.items():
+            for name, t in self._internal_channel_type_store.items():
                 if channel_name.startswith(name):
                     registered_type = t
 
@@ -81,10 +84,10 @@ class Communication:
         return self._state_movements
 
     def get_internal_channel_size(self, channel_name):
-        registered_type = self._type_store.get(channel_name)
+        registered_type = self._internal_channel_type_store.get(channel_name)
 
         if registered_type is None:
-            for name, t in self._type_store.items():
+            for name, t in self._internal_channel_type_store.items():
                 if channel_name.startswith(name):
                     registered_type = t
 
@@ -109,6 +112,18 @@ class Communication:
         return server_channel_size + buffer_channel_size
 
     def get_signal_channel_size(self, channel_name):
+        registered_type = self._signal_channel_type_store.get(channel_name)
+
+        if registered_type is None:
+            for name, t in self._signal_channel_type_store.items():
+                if channel_name.startswith(name):
+                    registered_type = t
+
+        if registered_type is None:
+            raise WorkflowDefinitionError(
+                f"SignalChannel channel_name is not defined {channel_name}"
+            )
+
         if (
             self._signal_channel_infos is not None
             and channel_name in self._signal_channel_infos

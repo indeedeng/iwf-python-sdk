@@ -71,6 +71,7 @@ class WorkerService:
         rpc_info = self._registry.get_rpc_infos(wf_type)[request.rpc_name]
 
         internal_channel_types = self._registry.get_internal_channel_types(wf_type)
+        signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
 
         context = _from_idl_context(request.context)
@@ -90,6 +91,7 @@ class WorkerService:
         )
         communication = Communication(
             internal_channel_types,
+            signal_channel_types,
             self._options.object_encoder,
             unset_to_none(request.internal_channel_infos),
             unset_to_none(request.signal_channel_infos),
@@ -140,6 +142,7 @@ class WorkerService:
             wf_type, request.workflow_state_id
         )
         internal_channel_types = self._registry.get_internal_channel_types(wf_type)
+        signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
 
         context = _from_idl_context(request.context)
@@ -159,6 +162,7 @@ class WorkerService:
         )
         communication = Communication(
             internal_channel_types,
+            signal_channel_types,
             self._options.object_encoder,
             None,
             None,
@@ -204,6 +208,7 @@ class WorkerService:
         )
         communication = Communication(
             internal_channel_types,
+            signal_channel_types,
             self._options.object_encoder,
             None,
             None,
