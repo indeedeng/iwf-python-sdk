@@ -71,6 +71,7 @@ class WorkerService:
         rpc_info = self._registry.get_rpc_infos(wf_type)[request.rpc_name]
 
         internal_channel_types = self._registry.get_internal_channel_types(wf_type)
+        signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
 
         context = _from_idl_context(request.context)
@@ -89,7 +90,11 @@ class WorkerService:
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
         communication = Communication(
-            internal_channel_types, self._options.object_encoder
+            internal_channel_types,
+            signal_channel_types,
+            self._options.object_encoder,
+            unset_to_none(request.internal_channel_infos),
+            unset_to_none(request.signal_channel_infos),
         )
         params: typing.Any = []
         if rpc_info.params_order is not None:
@@ -137,6 +142,7 @@ class WorkerService:
             wf_type, request.workflow_state_id
         )
         internal_channel_types = self._registry.get_internal_channel_types(wf_type)
+        signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
 
         context = _from_idl_context(request.context)
@@ -155,7 +161,11 @@ class WorkerService:
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
         communication = Communication(
-            internal_channel_types, self._options.object_encoder
+            internal_channel_types,
+            signal_channel_types,
+            self._options.object_encoder,
+            None,
+            None,
         )
         command_request = state.wait_until(context, _input, persistence, communication)
 
@@ -197,7 +207,11 @@ class WorkerService:
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
         communication = Communication(
-            internal_channel_types, self._options.object_encoder
+            internal_channel_types,
+            signal_channel_types,
+            self._options.object_encoder,
+            None,
+            None,
         )
 
         command_results = from_idl_command_results(
