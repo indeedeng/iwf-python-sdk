@@ -1,6 +1,7 @@
 import inspect
-import warnings
 from typing import Any, Callable, Optional, Type, TypeVar, Union
+
+from mypy.typeshed.stdlib.warnings import deprecated
 
 from iwf.client_options import ClientOptions
 from iwf.errors import InvalidArgumentError
@@ -95,7 +96,7 @@ class Client:
             wf_type, wf_id, starting_state_id, timeout_seconds, input, unreg_opts
         )
 
-    @warnings.deprecated("use wait_for_workflow_completion instead")
+    @deprecated("use wait_for_workflow_completion instead")
     def get_simple_workflow_result_with_wait(
         self,
         workflow_id: str,
