@@ -12,6 +12,7 @@ from iwf.communication import Communication
 from iwf.communication_schema import CommunicationMethod, CommunicationSchema
 from iwf.iwf_api.models import ChannelRequestStatus
 from iwf.persistence import Persistence
+from iwf.rpc import rpc
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
 from iwf.tests.worker_server import registry
@@ -22,6 +23,7 @@ from iwf.workflow_state import T, WorkflowState
 test_channel_int = "test-int"
 test_channel_none = "test-none"
 test_channel_str = "test-str"
+test_idle_channel_none = "test-idle"
 
 
 class WaitState(WorkflowState[None]):
@@ -68,10 +70,15 @@ class WaitSignalWorkflow(ObjectWorkflow):
             CommunicationMethod.signal_channel_def(test_channel_int, int),
             CommunicationMethod.signal_channel_def(test_channel_none, type(None)),
             CommunicationMethod.signal_channel_def(test_channel_str, str),
+            CommunicationMethod.signal_channel_def(test_idle_channel_none, type(None)),
         )
 
     def get_workflow_states(self) -> StateSchema:
         return StateSchema.with_starting_state(WaitState())
+
+    @rpc()
+    def get_idle_signal_channel_size(self, com: Communication):
+        return com.get_signal_channel_size(test_idle_channel_none)
 
 
 class TestSignal(unittest.TestCase):
@@ -89,3 +96,14 @@ class TestSignal(unittest.TestCase):
         self.client.signal_workflow(wf_id, test_channel_none)
         res = self.client.get_simple_workflow_result_with_wait(wf_id)
         assert res == "abc"
+
+    def test_signal_channel_size(self):
+        wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
+        self.client.start_workflow(WaitSignalWorkflow, wf_id, 1)
+        self.client.signal_workflow(wf_id, test_idle_channel_none)
+        self.client.signal_workflow(wf_id, test_idle_channel_none)
+        self.client.signal_workflow(wf_id, test_idle_channel_none)
+        res = self.client.invoke_rpc(
+            wf_id, WaitSignalWorkflow.get_idle_signal_channel_size
+        )
+        assert res == 3
