@@ -50,12 +50,12 @@ class WorkflowStateOptions:
         TODO the type should be the type is Optional[type[WorkflowState]] but -- there is an issue with circular import...
     """
     execute_failure_handling_state_when_retry_exhausted: Optional[type] = None
-    execute_api_data_attributes_loading_policy: Optional[
-        PersistenceLoadingPolicy
-    ] = None
-    execute_api_search_attributes_loading_policy: Optional[
-        PersistenceLoadingPolicy
-    ] = None
+    execute_api_data_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = (
+        None
+    )
+    execute_api_search_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = (
+        None
+    )
 
 
 def _to_idl_state_options(
