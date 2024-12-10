@@ -1,7 +1,7 @@
 import inspect
 from typing import Any, Callable, Optional, Type, TypeVar, Union
 
-from mypy.typeshed.stdlib.warnings import deprecated
+from typing_extensions import deprecated
 
 from iwf.client_options import ClientOptions
 from iwf.errors import InvalidArgumentError

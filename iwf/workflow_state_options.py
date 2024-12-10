@@ -27,7 +27,7 @@ class WorkflowStateOptions:
        This is useful for some advanced use cases like SAGA pattern.
        RetryPolicy is required to be set with maximumAttempts or maximumAttemptsDurationSeconds for waitUntil API.
     NOTE: execute API will use commandResults to check whether the waitUntil has succeeded or not.
-     * See more in <a href="https://github.com/indeedeng/iwf/wiki/WorkflowStateOptions">wiki</a>
+       See more in <a href="https://github.com/indeedeng/iwf/wiki/WorkflowStateOptions">wiki</a>
     """
     wait_until_api_failure_policy_when_retry_exhausted: Optional[
         WaitUntilApiFailurePolicy
