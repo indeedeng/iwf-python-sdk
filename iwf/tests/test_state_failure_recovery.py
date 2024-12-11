@@ -30,7 +30,7 @@ class FailState(WorkflowState[None]):
     def get_state_options(self) -> WorkflowStateOptions:
         return WorkflowStateOptions(
             execute_api_retry_policy=RetryPolicy(maximum_attempts=1),
-            execute_failure_handling_state=RecoveryState,
+            proceed_to_state_when_execute_retry_exhausted=RecoveryState,
         )
 
 

@@ -1,6 +1,8 @@
 import inspect
 from typing import Any, Callable, Optional, Type, TypeVar, Union
 
+from typing_extensions import deprecated
+
 from iwf.client_options import ClientOptions
 from iwf.errors import InvalidArgumentError
 from iwf.registry import Registry
@@ -94,7 +96,17 @@ class Client:
             wf_type, wf_id, starting_state_id, timeout_seconds, input, unreg_opts
         )
 
+    @deprecated("use wait_for_workflow_completion instead")
     def get_simple_workflow_result_with_wait(
+        self,
+        workflow_id: str,
+        type_hint: Optional[Type[T]] = None,
+    ) -> Optional[T]:
+        return self._unregistered_client.get_simple_workflow_result_with_wait(
+            workflow_id, "", type_hint
+        )
+
+    def wait_for_workflow_completion(
         self,
         workflow_id: str,
         type_hint: Optional[Type[T]] = None,

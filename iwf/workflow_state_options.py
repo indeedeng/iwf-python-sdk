@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Optional
 
+from iwf.errors import WorkflowDefinitionError
 from iwf.iwf_api.models import (
     ExecuteApiFailurePolicy,
     PersistenceLoadingPolicy,
@@ -8,6 +9,7 @@ from iwf.iwf_api.models import (
     WaitUntilApiFailurePolicy,
     WorkflowStateOptions as IdlWorkflowStateOptions,
 )
+from iwf.iwf_api.types import Unset
 
 
 @dataclass
@@ -19,7 +21,17 @@ class WorkflowStateOptions:
     # below are wait_until API specific options:
     wait_until_api_timeout_seconds: Optional[int] = None
     wait_until_api_retry_policy: Optional[RetryPolicy] = None
-    wait_until_api_failure_policy: Optional[WaitUntilApiFailurePolicy] = None
+    """
+       By default, workflow would fail after waitUntil API retry exhausted.
+       This policy to allow proceeding to the execute API after waitUntil API exhausted all retries.
+       This is useful for some advanced use cases like SAGA pattern.
+       RetryPolicy is required to be set with maximumAttempts or maximumAttemptsDurationSeconds for waitUntil API.
+    NOTE: execute API will use commandResults to check whether the waitUntil has succeeded or not.
+       See more in <a href="https://github.com/indeedeng/iwf/wiki/WorkflowStateOptions">wiki</a>
+    """
+    proceed_to_execute_when_wait_until_retry_exhausted: Optional[
+        WaitUntilApiFailurePolicy
+    ] = None
     wait_until_api_data_attributes_loading_policy: Optional[
         PersistenceLoadingPolicy
     ] = None
@@ -30,11 +42,14 @@ class WorkflowStateOptions:
     execute_api_timeout_seconds: Optional[int] = None
     execute_api_retry_policy: Optional[RetryPolicy] = None
     """
-        note that the failing handling state will take the same input as the failed state
-        the type is Optional[type[WorkflowState]] but there is an issue with type hint...
-        TODO fix this type hint
+        By default, workflow would fail after execute API retry exhausted.
+        Set the state to proceed to the specified state after the execute API exhausted all retries
+        This is useful for some advanced use cases like SAGA pattern.
+        RetryPolicy is required to be set with maximumAttempts or maximumAttemptsDurationSeconds for execute API.
+        Note that the failure handling state will take the same input as the failed from state.
+        TODO the type should be the type is Optional[type[WorkflowState]] but -- there is an issue with circular import...
     """
-    execute_failure_handling_state: Optional[type] = None
+    proceed_to_state_when_execute_retry_exhausted: Optional[type] = None
     execute_api_data_attributes_loading_policy: Optional[PersistenceLoadingPolicy] = (
         None
     )
@@ -77,8 +92,20 @@ def _to_idl_state_options(
         )
     if options.data_attributes_loading_policy is not None:
         res.data_attributes_loading_policy = options.data_attributes_loading_policy
-    if options.wait_until_api_failure_policy is not None:
-        res.wait_until_api_failure_policy = options.wait_until_api_failure_policy
+    if options.proceed_to_execute_when_wait_until_retry_exhausted is not None:
+        res.wait_until_api_failure_policy = (
+            options.proceed_to_execute_when_wait_until_retry_exhausted
+        )
+        if options.wait_until_api_retry_policy is None:
+            raise WorkflowDefinitionError("wait_until API retry policy must be set")
+        if isinstance(
+            options.wait_until_api_retry_policy.maximum_attempts, Unset
+        ) and isinstance(
+            options.wait_until_api_retry_policy.maximum_attempts_duration_seconds, Unset
+        ):
+            raise WorkflowDefinitionError(
+                "wait_until API retry policy must be set with maximum_attempts or maximum_attempts_duration_seconds"
+            )
     if options.wait_until_api_retry_policy is not None:
         res.wait_until_api_retry_policy = options.wait_until_api_retry_policy
     if options.wait_until_api_timeout_seconds is not None:
@@ -87,14 +114,25 @@ def _to_idl_state_options(
         res.execute_api_retry_policy = options.execute_api_retry_policy
     if options.execute_api_timeout_seconds is not None:
         res.execute_api_timeout_seconds = options.execute_api_timeout_seconds
-    if options.execute_failure_handling_state is not None:
+    if options.proceed_to_state_when_execute_retry_exhausted is not None:
         res.execute_api_failure_policy = (
             ExecuteApiFailurePolicy.PROCEED_TO_CONFIGURED_STATE
         )
+        if options.execute_api_retry_policy is None:
+            raise WorkflowDefinitionError("execute API retry policy must be set")
+        if isinstance(
+            options.execute_api_retry_policy.maximum_attempts, Unset
+        ) and isinstance(
+            options.execute_api_retry_policy.maximum_attempts_duration_seconds, Unset
+        ):
+            raise WorkflowDefinitionError(
+                "execute API retry policy must be set with maximum_attempts or maximum_attempts_duration_seconds"
+            )
+
         from iwf.workflow_state import get_state_id_by_class
 
         res.execute_api_failure_proceed_state_id = get_state_id_by_class(
-            options.execute_failure_handling_state
+            options.proceed_to_state_when_execute_retry_exhausted
         )
         state = state_store[res.execute_api_failure_proceed_state_id]
         proceed_state_options = state.get_state_options()
