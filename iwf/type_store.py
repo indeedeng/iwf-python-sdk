@@ -32,7 +32,7 @@ class TypeStore:
         if t is None:
             raise ValueError(f"{self._class_type} not registered: {name}")
 
-        return type
+        return t
 
     def add_internal_channel_def(self, obj: CommunicationMethod):
         if self._class_type != Type.INTERNAL_CHANNEL:
