@@ -70,7 +70,7 @@ class WorkerService:
         wf_type = request.workflow_type
         rpc_info = self._registry.get_rpc_infos(wf_type)[request.rpc_name]
 
-        internal_channel_types = self._registry.get_internal_channel_types(wf_type)
+        internal_channel_types = self._registry.get_internal_channel_type_store(wf_type)
         signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
 
@@ -141,7 +141,7 @@ class WorkerService:
         state = self._registry.get_workflow_state_with_check(
             wf_type, request.workflow_state_id
         )
-        internal_channel_types = self._registry.get_internal_channel_types(wf_type)
+        internal_channel_types = self._registry.get_internal_channel_type_store(wf_type)
         signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
 
@@ -187,7 +187,7 @@ class WorkerService:
         state = self._registry.get_workflow_state_with_check(
             wf_type, request.workflow_state_id
         )
-        internal_channel_types = self._registry.get_internal_channel_types(wf_type)
+        internal_channel_types = self._registry.get_internal_channel_type_store(wf_type)
         signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
         context = _from_idl_context(request.context)
