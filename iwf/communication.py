@@ -80,12 +80,7 @@ class Communication:
         return self._state_movements
 
     def get_internal_channel_size(self, channel_name):
-        registered_type = self._internal_channel_type_store.get(channel_name)
-
-        if registered_type is None:
-            for name, t in self._internal_channel_type_store.items():
-                if channel_name.startswith(name):
-                    registered_type = t
+        registered_type = self._internal_channel_type_store.get_type(channel_name)
 
         if registered_type is None:
             raise WorkflowDefinitionError(
