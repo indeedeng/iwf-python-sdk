@@ -4,6 +4,7 @@ from iwf.communication_schema import CommunicationMethodType
 from iwf.errors import InvalidArgumentError, WorkflowDefinitionError
 from iwf.persistence_schema import PersistenceFieldType
 from iwf.rpc import RPCInfo
+from iwf.type_store import TypeStore, Type
 from iwf.workflow import ObjectWorkflow, get_workflow_type
 from iwf.workflow_state import WorkflowState, get_state_id
 
@@ -12,7 +13,7 @@ class Registry:
     _workflow_store: dict[str, ObjectWorkflow]
     _starting_state_store: dict[str, WorkflowState]
     _state_store: dict[str, dict[str, WorkflowState]]
-    _internal_channel_type_store: dict[str, dict[str, Optional[type]]]
+    _internal_channel_type_store: dict[str, TypeStore]
     _signal_channel_type_store: dict[str, dict[str, Optional[type]]]
     _data_attribute_types: dict[str, dict[str, Optional[type]]]
     _rpc_infos: dict[str, dict[str, RPCInfo]]
@@ -63,7 +64,7 @@ class Registry:
     def get_state_store(self, wf_type: str) -> dict[str, WorkflowState]:
         return self._state_store[wf_type]
 
-    def get_internal_channel_types(self, wf_type: str) -> dict[str, Optional[type]]:
+    def get_internal_channel_type_store(self, wf_type: str) -> TypeStore:
         return self._internal_channel_type_store[wf_type]
 
     def get_signal_channel_types(self, wf_type: str) -> dict[str, Optional[type]]:
@@ -83,13 +84,13 @@ class Registry:
 
     def _register_internal_channels(self, wf: ObjectWorkflow):
         wf_type = get_workflow_type(wf)
-        types: dict[str, Optional[type]] = {}
+
+        if self._internal_channel_type_store[wf_type] is None:
+            self._internal_channel_type_store[wf_type] = TypeStore(Type.INTERNAL_CHANNEL)
+
         for method in wf.get_communication_schema().communication_methods:
             if method.method_type == CommunicationMethodType.InternalChannel:
-                types[method.name] = method.value_type
-                # TODO use is_prefix to implement like Java SDK
-        #
-        self._internal_channel_type_store[wf_type] = types
+                self._internal_channel_type_store[wf_type].add_internal_channel_def(method)
 
     def _register_signal_channels(self, wf: ObjectWorkflow):
         wf_type = get_workflow_type(wf)

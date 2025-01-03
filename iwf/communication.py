@@ -9,10 +9,11 @@ from iwf.iwf_api.models import (
 )
 from iwf.object_encoder import ObjectEncoder
 from iwf.state_movement import StateMovement
+from iwf.type_store import TypeStore
 
 
 class Communication:
-    _internal_channel_type_store: dict[str, Optional[type]]
+    _internal_channel_type_store: TypeStore
     _signal_channel_type_store: dict[str, Optional[type]]
     _object_encoder: ObjectEncoder
     _to_publish_internal_channel: dict[str, list[EncodedObject]]
@@ -22,7 +23,7 @@ class Communication:
 
     def __init__(
         self,
-        internal_channel_type_store: dict[str, Optional[type]],
+        internal_channel_type_store: TypeStore,
         signal_channel_type_store: dict[str, Optional[type]],
         object_encoder: ObjectEncoder,
         internal_channel_infos: Optional[WorkflowWorkerRpcRequestInternalChannelInfos],
@@ -47,12 +48,7 @@ class Communication:
         self._state_movements.append(movement)
 
     def publish_to_internal_channel(self, channel_name: str, value: Any = None):
-        registered_type = self._internal_channel_type_store.get(channel_name)
-
-        if registered_type is None:
-            for name, t in self._internal_channel_type_store.items():
-                if channel_name.startswith(name):
-                    registered_type = t
+        registered_type = self._internal_channel_type_store.get_type(channel_name)
 
         if registered_type is None:
             raise WorkflowDefinitionError(
