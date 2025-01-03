@@ -85,7 +85,7 @@ class Registry:
     def _register_internal_channels(self, wf: ObjectWorkflow):
         wf_type = get_workflow_type(wf)
 
-        if self._internal_channel_type_store[wf_type] is None:
+        if wf_type not in self._internal_channel_type_store:
             self._internal_channel_type_store[wf_type] = TypeStore(
                 Type.INTERNAL_CHANNEL
             )
