@@ -105,7 +105,7 @@ registry.add_workflow(wf)
 client = Client(registry)
 
 
-class TestConditionalTimeout(unittest.TestCase):
+class TestInternalChannelWithNoPrefix(unittest.TestCase):
     def test_internal_channel_workflow_with_no_prefix_channel(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
