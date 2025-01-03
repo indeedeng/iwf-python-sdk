@@ -1,5 +1,6 @@
 import inspect
 import time
+import unittest
 
 from iwf.client import Client
 from iwf.command_request import CommandRequest, InternalChannelCommand
@@ -132,9 +133,9 @@ wf = InternalChannelWorkflow()
 registry.add_workflow(wf)
 client = Client(registry)
 
+class TestConditionalComplete(unittest.TestCase):
+    def test_internal_channel_workflow(self):
+        wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-def test_internal_channel_workflow():
-    wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
-
-    client.start_workflow(InternalChannelWorkflow, wf_id, 100, None)
-    client.get_simple_workflow_result_with_wait(wf_id, None)
+        client.start_workflow(InternalChannelWorkflow, wf_id, 100, None)
+        client.get_simple_workflow_result_with_wait(wf_id, None)

@@ -47,7 +47,7 @@ class TypeStore:
 
         prefixes = self._prefix_to_type_store.keys()
 
-        first = next((prefix for prefix in prefixes if prefix.startswith(name)), None)
+        first = next((prefix for prefix in prefixes if name.startswith(prefix)), None)
 
         if first is None:
             return None
