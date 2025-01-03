@@ -86,11 +86,15 @@ class Registry:
         wf_type = get_workflow_type(wf)
 
         if self._internal_channel_type_store[wf_type] is None:
-            self._internal_channel_type_store[wf_type] = TypeStore(Type.INTERNAL_CHANNEL)
+            self._internal_channel_type_store[wf_type] = TypeStore(
+                Type.INTERNAL_CHANNEL
+            )
 
         for method in wf.get_communication_schema().communication_methods:
             if method.method_type == CommunicationMethodType.InternalChannel:
-                self._internal_channel_type_store[wf_type].add_internal_channel_def(method)
+                self._internal_channel_type_store[wf_type].add_internal_channel_def(
+                    method
+                )
 
     def _register_signal_channels(self, wf: ObjectWorkflow):
         wf_type = get_workflow_type(wf)

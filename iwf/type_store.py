@@ -11,6 +11,7 @@ class Type(Enum):
     # DATA_ATTRIBUTE = 2
     # SIGNAL_CHANNEL = 3
 
+
 class TypeStore:
     _class_type: Type
     _name_to_type_store: dict[str, Optional[type]]
@@ -40,7 +41,6 @@ class TypeStore:
             )
         self._do_add_to_store(obj.is_prefix, obj.name, obj.value_type)
 
-
     def _do_get_type(self, name: str) -> Optional[type]:
         if name in self._name_to_type_store:
             return self._name_to_type_store[name]
@@ -62,7 +62,7 @@ class TypeStore:
 
         if name in store:
             raise WorkflowDefinitionError(
-                            f"{self._class_type} name/prefix {name} already exists")
+                f"{self._class_type} name/prefix {name} already exists"
+            )
 
         store[name] = t
-
