@@ -4,15 +4,12 @@ import unittest
 
 from iwf.client import Client
 from iwf.command_request import CommandRequest, InternalChannelCommand
-from iwf.command_results import CommandResults, InternalChannelCommandResult
+from iwf.command_results import CommandResults
 from iwf.communication import Communication
 from iwf.communication_schema import CommunicationMethod, CommunicationSchema
-from iwf.errors import WorkflowFailed
-from iwf.iwf_api.models import ChannelRequestStatus
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
-from iwf.tests.test_abnormal_exit_workflow import AbnormalExitWorkflow
 from iwf.tests.worker_server import registry
 from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
@@ -99,9 +96,7 @@ class InternalChannelWorkflowWithNoPrefixChannel(ObjectWorkflow):
         return CommunicationSchema.create(
             CommunicationMethod.internal_channel_def(internal_channel_name, type(None)),
             # Defining a standard channel (non-prefix) to make sure messages to the channel with a suffix added will not be accepted
-            CommunicationMethod.internal_channel_def(
-                test_non_prefix_channel_name, str
-            ),
+            CommunicationMethod.internal_channel_def(test_non_prefix_channel_name, str),
         )
 
 
@@ -114,11 +109,15 @@ class TestConditionalTimeout(unittest.TestCase):
     def test_internal_channel_workflow_with_no_prefix_channel(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-        client.start_workflow(InternalChannelWorkflowWithNoPrefixChannel, wf_id, 5, None)
+        client.start_workflow(
+            InternalChannelWorkflowWithNoPrefixChannel, wf_id, 5, None
+        )
 
         with self.assertRaises(Exception) as context:
             client.wait_for_workflow_completion(wf_id, None)
 
         self.assertIn("FAILED", context.exception.workflow_status)
         self.assertIn(
-            f"WorkerExecutionError: Type.INTERNAL_CHANNEL not registered: {test_non_prefix_channel_name_with_suffix}", context.exception.error_message)
+            f"WorkerExecutionError: Type.INTERNAL_CHANNEL not registered: {test_non_prefix_channel_name_with_suffix}",
+            context.exception.error_message,
+        )
