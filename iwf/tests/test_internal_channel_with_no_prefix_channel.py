@@ -118,6 +118,6 @@ class TestInternalChannelWithNoPrefix(unittest.TestCase):
 
         self.assertIn("FAILED", context.exception.workflow_status)
         self.assertIn(
-            f"WorkerExecutionError: Type.INTERNAL_CHANNEL not registered: {test_non_prefix_channel_name_with_suffix}",
+            f"WorkerExecutionError: InternalChannel channel_name is not defined {test_non_prefix_channel_name_with_suffix}",
             context.exception.error_message,
         )
