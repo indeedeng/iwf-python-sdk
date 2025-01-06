@@ -1,6 +1,6 @@
 from typing import Any, Optional, Union
 
-from iwf.errors import WorkflowDefinitionError
+from iwf.errors import WorkflowDefinitionError, NotRegisteredError
 from iwf.iwf_api.models import (
     EncodedObject,
     InterStateChannelPublishing,
@@ -48,12 +48,12 @@ class Communication:
         self._state_movements.append(movement)
 
     def publish_to_internal_channel(self, channel_name: str, value: Any = None):
-        registered_type = self._internal_channel_type_store.get_type(channel_name)
-
-        if registered_type is None:
+        try:
+            registered_type = self._internal_channel_type_store.get_type(channel_name)
+        except NotRegisteredError as exception:
             raise WorkflowDefinitionError(
                 f"InternalChannel channel_name is not defined {channel_name}"
-            )
+            ) from exception
 
         if (
             value is not None

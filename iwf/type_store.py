@@ -2,7 +2,7 @@ from typing import Optional
 from enum import Enum
 
 from iwf.communication_schema import CommunicationMethod
-from iwf.errors import WorkflowDefinitionError
+from iwf.errors import WorkflowDefinitionError, NotRegisteredError
 
 
 class Type(Enum):
@@ -26,11 +26,11 @@ class TypeStore:
         t = self._do_get_type(name)
         return t is not None
 
-    def get_type(self, name: str) -> Optional[type]:
+    def get_type(self, name: str) -> type:
         t = self._do_get_type(name)
 
         if t is None:
-            raise ValueError(f"{self._class_type} not registered: {name}")
+            raise NotRegisteredError(f"{self._class_type} not registered: {name}")
 
         return t
 
