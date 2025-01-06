@@ -36,7 +36,7 @@ class TypeStore:
 
     def add_internal_channel_def(self, obj: CommunicationMethod):
         if self._class_type != Type.INTERNAL_CHANNEL:
-            raise WorkflowDefinitionError(
+            raise ValueError(
                 f"Cannot add internal channel definition to {self._class_type}"
             )
         self._do_add_to_store(obj.is_prefix, obj.name, obj.value_type)
