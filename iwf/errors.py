@@ -18,6 +18,10 @@ class InvalidArgumentError(Exception):
     pass
 
 
+class NotRegisteredError(Exception):
+    pass
+
+
 class HttpError(RuntimeError):
     def __init__(self, status: int, err_resp: ErrorResponse):
         super().__init__(err_resp.detail)

@@ -2,7 +2,7 @@ import typing
 from dataclasses import dataclass
 from typing import Any, Union
 
-from iwf.errors import WorkflowDefinitionError
+from iwf.errors import WorkflowDefinitionError, NotRegisteredError
 from iwf.iwf_api.models import (
     ChannelRequestStatus,
     CommandResults as IdlCommandResults,
@@ -10,6 +10,7 @@ from iwf.iwf_api.models import (
 )
 from iwf.iwf_api.types import Unset
 from iwf.object_encoder import ObjectEncoder
+from iwf.type_store import TypeStore
 
 
 @dataclass
@@ -43,7 +44,7 @@ class CommandResults:
 
 def from_idl_command_results(
     idl_results: Union[Unset, IdlCommandResults],
-    internal_channel_types: dict[str, typing.Optional[type]],
+    internal_channel_types: TypeStore,
     signal_channel_types: dict[str, typing.Optional[type]],
     object_encoder: ObjectEncoder,
 ) -> CommandResults:
@@ -58,18 +59,13 @@ def from_idl_command_results(
 
     if not isinstance(idl_results.inter_state_channel_results, Unset):
         for inter in idl_results.inter_state_channel_results:
-            val_type = internal_channel_types.get(inter.channel_name)
-            if val_type is None:
-                # fallback to assume it's prefix
-                # TODO use is_prefix to implement like Java SDK
-                for name, t in internal_channel_types.items():
-                    if inter.channel_name.startswith(name):
-                        val_type = t
-                        break
-            if val_type is None:
+
+            try:
+                val_type = internal_channel_types.get_type(inter.channel_name)
+            except NotRegisteredError as exception:
                 raise WorkflowDefinitionError(
                     "internal channel is not registered: " + inter.channel_name
-                )
+                ) from exception
 
             encoded = object_encoder.decode(inter.value, val_type)
 

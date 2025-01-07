@@ -4,10 +4,9 @@ import unittest
 
 from iwf.client import Client
 from iwf.command_request import CommandRequest, InternalChannelCommand
-from iwf.command_results import CommandResults, InternalChannelCommandResult
+from iwf.command_results import CommandResults
 from iwf.communication import Communication
 from iwf.communication_schema import CommunicationMethod, CommunicationSchema
-from iwf.iwf_api.models import ChannelRequestStatus
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
@@ -16,13 +15,10 @@ from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
 from iwf.workflow_state import T, WorkflowState
 
-test_channel_name1 = "test-internal-channel-1"
-test_channel_name2 = "test-internal-channel-2"
+internal_channel_name = "internal-channel-1"
 
-test_channel_name3 = "test-internal-channel-3"
-test_channel_name4 = "test-internal-channel-4"
-
-test_channel_name_prefix = "test-internal-channel-prefix-"
+test_non_prefix_channel_name = "test-channel-"
+test_non_prefix_channel_name_with_suffix = test_non_prefix_channel_name + "abc"
 
 
 class InitState(WorkflowState[None]):
@@ -47,14 +43,12 @@ class WaitAnyWithPublishState(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> CommandRequest:
-        communication.publish_to_internal_channel(test_channel_name3, 123)
-        communication.publish_to_internal_channel(test_channel_name4, "str-value")
+        # Trying to publish to a non-existing channel; this would only work if test_channel_name_non_prefix was defined as a prefix channel
         communication.publish_to_internal_channel(
-            test_channel_name_prefix + "abc", "str-value-for-prefix"
+            test_non_prefix_channel_name_with_suffix, "str-value-for-prefix"
         )
         return CommandRequest.for_any_command_completed(
-            InternalChannelCommand.by_name(test_channel_name1),
-            InternalChannelCommand.by_name(test_channel_name2),
+            InternalChannelCommand.by_name(internal_channel_name),
         )
 
     def execute(
@@ -65,23 +59,6 @@ class WaitAnyWithPublishState(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        assert len(command_results.internal_channel_commands) == 2
-        assert command_results.internal_channel_commands[
-            0
-        ] == InternalChannelCommandResult(
-            channel_name=test_channel_name1,
-            command_id="",
-            status=ChannelRequestStatus.WAITING,
-            value=None,
-        )
-        assert command_results.internal_channel_commands[
-            1
-        ] == InternalChannelCommandResult(
-            channel_name=test_channel_name2,
-            command_id="",
-            status=ChannelRequestStatus.RECEIVED,
-            value=None,
-        )
         return StateDecision.graceful_complete_workflow()
 
 
@@ -94,9 +71,7 @@ class WaitAllThenPublishState(WorkflowState[None]):
         communication: Communication,
     ) -> CommandRequest:
         return CommandRequest.for_all_command_completed(
-            InternalChannelCommand.by_name(test_channel_name3),
-            InternalChannelCommand.by_name(test_channel_name4),
-            InternalChannelCommand.by_name(test_channel_name_prefix + "abc"),
+            InternalChannelCommand.by_name(test_non_prefix_channel_name),
         )
 
     def execute(
@@ -107,11 +82,11 @@ class WaitAllThenPublishState(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        communication.publish_to_internal_channel(test_channel_name2, None)
+        communication.publish_to_internal_channel(internal_channel_name, None)
         return StateDecision.dead_end
 
 
-class InternalChannelWorkflow(ObjectWorkflow):
+class InternalChannelWorkflowWithNoPrefixChannel(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
         return StateSchema.with_starting_state(
             InitState(), WaitAnyWithPublishState(), WaitAllThenPublishState()
@@ -119,24 +94,30 @@ class InternalChannelWorkflow(ObjectWorkflow):
 
     def get_communication_schema(self) -> CommunicationSchema:
         return CommunicationSchema.create(
-            CommunicationMethod.internal_channel_def(test_channel_name1, int),
-            CommunicationMethod.internal_channel_def(test_channel_name2, type(None)),
-            CommunicationMethod.internal_channel_def(test_channel_name3, int),
-            CommunicationMethod.internal_channel_def(test_channel_name4, str),
-            CommunicationMethod.internal_channel_def_by_prefix(
-                test_channel_name_prefix, str
-            ),
+            CommunicationMethod.internal_channel_def(internal_channel_name, type(None)),
+            # Defining a standard channel (non-prefix) to make sure messages to the channel with a suffix added will not be accepted
+            CommunicationMethod.internal_channel_def(test_non_prefix_channel_name, str),
         )
 
 
-wf = InternalChannelWorkflow()
+wf = InternalChannelWorkflowWithNoPrefixChannel()
 registry.add_workflow(wf)
 client = Client(registry)
 
 
-class TestConditionalComplete(unittest.TestCase):
-    def test_internal_channel_workflow(self):
+class TestInternalChannelWithNoPrefix(unittest.TestCase):
+    def test_internal_channel_workflow_with_no_prefix_channel(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-        client.start_workflow(InternalChannelWorkflow, wf_id, 100, None)
-        client.get_simple_workflow_result_with_wait(wf_id, None)
+        client.start_workflow(
+            InternalChannelWorkflowWithNoPrefixChannel, wf_id, 5, None
+        )
+
+        with self.assertRaises(Exception) as context:
+            client.wait_for_workflow_completion(wf_id, None)
+
+        self.assertIn("FAILED", context.exception.workflow_status)
+        self.assertIn(
+            f"WorkerExecutionError: InternalChannel channel_name is not defined {test_non_prefix_channel_name_with_suffix}",
+            context.exception.error_message,
+        )
