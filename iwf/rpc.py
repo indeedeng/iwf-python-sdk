@@ -69,6 +69,7 @@ def rpc(
             if v.annotation not in valid_param_types_exclude_input:
                 if not has_input:
                     has_input = True
+                    rpc_info.input_type = v.annotation
                 else:
                     raise rpc_definition_err
         if not need_persistence:
