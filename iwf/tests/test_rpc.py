@@ -126,8 +126,8 @@ class TestRPCs(unittest.TestCase):
         self.client.start_workflow(RPCWorkflow, wf_id, 10)
 
         input = Mydata("test", 100)
-        output = self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_input_type, input)
-        assert output
+        output = self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_input_type, input, Mydata)
+        assert output == input
 
         output = self.client.invoke_rpc(wf_id, RPCWorkflow.test_simple_rpc)
         assert output == 123
