@@ -22,10 +22,12 @@ test_data_attribute = "test-1"
 channel_name = "test-2"
 idle_channel_name = "test-3"
 
+
 @dataclass
 class Mydata:
     strdata: str
     intdata: int
+
 
 class WaitState(WorkflowState[None]):
     def wait_until(
@@ -108,8 +110,8 @@ class RPCWorkflow(ObjectWorkflow):
         return com.get_internal_channel_size(idle_channel_name)
 
     @rpc()
-    def test_rpc_input_type(self, input: Mydata)->Mydata:
-        if input.intdata != 100 or input.strdata!= "test":
+    def test_rpc_input_type(self, input: Mydata) -> Mydata:
+        if input.intdata != 100 or input.strdata != "test":
             raise Exception("input type test failed")
         return input
 
@@ -126,7 +128,9 @@ class TestRPCs(unittest.TestCase):
         self.client.start_workflow(RPCWorkflow, wf_id, 10)
 
         input = Mydata("test", 100)
-        output = self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_input_type, input, Mydata)
+        output = self.client.invoke_rpc(
+            wf_id, RPCWorkflow.test_rpc_input_type, input, Mydata
+        )
         assert output == input
 
         output = self.client.invoke_rpc(wf_id, RPCWorkflow.test_simple_rpc)
@@ -134,7 +138,6 @@ class TestRPCs(unittest.TestCase):
         wf = RPCWorkflow()
         output = self.client.invoke_rpc(wf_id, wf.test_simple_rpc)
         assert output == 123
-
 
     def test_complicated_rpc(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
