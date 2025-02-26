@@ -3,18 +3,16 @@ from __future__ import annotations  # <-- Additional import.
 import typing
 
 from iwf.iwf_api.models import WorkflowConditionalClose, WorkflowConditionalCloseType
+from iwf.workflow_state_options import WorkflowStateOptions
 
 if typing.TYPE_CHECKING:
     from iwf.registry import Registry
     from iwf.workflow_state import WorkflowState
 
 from dataclasses import dataclass
-from typing import Any, List, Union
+from typing import Any, List, Union, Optional
 
 from iwf.iwf_api.models.state_decision import StateDecision as IdlStateDecision
-from iwf.iwf_api.models.workflow_state_options import (
-    WorkflowStateOptions as IdlWorkflowStateOptions,
-)
 
 from iwf.object_encoder import ObjectEncoder
 
@@ -55,7 +53,7 @@ class StateDecision:
         cls,
         state: Union[str, type[WorkflowState]],
         state_input: Any = None,
-        state_options_override: IdlWorkflowStateOptions = None,
+        state_options_override: Optional[WorkflowStateOptions] = None,
     ) -> StateDecision:
         return StateDecision(
             [StateMovement.create(state, state_input, state_options_override)]

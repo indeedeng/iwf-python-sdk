@@ -16,14 +16,10 @@ from typing import Any
 
 
 from iwf.iwf_api.models.state_movement import StateMovement as IdlStateMovement
-from iwf.iwf_api.models.workflow_state_options import (
-    WorkflowStateOptions as IdlWorkflowStateOptions,
-)
 
 from iwf.object_encoder import ObjectEncoder
 
-from iwf.workflow_state_options import _to_idl_state_options
-
+from iwf.workflow_state_options import _to_idl_state_options, WorkflowStateOptions
 
 reserved_state_id_prefix = "_SYS_"
 
@@ -39,7 +35,7 @@ dead_end_sys_state_id = reserved_state_id_prefix + "DEAD_END"
 class StateMovement:
     state_id: str
     state_input: Any = None
-    state_options_override: Optional[IdlWorkflowStateOptions] = None
+    state_options_override: Optional[WorkflowStateOptions] = None
 
     dead_end: typing.ClassVar[StateMovement]
 
@@ -60,7 +56,7 @@ class StateMovement:
         cls,
         state: Union[str, type[WorkflowState]],
         state_input: Any = None,
-        state_options_override: IdlWorkflowStateOptions = None,
+        state_options_override: Optional[WorkflowStateOptions] = None,
     ) -> StateMovement:
         if isinstance(state, str):
             state_id = state
