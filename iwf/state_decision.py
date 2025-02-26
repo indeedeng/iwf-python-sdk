@@ -12,6 +12,9 @@ from dataclasses import dataclass
 from typing import Any, List, Union
 
 from iwf.iwf_api.models.state_decision import StateDecision as IdlStateDecision
+from iwf.iwf_api.models.workflow_state_options import (
+    WorkflowStateOptions as IdlWorkflowStateOptions,
+)
 
 from iwf.object_encoder import ObjectEncoder
 
@@ -49,9 +52,14 @@ class StateDecision:
 
     @classmethod
     def single_next_state(
-        cls, state: Union[str, type[WorkflowState]], state_input: Any = None
+        cls,
+        state: Union[str, type[WorkflowState]],
+        state_input: Any = None,
+        state_options_override: IdlWorkflowStateOptions = None,
     ) -> StateDecision:
-        return StateDecision([StateMovement.create(state, state_input)])
+        return StateDecision(
+            [StateMovement.create(state, state_input, state_options_override)]
+        )
 
     @classmethod
     def multi_next_states(
