@@ -9,8 +9,7 @@ from iwf.communication import Communication
 from iwf.persistence_schema import PersistenceSchema, PersistenceField
 from iwf.workflow_options import WorkflowOptions
 
-from iwf.iwf_api.models import (RetryPolicy,
-                                WaitUntilApiFailurePolicy, IDReusePolicy)
+from iwf.iwf_api.models import RetryPolicy, WaitUntilApiFailurePolicy, IDReusePolicy
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
@@ -22,6 +21,7 @@ from iwf.workflow_state_options import WorkflowStateOptions
 
 output_da = "output_da"
 
+
 class InitState(WorkflowState[str]):
     def wait_until(
         self,
@@ -30,7 +30,9 @@ class InitState(WorkflowState[str]):
         persistence: Persistence,
         communication: Communication,
     ) -> CommandRequest:
-        persistence.set_data_attribute(output_da, input + "_InitState_waitUntil_completed")
+        persistence.set_data_attribute(
+            output_da, input + "_InitState_waitUntil_completed"
+        )
         return CommandRequest.empty()
 
     def execute(
@@ -43,13 +45,15 @@ class InitState(WorkflowState[str]):
     ) -> StateDecision:
         data = persistence.get_data_attribute(output_da)
         data += "_InitState_execute_completed"
-        return StateDecision.single_next_state(NonInitState,
-                                               data,
-                                               WorkflowStateOptions(
-                                                   wait_until_api_retry_policy=RetryPolicy(maximum_attempts=2),
-                                                   proceed_to_execute_when_wait_until_retry_exhausted=WaitUntilApiFailurePolicy.PROCEED_ON_FAILURE
-                                               )
-                                               )
+        return StateDecision.single_next_state(
+            NonInitState,
+            data,
+            WorkflowStateOptions(
+                wait_until_api_retry_policy=RetryPolicy(maximum_attempts=2),
+                proceed_to_execute_when_wait_until_retry_exhausted=WaitUntilApiFailurePolicy.PROCEED_ON_FAILURE,
+            ),
+        )
+
 
 class NonInitState(WorkflowState[str]):
     def wait_until(
@@ -98,7 +102,16 @@ class TestStateOptionsOverrideWorkflow(unittest.TestCase):
 
     def test_override(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
-        self.client.start_workflow(StateOptionsOverrideWorkflow, wf_id, 10, "input", WorkflowOptions(workflow_id_reuse_policy=IDReusePolicy.DISALLOW_REUSE))
+        self.client.start_workflow(
+            StateOptionsOverrideWorkflow,
+            wf_id,
+            10,
+            "input",
+            WorkflowOptions(workflow_id_reuse_policy=IDReusePolicy.DISALLOW_REUSE),
+        )
         output = self.client.wait_for_workflow_completion(wf_id)
 
-        assert output == "input_InitState_waitUntil_completed_InitState_execute_completed_NonInitState_execute_completed"
+        assert (
+            output
+            == "input_InitState_waitUntil_completed_InitState_execute_completed_NonInitState_execute_completed"
+        )
