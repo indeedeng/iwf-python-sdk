@@ -31,7 +31,7 @@ class InitState(WorkflowState[str]):
         communication: Communication,
     ) -> CommandRequest:
         persistence.set_data_attribute(
-            output_da, input + "_InitState_waitUntil_completed"
+            output_da, str(input) + "_InitState_waitUntil_completed"
         )
         return CommandRequest.empty()
 
@@ -73,7 +73,7 @@ class NonInitState(WorkflowState[str]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        data = input + "_NonInitState_execute_completed"
+        data = str(input) + "_NonInitState_execute_completed"
         return StateDecision.graceful_complete_workflow(data)
 
     def get_state_options(self) -> WorkflowStateOptions:
