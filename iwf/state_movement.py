@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import typing
-from typing import Union
+from typing import Union, Optional
 
 from iwf.errors import WorkflowDefinitionError
 
@@ -14,12 +14,12 @@ if typing.TYPE_CHECKING:
 from dataclasses import dataclass
 from typing import Any
 
+
 from iwf.iwf_api.models.state_movement import StateMovement as IdlStateMovement
 
 from iwf.object_encoder import ObjectEncoder
 
-from iwf.workflow_state_options import _to_idl_state_options
-
+from iwf.workflow_state_options import _to_idl_state_options, WorkflowStateOptions
 
 reserved_state_id_prefix = "_SYS_"
 
@@ -35,6 +35,7 @@ dead_end_sys_state_id = reserved_state_id_prefix + "DEAD_END"
 class StateMovement:
     state_id: str
     state_input: Any = None
+    state_options_override: Optional[WorkflowStateOptions] = None
 
     dead_end: typing.ClassVar[StateMovement]
 
@@ -52,7 +53,10 @@ class StateMovement:
 
     @classmethod
     def create(
-        cls, state: Union[str, type[WorkflowState]], state_input: Any = None
+        cls,
+        state: Union[str, type[WorkflowState]],
+        state_input: Any = None,
+        state_options_override: Optional[WorkflowStateOptions] = None,
     ) -> StateMovement:
         if isinstance(state, str):
             state_id = state
@@ -64,7 +68,7 @@ class StateMovement:
             state_id = get_state_id_by_class(state)
         if state_id.startswith(reserved_state_id_prefix):
             raise WorkflowDefinitionError("cannot use reserved stateId")
-        return StateMovement(state_id, state_input)
+        return StateMovement(state_id, state_input, state_options_override)
 
 
 StateMovement.dead_end = StateMovement(dead_end_sys_state_id)
@@ -83,9 +87,14 @@ def _to_idl_state_movement(
             should_skip_wait_until,
         )
 
+        if movement.state_options_override is not None:
+            options = movement.state_options_override
+        else:
+            options = state.get_state_options()
+
         idl_state_options = _to_idl_state_options(
             should_skip_wait_until(state),
-            state.get_state_options(),
+            options,
             registry.get_state_store(wf_type),
         )
 
