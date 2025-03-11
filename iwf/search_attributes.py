@@ -2,20 +2,21 @@ from typing import Union
 
 from iwf.errors import WorkflowDefinitionError
 from iwf.iwf_api.models import SearchAttribute, SearchAttributeValueType
+from iwf.utils.iwf_typing import unset_to_none
 
 
 class SearchAttributes:
-    _key_to_type_map = dict[str, SearchAttributeValueType]
-    _int64_attribute_map: dict[str, int]
-    _upsert_to_server_int64_attribute_map: dict[str, int]
-    _string_attribute_map: dict[str, str]
-    _upsert_to_server_string_attribute_map: dict[str, str]
-    _double_attribute_map: dict[str, float]
-    _upsert_to_server_double_attribute_map: dict[str, float]
-    _bool_attribute_map: dict[str, bool]
-    _upsert_to_server_bool_attribute_map: dict[str, bool]
-    _string_array_attribute_map: dict[str, list[str]]
-    _upsert_to_server_string_array_attribute_map: dict[str, list[str]]
+    _key_to_type_map: dict[str, SearchAttributeValueType]
+    _int64_attribute_map: dict[str, Union[int, None]]
+    _upsert_to_server_int64_attribute_map: dict[str, Union[int, None]]
+    _string_attribute_map: dict[str, Union[str, None]]
+    _upsert_to_server_string_attribute_map: dict[str, Union[str, None]]
+    _double_attribute_map: dict[str, Union[float, None]]
+    _upsert_to_server_double_attribute_map: dict[str, Union[float, None]]
+    _bool_attribute_map: dict[str, Union[bool, None]]
+    _upsert_to_server_bool_attribute_map: dict[str, Union[bool, None]]
+    _string_array_attribute_map: dict[str, Union[list[str], None]]
+    _upsert_to_server_string_array_attribute_map: dict[str, Union[list[str], None]]
 
     def __init__(
         self,
@@ -36,27 +37,36 @@ class SearchAttributes:
 
         if search_attribute_map is not None:
             for attribute in search_attribute_map:
-                value_type = key_to_type_map[attribute.key]
+                key = unset_to_none(attribute.key)
+                if key is None:
+                    raise ValueError("empty search attribute value type is not allowed")
+                value_type = key_to_type_map[key]
 
                 if (
                     value_type == SearchAttributeValueType.KEYWORD
                     or value_type == SearchAttributeValueType.DATETIME
                     or value_type == SearchAttributeValueType.TEXT
                 ):
-                    self._string_attribute_map[attribute.key] = attribute.string_value
+                    self._string_attribute_map[key] = unset_to_none(
+                        attribute.string_value
+                    )
                 elif value_type == SearchAttributeValueType.INT:
-                    self._int64_attribute_map[attribute.key] = attribute.integer_value
+                    self._int64_attribute_map[key] = unset_to_none(
+                        attribute.integer_value
+                    )
                 elif value_type == SearchAttributeValueType.DOUBLE:
-                    self._double_attribute_map[attribute.key] = attribute.double_value
+                    self._double_attribute_map[key] = unset_to_none(
+                        attribute.double_value
+                    )
                 elif value_type == SearchAttributeValueType.BOOL:
-                    self._bool_attribute_map[attribute.key] = attribute.bool_value
+                    self._bool_attribute_map[key] = unset_to_none(attribute.bool_value)
                 elif value_type == SearchAttributeValueType.KEYWORD_ARRAY:
-                    self._string_array_attribute_map[attribute.key] = (
+                    self._string_array_attribute_map[key] = unset_to_none(
                         attribute.string_array_value
                     )
                 else:
                     raise ValueError(
-                        f"empty or not supported search attribute value type, {value_type}"
+                        f"not supported search attribute value type, {value_type}"
                     )
 
     def get_search_attribute_int64(self, key: str) -> Union[int, None]:
@@ -143,17 +153,21 @@ class SearchAttributes:
         self._string_array_attribute_map[key] = value
         self._upsert_to_server_string_array_attribute_map[key] = value
 
-    def get_upsert_to_server_int64_attribute_map(self) -> dict[str, int]:
+    def get_upsert_to_server_int64_attribute_map(self) -> dict[str, Union[int, None]]:
         return self._upsert_to_server_int64_attribute_map
 
-    def get_upsert_to_server_string_attribute_map(self) -> dict[str, str]:
+    def get_upsert_to_server_string_attribute_map(self) -> dict[str, Union[str, None]]:
         return self._upsert_to_server_string_attribute_map
 
-    def get_upsert_to_server_string_array_attribute_map(self) -> dict[str, list[str]]:
+    def get_upsert_to_server_string_array_attribute_map(
+        self,
+    ) -> dict[str, Union[list[str], None]]:
         return self._upsert_to_server_string_array_attribute_map
 
-    def get_upsert_to_server_bool_attribute_map(self) -> dict[str, bool]:
+    def get_upsert_to_server_bool_attribute_map(self) -> dict[str, Union[bool, None]]:
         return self._upsert_to_server_bool_attribute_map
 
-    def get_upsert_to_server_double_attribute_map(self) -> dict[str, float]:
+    def get_upsert_to_server_double_attribute_map(
+        self,
+    ) -> dict[str, Union[float, None]]:
         return self._upsert_to_server_double_attribute_map

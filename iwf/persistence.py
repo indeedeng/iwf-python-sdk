@@ -6,7 +6,7 @@ from iwf.search_attributes import SearchAttributes
 
 class Persistence:
     _data_attributes: DataAttributes
-    _search_attributes = SearchAttributes
+    _search_attributes: SearchAttributes
 
     def __init__(
         self,
