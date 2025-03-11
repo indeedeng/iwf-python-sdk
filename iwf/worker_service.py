@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from iwf.command_request import _to_idl_command_request
 from iwf.command_results import from_idl_command_results
 from iwf.communication import Communication
+from iwf.data_attributes import DataAttributes
 from iwf.iwf_api.models import (
     EncodedObject,
     KeyValue,
@@ -19,6 +20,7 @@ from iwf.iwf_api.types import Unset
 from iwf.object_encoder import ObjectEncoder
 from iwf.persistence import Persistence
 from iwf.registry import Registry
+from iwf.search_attributes import SearchAttributes
 from iwf.state_decision import StateDecision, _to_idl_state_decision
 from iwf.utils.iwf_typing import assert_not_unset, unset_to_none
 from iwf.workflow_context import WorkflowContext, _from_idl_context
@@ -86,9 +88,14 @@ class WorkerService:
                 for attr in request.data_attributes
             }
 
-        persistence = Persistence(
+        data_attributes = DataAttributes(
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
+
+        search_attributes = SearchAttributes({}, None)
+
+        persistence = Persistence(data_attributes, search_attributes)
+
         communication = Communication(
             internal_channel_types,
             signal_channel_types,
@@ -157,9 +164,14 @@ class WorkerService:
                 for attr in request.data_objects
             }
 
-        persistence = Persistence(
+        data_attributes = DataAttributes(
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
+
+        search_attributes = SearchAttributes({}, None)
+
+        persistence = Persistence(data_attributes, search_attributes)
+
         communication = Communication(
             internal_channel_types,
             signal_channel_types,
@@ -203,9 +215,14 @@ class WorkerService:
                 for attr in request.data_objects
             }
 
-        persistence = Persistence(
+        data_attributes = DataAttributes(
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
+
+        search_attributes = SearchAttributes({}, None)
+
+        persistence = Persistence(data_attributes, search_attributes)
+
         communication = Communication(
             internal_channel_types,
             signal_channel_types,
