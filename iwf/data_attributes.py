@@ -4,6 +4,7 @@ from iwf.errors import WorkflowDefinitionError
 from iwf.iwf_api.models import EncodedObject
 from iwf.object_encoder import ObjectEncoder
 
+
 class DataAttributes:
     _type_store: dict[str, Optional[type]]
     _object_encoder: ObjectEncoder
