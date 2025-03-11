@@ -124,10 +124,10 @@ class WorkerService:
 
         if len(pubs) > 0:
             response.publish_to_inter_state_channel = pubs
-        if len(persistence.get_updated_values_to_return()) > 0:
+        if len(data_attributes.get_updated_values_to_return()) > 0:
             response.upsert_data_attributes = [
                 KeyValue(k, v)
-                for (k, v) in persistence.get_updated_values_to_return().items()
+                for (k, v) in data_attributes.get_updated_values_to_return().items()
             ]
         if len(communication.get_to_trigger_state_movements()) > 0:
             movements = communication.get_to_trigger_state_movements()
@@ -187,7 +187,7 @@ class WorkerService:
             publish_to_inter_state_channel=pubs,
             upsert_data_objects=[
                 KeyValue(k, v)
-                for (k, v) in persistence.get_updated_values_to_return().items()
+                for (k, v) in data_attributes.get_updated_values_to_return().items()
             ],
         )
 
@@ -252,6 +252,6 @@ class WorkerService:
             publish_to_inter_state_channel=pubs,
             upsert_data_objects=[
                 KeyValue(k, v)
-                for (k, v) in persistence.get_updated_values_to_return().items()
+                for (k, v) in data_attributes.get_updated_values_to_return().items()
             ],
         )
