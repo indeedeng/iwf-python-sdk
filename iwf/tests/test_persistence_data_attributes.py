@@ -63,7 +63,7 @@ class DataAttributeRWState(WorkflowState[None]):
         return StateDecision.graceful_complete_workflow()
 
 
-class PersistenceWorkflow(ObjectWorkflow):
+class PersistenceDataAttributesWorkflow(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
         return StateSchema.with_starting_state(DataAttributeRWState())
 
@@ -85,14 +85,14 @@ class PersistenceWorkflow(ObjectWorkflow):
         )
 
 
-class TestPersistence(unittest.TestCase):
+class TestPersistenceDataAttributes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        wf = PersistenceWorkflow()
+        wf = PersistenceDataAttributesWorkflow()
         registry.add_workflow(wf)
         cls.client = Client(registry)
 
-    def test_persistence_workflow(self):
+    def test_persistence_data_attributes_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
         start_options = WorkflowOptions(
@@ -102,10 +102,14 @@ class TestPersistence(unittest.TestCase):
             },
         )
 
-        self.client.start_workflow(PersistenceWorkflow, wf_id, 100, None, start_options)
-        self.client.get_simple_workflow_result_with_wait(wf_id, None)
+        self.client.start_workflow(
+            PersistenceDataAttributesWorkflow, wf_id, 100, None, start_options
+        )
+        self.client.wait_for_workflow_completion(wf_id, None)
 
-        res = self.client.invoke_rpc(wf_id, PersistenceWorkflow.test_persistence_read)
+        res = self.client.invoke_rpc(
+            wf_id, PersistenceDataAttributesWorkflow.test_persistence_read
+        )
         assert res == [
             final_initial_da_value_1,
             final_initial_da_value_2,

@@ -72,7 +72,7 @@ class SearchAttributes:
     def get_search_attribute_int64(self, key: str) -> Union[int, None]:
         return self._int64_attribute_map.get(key)
 
-    def set_search_attribute_int64(self, key: str, value: int):
+    def set_search_attribute_int64(self, key: str, value: Union[int, None]):
         if (
             key not in self._key_to_type_map
             or self._key_to_type_map[key] != SearchAttributeValueType.INT
@@ -84,7 +84,7 @@ class SearchAttributes:
     def get_search_attribute_double(self, key: str) -> Union[float, None]:
         return self._double_attribute_map.get(key)
 
-    def set_search_attribute_double(self, key: str, value: float):
+    def set_search_attribute_double(self, key: str, value: Union[float, None]):
         if (
             key not in self._key_to_type_map
             or self._key_to_type_map[key] != SearchAttributeValueType.DOUBLE
@@ -96,7 +96,7 @@ class SearchAttributes:
     def get_search_attribute_boolean(self, key: str) -> Union[bool, None]:
         return self._bool_attribute_map.get(key)
 
-    def set_search_attribute_boolean(self, key: str, value: bool):
+    def set_search_attribute_boolean(self, key: str, value: Union[bool, None]):
         if (
             key not in self._key_to_type_map
             or self._key_to_type_map[key] != SearchAttributeValueType.BOOL
@@ -108,7 +108,7 @@ class SearchAttributes:
     def get_search_attribute_keyword(self, key: str) -> Union[str, None]:
         return self._string_attribute_map.get(key)
 
-    def set_search_attribute_keyword(self, key: str, value: str):
+    def set_search_attribute_keyword(self, key: str, value: Union[str, None]):
         if (
             key not in self._key_to_type_map
             or self._key_to_type_map[key] != SearchAttributeValueType.KEYWORD
@@ -120,7 +120,7 @@ class SearchAttributes:
     def get_search_attribute_text(self, key: str) -> Union[str, None]:
         return self._string_attribute_map.get(key)
 
-    def set_search_attribute_text(self, key: str, value: str):
+    def set_search_attribute_text(self, key: str, value: Union[str, None]):
         if (
             key not in self._key_to_type_map
             or self._key_to_type_map[key] != SearchAttributeValueType.TEXT
@@ -132,7 +132,7 @@ class SearchAttributes:
     def get_search_attribute_datetime(self, key: str) -> Union[str, None]:
         return self._string_attribute_map.get(key)
 
-    def set_search_attribute_datetime(self, key: str, value: str):
+    def set_search_attribute_datetime(self, key: str, value: Union[str, None]):
         if (
             key not in self._key_to_type_map
             or self._key_to_type_map[key] != SearchAttributeValueType.DATETIME
@@ -144,7 +144,9 @@ class SearchAttributes:
     def get_search_attribute_keyword_array(self, key: str) -> Union[list[str], None]:
         return self._string_array_attribute_map.get(key)
 
-    def set_search_attribute_keyword_array(self, key: str, value: list[str]):
+    def set_search_attribute_keyword_array(
+        self, key: str, value: Union[list[str], None]
+    ):
         if (
             key not in self._key_to_type_map
             or self._key_to_type_map[key] != SearchAttributeValueType.KEYWORD_ARRAY
