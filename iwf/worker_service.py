@@ -1,6 +1,7 @@
 import traceback
 import typing
 from dataclasses import dataclass
+from typing import Union
 
 from iwf.command_request import _to_idl_command_request
 from iwf.command_results import from_idl_command_results
@@ -310,53 +311,59 @@ class WorkerService:
 
 def _create_upsert_search_attributes(
     type_map: dict[str, SearchAttributeValueType],
-    upsert_to_server_int64_attribute_map: dict[str, int],
-    upsert_to_server_keyword_attribute_map: dict[str, str],
-    upsert_to_server_bool_attribute_map: dict[str, bool],
-    upsert_to_server_double_attribute_map: dict[str, float],
-    upsert_to_server_string_array_attribute_map: dict[str, list[str]],
+    upsert_to_server_int64_attribute_map: dict[str, Union[int, None]],
+    upsert_to_server_keyword_attribute_map: dict[str, Union[str, None]],
+    upsert_to_server_bool_attribute_map: dict[str, Union[bool, None]],
+    upsert_to_server_double_attribute_map: dict[str, Union[float, None]],
+    upsert_to_server_string_array_attribute_map: dict[str, Union[list[str], None]],
 ):
     sas: list[SearchAttribute] = []
     for int_key, int_sa in upsert_to_server_int64_attribute_map.items():
-        sas.append(
-            SearchAttribute(
-                key=int_key, integer_value=int_sa, value_type=type_map[int_key]
-            )
+        sa = SearchAttribute(
+            key=int_key,
+            value_type=type_map[int_key],
         )
+        if int_sa is not None:
+            sa.integer_value = int_sa
+        sas.append(sa)
 
     for keyword_key, keyword_sa in upsert_to_server_keyword_attribute_map.items():
-        sas.append(
-            SearchAttribute(
-                key=keyword_key,
-                string_value=keyword_sa,
-                value_type=type_map[keyword_key],
-            )
+        sa = SearchAttribute(
+            key=keyword_key,
+            value_type=type_map[keyword_key],
         )
+        if keyword_sa is not None:
+            sa.string_value = keyword_sa
+        sas.append(sa)
 
     for bool_key, bool_sa in upsert_to_server_bool_attribute_map.items():
-        sas.append(
-            SearchAttribute(
-                key=bool_key, bool_value=bool_sa, value_type=type_map[bool_key]
-            )
+        sa = SearchAttribute(
+            key=bool_key,
+            value_type=type_map[bool_key],
         )
+        if bool_sa is not None:
+            sa.bool_value = bool_sa
+        sas.append(sa)
 
     for double_key, double_sa in upsert_to_server_double_attribute_map.items():
-        sas.append(
-            SearchAttribute(
-                key=double_key, double_value=double_sa, value_type=type_map[double_key]
-            )
+        sa = SearchAttribute(
+            key=double_key,
+            value_type=type_map[double_key],
         )
+        if double_sa is not None:
+            sa.double_value = double_sa
+        sas.append(sa)
 
     for (
         string_array_key,
         string_array_sa,
     ) in upsert_to_server_string_array_attribute_map.items():
-        sas.append(
-            SearchAttribute(
-                key=string_array_key,
-                string_array_value=string_array_sa,
-                value_type=type_map[string_array_key],
-            )
+        sa = SearchAttribute(
+            key=string_array_key,
+            value_type=type_map[string_array_key],
         )
+        if string_array_sa is not None:
+            sa.string_array_value = string_array_sa
+        sas.append(sa)
 
     return sas
