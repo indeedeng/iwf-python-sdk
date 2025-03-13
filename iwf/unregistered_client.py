@@ -231,6 +231,7 @@ class UnregisteredClient:
         data_attribute_policy: Optional[PersistenceLoadingPolicy],
         all_defined_search_attribute_types: list[SearchAttributeKeyAndType],
         return_type_hint: Optional[Type[T]] = None,
+        search_attribute_policy: Optional[PersistenceLoadingPolicy] = None,
     ) -> Optional[T]:
         request = WorkflowRpcRequest(
             input_=self.client_options.object_encoder.encode(input),
@@ -242,6 +243,8 @@ class UnregisteredClient:
         )
         if data_attribute_policy is not None:
             request.data_attributes_loading_policy = data_attribute_policy
+        if search_attribute_policy is not None:
+            request.search_attributes_loading_policy = search_attribute_policy
 
         try:
             response = post_api_v1_workflow_rpc.sync_detailed(

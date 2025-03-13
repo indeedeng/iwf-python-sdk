@@ -92,7 +92,10 @@ class WorkerService:
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
 
-        search_attributes = SearchAttributes({}, None)
+        search_attributes_types = self._registry.get_search_attribute_types(wf_type)
+        search_attributes = SearchAttributes(
+            search_attributes_types, unset_to_none(request.search_attributes)
+        )
 
         persistence = Persistence(data_attributes, search_attributes)
 
@@ -168,7 +171,10 @@ class WorkerService:
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
 
-        search_attributes = SearchAttributes({}, None)
+        search_attributes_types = self._registry.get_search_attribute_types(wf_type)
+        search_attributes = SearchAttributes(
+            search_attributes_types, unset_to_none(request.search_attributes)
+        )
 
         persistence = Persistence(data_attributes, search_attributes)
 
@@ -219,7 +225,10 @@ class WorkerService:
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
 
-        search_attributes = SearchAttributes({}, None)
+        search_attributes_types = self._registry.get_search_attribute_types(wf_type)
+        search_attributes = SearchAttributes(
+            search_attributes_types, unset_to_none(request.search_attributes)
+        )
 
         persistence = Persistence(data_attributes, search_attributes)
 

@@ -5,10 +5,17 @@ from typing_extensions import deprecated
 
 from iwf.client_options import ClientOptions
 from iwf.errors import InvalidArgumentError
+from iwf.iwf_api.models import (
+    SearchAttribute,
+    SearchAttributeKeyAndType,
+    SearchAttributeValueType,
+)
+from iwf.iwf_api.types import Unset
 from iwf.registry import Registry
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
 from iwf.stop_workflow_options import StopWorkflowOptions
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
+from iwf.utils.iwf_typing import unset_to_none
 from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import (
@@ -211,3 +218,106 @@ class Client:
             state_execution_number,
             timer_command_index,
         )
+
+    def get_all_search_attributes(
+        self,
+        workflow_class: type[ObjectWorkflow],
+        workflow_id: str,
+        workflow_run_id: Optional[str] = None,
+    ):
+        return self._do_get_workflow_search_attributes(
+            workflow_class, workflow_id, workflow_run_id
+        )
+
+    def get_workflow_search_attributes(
+        self,
+        workflow_class: type[ObjectWorkflow],
+        workflow_id: str,
+        attribute_keys: list[str],
+        workflow_run_id: Optional[str] = None,
+    ):
+        if not attribute_keys:
+            raise ValueError(
+                "attribute_keys must contain at least one entry, or use get_all_search_attributes API to get all"
+            )
+        return self._do_get_workflow_search_attributes(
+            workflow_class, workflow_id, workflow_run_id, attribute_keys
+        )
+
+    def _do_get_workflow_search_attributes(
+        self,
+        workflow_class: type[ObjectWorkflow],
+        workflow_id: str,
+        workflow_run_id: Optional[str],
+        attribute_keys: Optional[list[str]] = None,
+    ):
+        wf_type = get_workflow_type_by_class(workflow_class)
+        self._registry.get_workflow_with_check(wf_type)
+
+        search_attribute_types = self._registry.get_search_attribute_types(wf_type)
+
+        # if attribute keys is None or empty, iwf server will return all search attributes
+        if attribute_keys is not None and attribute_keys:
+            non_existing_search_attribute_list: list[str] = []
+            for attribute_key in attribute_keys:
+                if attribute_key not in search_attribute_types:
+                    non_existing_search_attribute_list.append(attribute_key)
+
+            if non_existing_search_attribute_list:
+                raise InvalidArgumentError(
+                    f"Search attributes not registered: {','.join(non_existing_search_attribute_list)}"
+                )
+
+        key_and_types: list[SearchAttributeKeyAndType] = []
+        if attribute_keys is None:
+            for attribute_key, sa_type in search_attribute_types.items():
+                key_and_types.append(SearchAttributeKeyAndType(attribute_key, sa_type))
+        else:
+            for attribute_key in attribute_keys:
+                sa_type = search_attribute_types[attribute_key]
+                key_and_types.append(SearchAttributeKeyAndType(attribute_key, sa_type))
+
+        run_id = workflow_run_id if workflow_run_id is not None else ""
+
+        response = self._unregistered_client.get_workflow_search_attributes(
+            workflow_id, run_id, key_and_types
+        )
+
+        response_sas = response.search_attributes
+
+        # TODO: troubleshoot why unset_to_none doesn't work as expected with lists
+        if isinstance(response_sas, Unset) or response_sas is None:
+            raise RuntimeError("search attributes not returned")
+
+        result: dict[str, Any] = {}
+
+        for response_sa in response_sas:
+            response_sa_key = unset_to_none(response_sa.key)
+            if response_sa_key is None:
+                raise RuntimeError("search attribute key is None")
+            response_sa_type = search_attribute_types[response_sa_key]
+            value = self.get_search_attribute_value(response_sa_type, response_sa)
+            result[response_sa_key] = value
+
+        return result
+
+    @staticmethod
+    def get_search_attribute_value(
+        sa_type: SearchAttributeValueType, attribute: SearchAttribute
+    ):
+        if (
+            sa_type == SearchAttributeValueType.KEYWORD
+            or sa_type == SearchAttributeValueType.DATETIME
+            or sa_type == SearchAttributeValueType.TEXT
+        ):
+            return unset_to_none(attribute.string_value)
+        elif sa_type == SearchAttributeValueType.INT:
+            return unset_to_none(attribute.integer_value)
+        elif sa_type == SearchAttributeValueType.DOUBLE:
+            return unset_to_none(attribute.double_value)
+        elif sa_type == SearchAttributeValueType.BOOL:
+            return unset_to_none(attribute.bool_value)
+        elif sa_type == SearchAttributeValueType.KEYWORD_ARRAY:
+            return unset_to_none(attribute.string_array_value)
+        else:
+            raise ValueError(f"not supported search attribute value type, {sa_type}")
