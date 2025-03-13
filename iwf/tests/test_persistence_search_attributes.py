@@ -4,7 +4,7 @@ import unittest
 from time import sleep
 
 from iwf.client import Client
-from iwf.command_request import CommandRequest, TimerCommand, InternalChannelCommand
+from iwf.command_request import CommandRequest, TimerCommand
 from iwf.command_results import CommandResults
 from iwf.communication import Communication
 from iwf.communication_schema import CommunicationSchema, CommunicationMethod
@@ -82,7 +82,7 @@ class SearchAttributeState2(WorkflowState[None]):
         communication: Communication,
     ) -> CommandRequest:
         return CommandRequest.for_all_command_completed(
-            TimerCommand.by_seconds(2),
+            TimerCommand.by_seconds(5),
         )
 
     def execute(
@@ -156,7 +156,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         )
 
         # Wait for the search attributes to be set; could be replaced with wait_for_state_execution_completed once implemented
-        sleep(1)
+        sleep(3)
 
         returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id
