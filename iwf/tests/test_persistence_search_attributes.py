@@ -11,7 +11,6 @@ from iwf.communication_schema import CommunicationSchema, CommunicationMethod
 from iwf.iwf_api.models import SearchAttributeValueType
 from iwf.persistence import Persistence
 from iwf.persistence_schema import PersistenceField, PersistenceSchema
-from iwf.rpc import rpc
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
 from iwf.tests.worker_server import registry
@@ -61,9 +60,7 @@ class SearchAttributeState1(WorkflowState[None]):
             sa_keyword_array_key, sa_keyword_array
         )
 
-        return CommandRequest.for_all_command_completed(
-            InternalChannelCommand.by_name(test_internal_channel),
-        )
+        return CommandRequest.empty()
 
     def execute(
         self,
@@ -143,10 +140,6 @@ class PersistenceSearchAttributesWorkflow(ObjectWorkflow):
             ),
         )
 
-    @rpc()
-    def test_rpc_publish_channel(self, com: Communication):
-        com.publish_to_internal_channel(test_internal_channel, 0)
-
 
 class TestPersistenceSearchAttributes(unittest.TestCase):
     @classmethod
@@ -164,10 +157,6 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
 
         # Wait for the search attributes to be set; could be replaced with wait_for_state_execution_completed once implemented
         sleep(1)
-
-        self.client.invoke_rpc(
-            wf_id, PersistenceSearchAttributesWorkflow.test_rpc_publish_channel
-        )
 
         returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id
