@@ -110,9 +110,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
     def test_persistence_search_attributes_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-        self.client.start_workflow(
-            PersistenceSearchAttributesWorkflow, wf_id, 200
-        )
+        self.client.start_workflow(PersistenceSearchAttributesWorkflow, wf_id, 10)
 
         # # Wait for the search attributes to be set; long sleep to avoid test flakiness
         # # TODO: Should be replaced with setting within a state and wait_for_state_execution_completed once implemented
