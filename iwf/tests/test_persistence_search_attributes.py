@@ -143,7 +143,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
 
         self.client.start_workflow(PersistenceSearchAttributesWorkflow, wf_id, 100)
 
-        # TODO: Should be replaced with setting within a state and wait_for_state_execution_completed once implemented
+        # TODO: Should be replaced with wait_for_state_execution_completed once implemented
         # https://github.com/indeedeng/iwf-python-sdk/issues/48
         time.sleep(3)
 
