@@ -80,7 +80,7 @@ class SearchAttributeState2(WorkflowState[None]):
         communication: Communication,
     ) -> CommandRequest:
         return CommandRequest.for_all_command_completed(
-            TimerCommand.by_seconds(8),
+            TimerCommand.by_seconds(15),
         )
 
     def execute(
@@ -146,7 +146,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         registry.add_workflow(wf)
         cls.client = Client(registry)
 
-    def test_persistence_workflow(self):
+    def test_persistence_search_attributes_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
         self.client.start_workflow(
@@ -154,7 +154,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         )
 
         # Wait for the search attributes to be set; could be replaced with wait_for_state_execution_completed once implemented
-        time.sleep(6)
+        time.sleep(10)
 
         returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id
@@ -186,7 +186,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         final_expected_search_attributes[sa_bool_key] = final_sa_bool
         final_expected_search_attributes[sa_keyword_array_key] = final_sa_keyword_array
         final_expected_search_attributes[sa_datetime_key] = (
-            "2024-12-13T18:00:01.731455544-06:00"  # This is a bug. The iwf-server always returns utc time. See https://github.com/indeedeng/iwf/issues/261
+            "2024-12-14T00:00:01.731455544Z"  # This is a bug. The iwf-server always returns utc time. See https://github.com/indeedeng/iwf/issues/261
         )
 
         assert final_expected_search_attributes == final_returned_search_attributes
