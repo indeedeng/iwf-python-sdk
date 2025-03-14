@@ -42,6 +42,7 @@ final_sa_bool: bool = False
 final_sa_datetime: str = "2024-12-13T16:00:01.731455544-08:00"
 final_sa_keyword_array: list[str] = ["final_keyword-1", "final_keyword-2"]
 
+
 class SearchAttributeState(WorkflowState[None]):
     def wait_until(
         self,
@@ -80,9 +81,7 @@ class PersistenceSearchAttributesWorkflow(ObjectWorkflow):
         )
 
     def get_workflow_states(self) -> StateSchema:
-        return StateSchema.with_starting_state(
-            SearchAttributeState()
-        )
+        return StateSchema.with_starting_state(SearchAttributeState())
 
     def get_persistence_schema(self) -> PersistenceSchema:
         return PersistenceSchema.create(
@@ -138,12 +137,16 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         )
 
         self.client.invoke_rpc(
-            wf_id, PersistenceSearchAttributesWorkflow.test_persistence_set_search_attribute
+            wf_id,
+            PersistenceSearchAttributesWorkflow.test_persistence_set_search_attribute,
         )
 
-        time.sleep(1)
+        # Wait for the search attributes to be set; long sleep to avoid test flakiness
+        # TODO: Should be replaced with setting within a state and wait_for_state_execution_completed once implemented
+        # https://github.com/indeedeng/iwf-python-sdk/issues/48
+        time.sleep(10)
 
-        returned_search_attributes = self.client.get_all_search_attributes(
+        returned_search_attributes = self.client.get_workflow_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id
         )
 
