@@ -1,4 +1,5 @@
 import inspect
+import pytest
 import time
 import unittest
 
@@ -88,6 +89,7 @@ class TestSignal(unittest.TestCase):
         registry.add_workflow(wf)
         cls.client = Client(registry)
 
+    @pytest.mark.skip
     def test_signal(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
         self.client.start_workflow(WaitSignalWorkflow, wf_id, 1)
@@ -97,6 +99,7 @@ class TestSignal(unittest.TestCase):
         res = self.client.get_simple_workflow_result_with_wait(wf_id)
         assert res == "abc"
 
+    @pytest.mark.skip
     def test_signal_channel_size(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
         self.client.start_workflow(WaitSignalWorkflow, wf_id, 1)

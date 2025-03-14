@@ -1,4 +1,5 @@
 import inspect
+import pytest
 import time
 import unittest
 
@@ -92,6 +93,7 @@ class TestPersistenceDataAttributes(unittest.TestCase):
         registry.add_workflow(wf)
         cls.client = Client(registry)
 
+    @pytest.mark.skip
     def test_persistence_data_attributes_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 

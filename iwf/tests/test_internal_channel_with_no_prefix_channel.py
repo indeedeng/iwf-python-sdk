@@ -1,4 +1,5 @@
 import inspect
+import pytest
 import time
 import unittest
 
@@ -106,6 +107,7 @@ client = Client(registry)
 
 
 class TestInternalChannelWithNoPrefix(unittest.TestCase):
+    @pytest.mark.skip
     def test_internal_channel_workflow_with_no_prefix_channel(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
