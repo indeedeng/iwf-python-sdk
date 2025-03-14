@@ -111,7 +111,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
         self.client.start_workflow(
-            PersistenceSearchAttributesWorkflow, wf_id, 100, None
+            PersistenceSearchAttributesWorkflow, wf_id, 200
         )
 
         # # Wait for the search attributes to be set; long sleep to avoid test flakiness
@@ -135,7 +135,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         #
         # assert expected_search_attributes == returned_search_attributes
 
-        self.client.wait_for_workflow_completion(wf_id, None)
+        self.client.wait_for_workflow_completion(wf_id)
 
         final_returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id

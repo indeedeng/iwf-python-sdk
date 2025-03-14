@@ -261,8 +261,8 @@ class Client:
 
         search_attribute_types = self._registry.get_search_attribute_types(wf_type)
 
-        # if attribute keys is None or empty, iwf server will return all search attributes
-        if attribute_keys is not None and attribute_keys:
+        # if attribute keys is None, will fetch all registered search attributes from the server
+        if attribute_keys:
             non_existing_search_attribute_list: list[str] = []
             for attribute_key in attribute_keys:
                 if attribute_key not in search_attribute_types:
