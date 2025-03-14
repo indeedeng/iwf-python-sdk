@@ -1,5 +1,4 @@
 import inspect
-import pytest
 import time
 import unittest
 from typing import Union
@@ -70,7 +69,6 @@ client = Client(registry)
 
 
 class TestWorkflowErrors(unittest.TestCase):
-    @pytest.mark.skip
     def test_basic_workflow(self):
         original_request_id = "1"
         later_request_id = "2"

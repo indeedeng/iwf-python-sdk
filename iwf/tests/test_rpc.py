@@ -1,5 +1,4 @@
 import inspect
-import pytest
 import time
 import unittest
 from dataclasses import dataclass
@@ -124,7 +123,6 @@ class TestRPCs(unittest.TestCase):
         registry.add_workflow(wf)
         cls.client = Client(registry)
 
-    @pytest.mark.skip
     def test_simple_rpc(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
         self.client.start_workflow(RPCWorkflow, wf_id, 10)
@@ -141,7 +139,6 @@ class TestRPCs(unittest.TestCase):
         output = self.client.invoke_rpc(wf_id, wf.test_simple_rpc)
         assert output == 123
 
-    @pytest.mark.skip
     def test_complicated_rpc(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
         self.client.start_workflow(RPCWorkflow, wf_id, 10)

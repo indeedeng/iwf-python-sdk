@@ -1,5 +1,4 @@
 import inspect
-import pytest
 import time
 import unittest
 
@@ -58,7 +57,6 @@ client = Client(registry)
 
 
 class Test(unittest.TestCase):
-    @pytest.mark.skip
     def test_workflow_recovery(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
         client.start_workflow(RecoveryWorkflow, wf_id, 10)

@@ -67,6 +67,7 @@ class SearchAttributeState1(WorkflowState[None]):
     ) -> StateDecision:
         return StateDecision.single_next_state(SearchAttributeState2)
 
+
 class SearchAttributeState2(WorkflowState[None]):
     def wait_until(
         self,
@@ -97,9 +98,12 @@ class SearchAttributeState2(WorkflowState[None]):
         )
         return StateDecision.graceful_complete_workflow()
 
+
 class PersistenceSearchAttributesWorkflow(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
-        return StateSchema.with_starting_state(SearchAttributeState1(), SearchAttributeState2())
+        return StateSchema.with_starting_state(
+            SearchAttributeState1(), SearchAttributeState2()
+        )
 
     def get_persistence_schema(self) -> PersistenceSchema:
         return PersistenceSchema.create(

@@ -1,5 +1,4 @@
 import inspect
-import pytest
 import time
 import unittest
 
@@ -136,7 +135,6 @@ client = Client(registry)
 
 
 class TestConditionalComplete(unittest.TestCase):
-    @pytest.mark.skip
     def test_internal_channel_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 

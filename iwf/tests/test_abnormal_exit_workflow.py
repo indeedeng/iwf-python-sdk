@@ -1,5 +1,4 @@
 import inspect
-import pytest
 import time
 import unittest
 from typing import Union
@@ -50,7 +49,6 @@ client = Client(registry)
 
 
 class TestAbnormalWorkflow(unittest.TestCase):
-    @pytest.mark.skip
     def test_abnormal_exit_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
         startOptions = WorkflowOptions(

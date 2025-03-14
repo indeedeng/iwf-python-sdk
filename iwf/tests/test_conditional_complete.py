@@ -1,5 +1,4 @@
 import inspect
-import pytest
 import time
 import unittest
 
@@ -98,12 +97,10 @@ class TestConditionalComplete(unittest.TestCase):
         wf = ConditionalCompleteWorkflow()
         registry.add_workflow(wf)
 
-    @pytest.mark.skip
     def test_internal_channel_conditional_complete(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
         self.do_test_conditional_workflow(wf_id, False)
 
-    @pytest.mark.skip
     def test_signal_channel_conditional_complete(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
         self.do_test_conditional_workflow(wf_id, True)
