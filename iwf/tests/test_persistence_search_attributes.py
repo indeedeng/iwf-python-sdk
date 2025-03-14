@@ -49,6 +49,14 @@ class SearchAttributeState(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> CommandRequest:
+        persistence.set_search_attribute_keyword(sa_keyword_key, final_sa_keyword)
+        persistence.set_search_attribute_text(sa_text_key, final_sa_text)
+        persistence.set_search_attribute_int64(sa_int_key, final_sa_int)
+        persistence.set_search_attribute_boolean(sa_bool_key, final_sa_bool)
+        persistence.set_search_attribute_datetime(sa_datetime_key, final_sa_datetime)
+        persistence.set_search_attribute_keyword_array(
+            sa_keyword_array_key, final_sa_keyword_array
+        )
         return CommandRequest.empty()
 
     def execute(
@@ -59,14 +67,6 @@ class SearchAttributeState(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        persistence.set_search_attribute_keyword(sa_keyword_key, final_sa_keyword)
-        persistence.set_search_attribute_text(sa_text_key, final_sa_text)
-        persistence.set_search_attribute_int64(sa_int_key, final_sa_int)
-        persistence.set_search_attribute_boolean(sa_bool_key, final_sa_bool)
-        persistence.set_search_attribute_datetime(sa_datetime_key, final_sa_datetime)
-        persistence.set_search_attribute_keyword_array(
-            sa_keyword_array_key, final_sa_keyword_array
-        )
         return StateDecision.graceful_complete_workflow()
 
 
