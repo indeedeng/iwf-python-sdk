@@ -1,7 +1,6 @@
 import inspect
 import time
 import unittest
-from time import sleep
 
 from iwf.client import Client
 from iwf.command_request import CommandRequest, TimerCommand
@@ -155,7 +154,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         )
 
         # Wait for the search attributes to be set; could be replaced with wait_for_state_execution_completed once implemented
-        time.sleep(4)
+        time.sleep(6)
 
         returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id
@@ -168,7 +167,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         expected_search_attributes[sa_int_key] = sa_int
         expected_search_attributes[sa_keyword_array_key] = sa_keyword_array
         expected_search_attributes[sa_datetime_key] = (
-            "2024-11-12T18:00:01.731455544-06:00"  # This is a bug. The iwf-server always returns utc time. See https://github.com/indeedeng/iwf/issues/261
+            "2024-11-13T00:00:01.731455544Z"  # This is a bug. The iwf-server always returns utc time. See https://github.com/indeedeng/iwf/issues/261
         )
 
         assert expected_search_attributes == returned_search_attributes
