@@ -153,8 +153,10 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
             PersistenceSearchAttributesWorkflow, wf_id, 100, None
         )
 
-        # Wait for the search attributes to be set; could be replaced with wait_for_state_execution_completed once implemented
-        time.sleep(10)
+        # Wait for the search attributes to be set; Long sleep to avoid test flakiness
+        # TODO: Should be replaced with wait_for_state_execution_completed once implemented
+        # https://github.com/indeedeng/iwf-python-sdk/issues/48
+        time.sleep(12)
 
         returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id
