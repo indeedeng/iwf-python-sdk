@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from iwf.command_request import _to_idl_command_request
 from iwf.command_results import from_idl_command_results
 from iwf.communication import Communication
+from iwf.data_attributes import DataAttributes
 from iwf.iwf_api.models import (
     EncodedObject,
     KeyValue,
@@ -19,6 +20,7 @@ from iwf.iwf_api.types import Unset
 from iwf.object_encoder import ObjectEncoder
 from iwf.persistence import Persistence
 from iwf.registry import Registry
+from iwf.search_attributes import SearchAttributes
 from iwf.state_decision import StateDecision, _to_idl_state_decision
 from iwf.utils.iwf_typing import assert_not_unset, unset_to_none
 from iwf.workflow_context import WorkflowContext, _from_idl_context
@@ -86,9 +88,17 @@ class WorkerService:
                 for attr in request.data_attributes
             }
 
-        persistence = Persistence(
+        data_attributes = DataAttributes(
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
+
+        search_attributes_types = self._registry.get_search_attribute_types(wf_type)
+        search_attributes = SearchAttributes(
+            search_attributes_types, unset_to_none(request.search_attributes)
+        )
+
+        persistence = Persistence(data_attributes, search_attributes)
+
         communication = Communication(
             internal_channel_types,
             signal_channel_types,
@@ -117,10 +127,10 @@ class WorkerService:
 
         if len(pubs) > 0:
             response.publish_to_inter_state_channel = pubs
-        if len(persistence.get_updated_values_to_return()) > 0:
+        if len(data_attributes.get_updated_values_to_return()) > 0:
             response.upsert_data_attributes = [
                 KeyValue(k, v)
-                for (k, v) in persistence.get_updated_values_to_return().items()
+                for (k, v) in data_attributes.get_updated_values_to_return().items()
             ]
         if len(communication.get_to_trigger_state_movements()) > 0:
             movements = communication.get_to_trigger_state_movements()
@@ -157,9 +167,17 @@ class WorkerService:
                 for attr in request.data_objects
             }
 
-        persistence = Persistence(
+        data_attributes = DataAttributes(
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
+
+        search_attributes_types = self._registry.get_search_attribute_types(wf_type)
+        search_attributes = SearchAttributes(
+            search_attributes_types, unset_to_none(request.search_attributes)
+        )
+
+        persistence = Persistence(data_attributes, search_attributes)
+
         communication = Communication(
             internal_channel_types,
             signal_channel_types,
@@ -175,7 +193,7 @@ class WorkerService:
             publish_to_inter_state_channel=pubs,
             upsert_data_objects=[
                 KeyValue(k, v)
-                for (k, v) in persistence.get_updated_values_to_return().items()
+                for (k, v) in data_attributes.get_updated_values_to_return().items()
             ],
         )
 
@@ -203,9 +221,17 @@ class WorkerService:
                 for attr in request.data_objects
             }
 
-        persistence = Persistence(
+        data_attributes = DataAttributes(
             data_attributes_types, self._options.object_encoder, current_data_attributes
         )
+
+        search_attributes_types = self._registry.get_search_attribute_types(wf_type)
+        search_attributes = SearchAttributes(
+            search_attributes_types, unset_to_none(request.search_attributes)
+        )
+
+        persistence = Persistence(data_attributes, search_attributes)
+
         communication = Communication(
             internal_channel_types,
             signal_channel_types,
@@ -235,6 +261,6 @@ class WorkerService:
             publish_to_inter_state_channel=pubs,
             upsert_data_objects=[
                 KeyValue(k, v)
-                for (k, v) in persistence.get_updated_values_to_return().items()
+                for (k, v) in data_attributes.get_updated_values_to_return().items()
             ],
         )

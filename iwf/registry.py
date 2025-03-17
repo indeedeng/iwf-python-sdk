@@ -2,6 +2,7 @@ from typing import Callable, Optional
 
 from iwf.communication_schema import CommunicationMethodType
 from iwf.errors import InvalidArgumentError, WorkflowDefinitionError
+from iwf.iwf_api.models import SearchAttributeValueType
 from iwf.persistence_schema import PersistenceFieldType
 from iwf.rpc import RPCInfo
 from iwf.type_store import TypeStore, Type
@@ -16,6 +17,7 @@ class Registry:
     _internal_channel_type_store: dict[str, TypeStore]
     _signal_channel_type_store: dict[str, dict[str, Optional[type]]]
     _data_attribute_types: dict[str, dict[str, Optional[type]]]
+    _search_attribute_types: dict[str, dict[str, SearchAttributeValueType]]
     _rpc_infos: dict[str, dict[str, RPCInfo]]
 
     def __init__(self):
@@ -25,6 +27,7 @@ class Registry:
         self._internal_channel_type_store = dict()
         self._signal_channel_type_store = dict()
         self._data_attribute_types = dict()
+        self._search_attribute_types = {}
         self._rpc_infos = dict()
 
     def add_workflow(self, wf: ObjectWorkflow):
@@ -33,6 +36,7 @@ class Registry:
         self._register_internal_channels(wf)
         self._register_signal_channels(wf)
         self._register_data_attributes(wf)
+        self._register_search_attributes(wf)
         self._register_workflow_rpcs(wf)
 
     def add_workflows(self, *wfs: ObjectWorkflow):
@@ -73,6 +77,11 @@ class Registry:
     def get_data_attribute_types(self, wf_type: str) -> dict[str, Optional[type]]:
         return self._data_attribute_types[wf_type]
 
+    def get_search_attribute_types(
+        self, wf_type: str
+    ) -> dict[str, SearchAttributeValueType]:
+        return self._search_attribute_types[wf_type]
+
     def get_rpc_infos(self, wf_type: str) -> dict[str, RPCInfo]:
         return self._rpc_infos[wf_type]
 
@@ -111,6 +120,23 @@ class Registry:
             if field.field_type == PersistenceFieldType.DataAttribute:
                 types[field.key] = field.value_type
         self._data_attribute_types[wf_type] = types
+
+    def _register_search_attributes(self, wf: ObjectWorkflow):
+        wf_type = get_workflow_type(wf)
+        types: dict[str, SearchAttributeValueType] = {}
+        for field in wf.get_persistence_schema().persistence_fields:
+            if field.field_type == PersistenceFieldType.SearchAttribute:
+                sa_type = field.search_attribute_type
+                if sa_type is None:
+                    raise WorkflowDefinitionError(
+                        f"Found search attribute {field.key} with no type set"
+                    )
+                if field.key in types:
+                    raise WorkflowDefinitionError(
+                        f"Search attribute {field.key} already exists"
+                    )
+                types[field.key] = sa_type
+        self._search_attribute_types[wf_type] = types
 
     def _register_workflow_state(self, wf):
         wf_type = get_workflow_type(wf)

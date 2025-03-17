@@ -1,51 +1,65 @@
-from typing import Any, Optional, Union
+from typing import Any, Union
 
-from iwf.errors import WorkflowDefinitionError
-from iwf.iwf_api.models import EncodedObject
-from iwf.object_encoder import ObjectEncoder
+from iwf.data_attributes import DataAttributes
+from iwf.search_attributes import SearchAttributes
 
 
 class Persistence:
-    _type_store: dict[str, Optional[type]]
-    _object_encoder: ObjectEncoder
-    _current_values: dict[str, Union[EncodedObject, None]]
-    _updated_values_to_return: dict[str, EncodedObject]
+    _data_attributes: DataAttributes
+    _search_attributes: SearchAttributes
 
     def __init__(
         self,
-        type_store: dict[str, Optional[type]],
-        object_encoder: ObjectEncoder,
-        current_values: dict[str, Union[EncodedObject, None]],
+        data_attributes: DataAttributes,
+        search_attributes: SearchAttributes,
     ):
-        self._object_encoder = object_encoder
-        self._type_store = type_store
-        self._current_values = current_values
-        self._updated_values_to_return = {}
+        self._data_attributes = data_attributes
+        self._search_attributes = search_attributes
 
     def get_data_attribute(self, key: str) -> Any:
-        if key not in self._type_store:
-            raise WorkflowDefinitionError(f"data attribute %s is not registered {key}")
-
-        encoded_object = self._current_values.get(key)
-        if encoded_object is None:
-            return None
-
-        registered_type = self._type_store[key]
-        return self._object_encoder.decode(encoded_object, registered_type)
+        return self._data_attributes.get_data_attribute(key)
 
     def set_data_attribute(self, key: str, value: Any):
-        if key not in self._type_store:
-            raise WorkflowDefinitionError(f"data attribute %s is not registered {key}")
+        self._data_attributes.set_data_attribute(key, value)
 
-        registered_type = self._type_store[key]
-        if registered_type is not None and not isinstance(value, registered_type):
-            raise WorkflowDefinitionError(
-                f"data attribute %s is of the right type {registered_type}"
-            )
+    def get_search_attribute_int64(self, key: str) -> Union[None, int]:
+        return self._search_attributes.get_search_attribute_int64(key)
 
-        encoded_value = self._object_encoder.encode(value)
-        self._current_values[key] = encoded_value
-        self._updated_values_to_return[key] = encoded_value
+    def set_search_attribute_int64(self, key: str, value: int):
+        self._search_attributes.set_search_attribute_int64(key, value)
 
-    def get_updated_values_to_return(self) -> dict[str, EncodedObject]:
-        return self._updated_values_to_return
+    def get_search_attribute_double(self, key: str) -> Union[None, float]:
+        return self._search_attributes.get_search_attribute_double(key)
+
+    def set_search_attribute_double(self, key: str, value: float):
+        self._search_attributes.set_search_attribute_double(key, value)
+
+    def get_search_attribute_boolean(self, key: str) -> Union[None, bool]:
+        return self._search_attributes.get_search_attribute_boolean(key)
+
+    def set_search_attribute_boolean(self, key: str, value: bool):
+        self._search_attributes.set_search_attribute_boolean(key, value)
+
+    def get_search_attribute_keyword(self, key: str) -> Union[None, str]:
+        return self._search_attributes.get_search_attribute_keyword(key)
+
+    def set_search_attribute_keyword(self, key: str, value: str):
+        self._search_attributes.set_search_attribute_keyword(key, value)
+
+    def get_search_attribute_text(self, key: str) -> Union[None, str]:
+        return self._search_attributes.get_search_attribute_text(key)
+
+    def set_search_attribute_text(self, key: str, value: str):
+        self._search_attributes.set_search_attribute_text(key, value)
+
+    def get_search_attribute_datetime(self, key: str) -> Union[None, str]:
+        return self._search_attributes.get_search_attribute_datetime(key)
+
+    def set_search_attribute_datetime(self, key: str, value: str):
+        self._search_attributes.set_search_attribute_datetime(key, value)
+
+    def get_search_attribute_keyword_array(self, key: str) -> Union[None, list[str]]:
+        return self._search_attributes.get_search_attribute_keyword_array(key)
+
+    def set_search_attribute_keyword_array(self, key: str, value: list[str]):
+        self._search_attributes.set_search_attribute_keyword_array(key, value)
