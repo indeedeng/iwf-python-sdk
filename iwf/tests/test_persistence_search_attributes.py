@@ -77,7 +77,7 @@ class SearchAttributeState2(WorkflowState[None]):
         communication: Communication,
     ) -> CommandRequest:
         return CommandRequest.for_all_command_completed(
-            TimerCommand.by_seconds(5),
+            TimerCommand.by_seconds(7),
         )
 
     def execute(
@@ -145,7 +145,7 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
 
         # TODO: Should be replaced with wait_for_state_execution_completed once implemented
         # https://github.com/indeedeng/iwf-python-sdk/issues/48
-        time.sleep(3)
+        time.sleep(5)
 
         returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id
