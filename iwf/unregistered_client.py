@@ -20,6 +20,7 @@ from iwf.iwf_api.api.default import (
     post_api_v1_workflow_rpc,
     post_api_v1_workflow_search,
     post_api_v1_workflow_searchattributes_get,
+    post_api_v1_workflow_searchattributes_set,
     post_api_v1_workflow_signal,
     post_api_v1_workflow_start,
     post_api_v1_workflow_stop,
@@ -31,6 +32,7 @@ from iwf.iwf_api.models import (
     ErrorResponse,
     IDReusePolicy,
     PersistenceLoadingPolicy,
+    SearchAttribute,
     SearchAttributeKeyAndType,
     WorkflowConfig,
     WorkflowGetDataObjectsRequest,
@@ -53,6 +55,7 @@ from iwf.iwf_api.models import (
     WorkflowStopRequest,
     WorkflowAlreadyStartedOptions,
     KeyValue,
+    WorkflowSetSearchAttributesRequest,
 )
 from iwf.iwf_api.types import Response
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
@@ -424,6 +427,23 @@ class UnregisteredClient:
         if attribute_keys:
             request.keys = attribute_keys
         response = post_api_v1_workflow_searchattributes_get.sync_detailed(
+            client=self.api_client,
+            json_body=request,
+        )
+        return handler_error_and_return(response)
+
+    def set_workflow_search_attributes(
+        self,
+        workflow_id: str,
+        workflow_run_id: str,
+        search_attributes: list[SearchAttribute],
+    ):
+        request = WorkflowSetSearchAttributesRequest(
+            workflow_id=workflow_id,
+            workflow_run_id=workflow_run_id,
+            search_attributes=search_attributes,
+        )
+        response = post_api_v1_workflow_searchattributes_set.sync_detailed(
             client=self.api_client,
             json_body=request,
         )

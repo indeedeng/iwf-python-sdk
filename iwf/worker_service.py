@@ -1,6 +1,7 @@
 import traceback
 import typing
 from dataclasses import dataclass
+from typing import Union
 
 from iwf.command_request import _to_idl_command_request
 from iwf.command_results import from_idl_command_results
@@ -9,6 +10,8 @@ from iwf.data_attributes import DataAttributes
 from iwf.iwf_api.models import (
     EncodedObject,
     KeyValue,
+    SearchAttribute,
+    SearchAttributeValueType,
     WorkflowStateExecuteRequest,
     WorkflowStateExecuteResponse,
     WorkflowStateWaitUntilRequest,
@@ -132,6 +135,16 @@ class WorkerService:
                 KeyValue(k, v)
                 for (k, v) in data_attributes.get_updated_values_to_return().items()
             ]
+        upsert_sas = _create_upsert_search_attributes(
+            search_attributes_types,
+            search_attributes.get_upsert_to_server_int64_attribute_map(),
+            search_attributes.get_upsert_to_server_string_attribute_map(),
+            search_attributes.get_upsert_to_server_bool_attribute_map(),
+            search_attributes.get_upsert_to_server_double_attribute_map(),
+            search_attributes.get_upsert_to_server_string_array_attribute_map(),
+        )
+        if upsert_sas:
+            response.upsert_search_attributes = upsert_sas
         if len(communication.get_to_trigger_state_movements()) > 0:
             movements = communication.get_to_trigger_state_movements()
             decision = StateDecision.multi_next_states(*movements)
@@ -188,7 +201,17 @@ class WorkerService:
         command_request = state.wait_until(context, _input, persistence, communication)
 
         pubs = communication.get_to_publishing_internal_channel()
-        return WorkflowStateWaitUntilResponse(
+
+        upsert_sas = _create_upsert_search_attributes(
+            search_attributes_types,
+            search_attributes.get_upsert_to_server_int64_attribute_map(),
+            search_attributes.get_upsert_to_server_string_attribute_map(),
+            search_attributes.get_upsert_to_server_bool_attribute_map(),
+            search_attributes.get_upsert_to_server_double_attribute_map(),
+            search_attributes.get_upsert_to_server_string_array_attribute_map(),
+        )
+
+        response = WorkflowStateWaitUntilResponse(
             command_request=_to_idl_command_request(command_request),
             publish_to_inter_state_channel=pubs,
             upsert_data_objects=[
@@ -196,6 +219,11 @@ class WorkerService:
                 for (k, v) in data_attributes.get_updated_values_to_return().items()
             ],
         )
+
+        if upsert_sas:
+            response.upsert_search_attributes = upsert_sas
+
+        return response
 
     def handle_workflow_state_execute(
         self,
@@ -251,7 +279,17 @@ class WorkerService:
         )
 
         pubs = communication.get_to_publishing_internal_channel()
-        return WorkflowStateExecuteResponse(
+
+        upsert_sas = _create_upsert_search_attributes(
+            search_attributes_types,
+            search_attributes.get_upsert_to_server_int64_attribute_map(),
+            search_attributes.get_upsert_to_server_string_attribute_map(),
+            search_attributes.get_upsert_to_server_bool_attribute_map(),
+            search_attributes.get_upsert_to_server_double_attribute_map(),
+            search_attributes.get_upsert_to_server_string_array_attribute_map(),
+        )
+
+        response = WorkflowStateExecuteResponse(
             state_decision=_to_idl_state_decision(
                 decision,
                 wf_type,
@@ -264,3 +302,68 @@ class WorkerService:
                 for (k, v) in data_attributes.get_updated_values_to_return().items()
             ],
         )
+
+        if upsert_sas:
+            response.upsert_search_attributes = upsert_sas
+
+        return response
+
+
+def _create_upsert_search_attributes(
+    type_map: dict[str, SearchAttributeValueType],
+    upsert_to_server_int64_attribute_map: dict[str, Union[int, None]],
+    upsert_to_server_keyword_attribute_map: dict[str, Union[str, None]],
+    upsert_to_server_bool_attribute_map: dict[str, Union[bool, None]],
+    upsert_to_server_double_attribute_map: dict[str, Union[float, None]],
+    upsert_to_server_string_array_attribute_map: dict[str, Union[list[str], None]],
+):
+    sas: list[SearchAttribute] = []
+    for int_key, int_sa in upsert_to_server_int64_attribute_map.items():
+        sa = SearchAttribute(
+            key=int_key,
+            value_type=type_map[int_key],
+        )
+        if int_sa is not None:
+            sa.integer_value = int_sa
+        sas.append(sa)
+
+    for keyword_key, keyword_sa in upsert_to_server_keyword_attribute_map.items():
+        sa = SearchAttribute(
+            key=keyword_key,
+            value_type=type_map[keyword_key],
+        )
+        if keyword_sa is not None:
+            sa.string_value = keyword_sa
+        sas.append(sa)
+
+    for bool_key, bool_sa in upsert_to_server_bool_attribute_map.items():
+        sa = SearchAttribute(
+            key=bool_key,
+            value_type=type_map[bool_key],
+        )
+        if bool_sa is not None:
+            sa.bool_value = bool_sa
+        sas.append(sa)
+
+    for double_key, double_sa in upsert_to_server_double_attribute_map.items():
+        sa = SearchAttribute(
+            key=double_key,
+            value_type=type_map[double_key],
+        )
+        if double_sa is not None:
+            sa.double_value = double_sa
+        sas.append(sa)
+
+    for (
+        string_array_key,
+        string_array_sa,
+    ) in upsert_to_server_string_array_attribute_map.items():
+        sa = SearchAttribute(
+            key=string_array_key,
+            value_type=type_map[string_array_key],
+        )
+        if string_array_sa is not None:
+            sa.string_array_value = string_array_sa
+        sas.append(sa)
+
+    return sas

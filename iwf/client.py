@@ -225,8 +225,10 @@ class Client:
         workflow_id: str,
         workflow_run_id: Optional[str] = None,
     ):
+        run_id = workflow_run_id if workflow_run_id is not None else ""
+
         return self._do_get_workflow_search_attributes(
-            workflow_class, workflow_id, workflow_run_id
+            workflow_class, workflow_id, run_id
         )
 
     def get_workflow_search_attributes(
@@ -240,15 +242,18 @@ class Client:
             raise ValueError(
                 "attribute_keys must contain at least one entry, or use get_all_search_attributes API to get all"
             )
+
+        run_id = workflow_run_id if workflow_run_id is not None else ""
+
         return self._do_get_workflow_search_attributes(
-            workflow_class, workflow_id, workflow_run_id, attribute_keys
+            workflow_class, workflow_id, run_id, attribute_keys
         )
 
     def _do_get_workflow_search_attributes(
         self,
         workflow_class: type[ObjectWorkflow],
         workflow_id: str,
-        workflow_run_id: Optional[str],
+        workflow_run_id: str,
         attribute_keys: Optional[list[str]] = None,
     ):
         wf_type = get_workflow_type_by_class(workflow_class)
@@ -256,8 +261,8 @@ class Client:
 
         search_attribute_types = self._registry.get_search_attribute_types(wf_type)
 
-        # if attribute keys is None or empty, iwf server will return all search attributes
-        if attribute_keys is not None and attribute_keys:
+        # if attribute keys is None, will fetch all registered search attributes from the server
+        if attribute_keys:
             non_existing_search_attribute_list: list[str] = []
             for attribute_key in attribute_keys:
                 if attribute_key not in search_attribute_types:
@@ -277,10 +282,8 @@ class Client:
                 sa_type = search_attribute_types[attribute_key]
                 key_and_types.append(SearchAttributeKeyAndType(attribute_key, sa_type))
 
-        run_id = workflow_run_id if workflow_run_id is not None else ""
-
         response = self._unregistered_client.get_workflow_search_attributes(
-            workflow_id, run_id, key_and_types
+            workflow_id, workflow_run_id, key_and_types
         )
 
         response_sas = response.search_attributes
@@ -296,28 +299,78 @@ class Client:
             if response_sa_key is None:
                 raise RuntimeError("search attribute key is None")
             response_sa_type = search_attribute_types[response_sa_key]
-            value = self.get_search_attribute_value(response_sa_type, response_sa)
+            value = get_search_attribute_value(response_sa_type, response_sa)
             result[response_sa_key] = value
 
         return result
 
-    @staticmethod
-    def get_search_attribute_value(
-        sa_type: SearchAttributeValueType, attribute: SearchAttribute
+    def set_workflow_search_attributes(
+        self,
+        workflow_class: type[ObjectWorkflow],
+        workflow_id: str,
+        search_attributes: list[SearchAttribute],
+        workflow_run_id: Optional[str] = None,
     ):
-        if (
-            sa_type == SearchAttributeValueType.KEYWORD
-            or sa_type == SearchAttributeValueType.DATETIME
-            or sa_type == SearchAttributeValueType.TEXT
-        ):
-            return unset_to_none(attribute.string_value)
-        elif sa_type == SearchAttributeValueType.INT:
-            return unset_to_none(attribute.integer_value)
-        elif sa_type == SearchAttributeValueType.DOUBLE:
-            return unset_to_none(attribute.double_value)
-        elif sa_type == SearchAttributeValueType.BOOL:
-            return unset_to_none(attribute.bool_value)
-        elif sa_type == SearchAttributeValueType.KEYWORD_ARRAY:
-            return unset_to_none(attribute.string_array_value)
-        else:
-            raise ValueError(f"not supported search attribute value type, {sa_type}")
+        run_id = workflow_run_id if workflow_run_id is not None else ""
+
+        return self._do_set_workflow_search_attributes(
+            workflow_class, workflow_id, run_id, search_attributes
+        )
+
+    def _do_set_workflow_search_attributes(
+        self,
+        workflow_class: type[ObjectWorkflow],
+        workflow_id: str,
+        workflow_run_id: str,
+        search_attributes: list[SearchAttribute],
+    ):
+        wf_type = get_workflow_type_by_class(workflow_class)
+        self._registry.get_workflow_with_check(wf_type)
+
+        search_attribute_types = self._registry.get_search_attribute_types(wf_type)
+
+        # Check that the requested sa type is registered to the key
+        for search_attribute in search_attributes:
+            sa_key = unset_to_none(search_attribute.key)
+            if sa_key is None:
+                raise RuntimeError("search attribute key is None")
+            if sa_key not in search_attribute_types:
+                raise InvalidArgumentError(f"Search attribute not registered: {sa_key}")
+            registered_value_type = search_attribute_types[sa_key]
+
+            sa_value_type = unset_to_none(search_attribute.value_type)
+            if sa_value_type is None:
+                raise RuntimeError("search value type is None")
+
+            if (
+                sa_value_type is not None
+                and registered_value_type != sa_value_type.value
+            ):
+                raise ValueError(
+                    f"Search attribute key, {sa_key} is registered to type {registered_value_type}, but tried to add search attribute type {sa_value_type.value}"
+                )
+
+        self._unregistered_client.set_workflow_search_attributes(
+            workflow_id, workflow_run_id, search_attributes
+        )
+
+
+def get_search_attribute_value(
+    sa_type: SearchAttributeValueType, attribute: SearchAttribute
+):
+    if (
+        sa_type == SearchAttributeValueType.KEYWORD
+        or sa_type == SearchAttributeValueType.DATETIME
+        or sa_type == SearchAttributeValueType.TEXT
+    ):
+        return unset_to_none(attribute.string_value)
+    elif sa_type == SearchAttributeValueType.INT:
+        return unset_to_none(attribute.integer_value)
+    elif sa_type == SearchAttributeValueType.DOUBLE:
+        return unset_to_none(attribute.double_value)
+    elif sa_type == SearchAttributeValueType.BOOL:
+        return unset_to_none(attribute.bool_value)
+    elif sa_type == SearchAttributeValueType.KEYWORD_ARRAY:
+        return unset_to_none(attribute.string_array_value)
+    else:
+        raise ValueError(f"not supported search attribute value type, {sa_type}")

@@ -25,41 +25,43 @@ class Persistence:
     def get_search_attribute_int64(self, key: str) -> Union[None, int]:
         return self._search_attributes.get_search_attribute_int64(key)
 
-    def set_search_attribute_int64(self, key: str, value: int):
+    def set_search_attribute_int64(self, key: str, value: Union[None, int]):
         self._search_attributes.set_search_attribute_int64(key, value)
 
     def get_search_attribute_double(self, key: str) -> Union[None, float]:
         return self._search_attributes.get_search_attribute_double(key)
 
-    def set_search_attribute_double(self, key: str, value: float):
+    def set_search_attribute_double(self, key: str, value: Union[None, float]):
         self._search_attributes.set_search_attribute_double(key, value)
 
     def get_search_attribute_boolean(self, key: str) -> Union[None, bool]:
         return self._search_attributes.get_search_attribute_boolean(key)
 
-    def set_search_attribute_boolean(self, key: str, value: bool):
+    def set_search_attribute_boolean(self, key: str, value: Union[None, bool]):
         self._search_attributes.set_search_attribute_boolean(key, value)
 
     def get_search_attribute_keyword(self, key: str) -> Union[None, str]:
         return self._search_attributes.get_search_attribute_keyword(key)
 
-    def set_search_attribute_keyword(self, key: str, value: str):
+    def set_search_attribute_keyword(self, key: str, value: Union[None, str]):
         self._search_attributes.set_search_attribute_keyword(key, value)
 
     def get_search_attribute_text(self, key: str) -> Union[None, str]:
         return self._search_attributes.get_search_attribute_text(key)
 
-    def set_search_attribute_text(self, key: str, value: str):
+    def set_search_attribute_text(self, key: str, value: Union[None, str]):
         self._search_attributes.set_search_attribute_text(key, value)
 
     def get_search_attribute_datetime(self, key: str) -> Union[None, str]:
         return self._search_attributes.get_search_attribute_datetime(key)
 
-    def set_search_attribute_datetime(self, key: str, value: str):
+    def set_search_attribute_datetime(self, key: str, value: Union[None, str]):
         self._search_attributes.set_search_attribute_datetime(key, value)
 
     def get_search_attribute_keyword_array(self, key: str) -> Union[None, list[str]]:
         return self._search_attributes.get_search_attribute_keyword_array(key)
 
-    def set_search_attribute_keyword_array(self, key: str, value: list[str]):
+    def set_search_attribute_keyword_array(
+        self, key: str, value: Union[None, list[str]]
+    ):
         self._search_attributes.set_search_attribute_keyword_array(key, value)
