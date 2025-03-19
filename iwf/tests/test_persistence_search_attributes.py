@@ -14,6 +14,7 @@ from iwf.state_schema import StateSchema
 from iwf.tests.worker_server import registry
 from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
+from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import T, WorkflowState
 
 sa_keyword_key = "CustomKeywordField"
@@ -77,7 +78,7 @@ class SearchAttributeState2(WorkflowState[None]):
         communication: Communication,
     ) -> CommandRequest:
         return CommandRequest.for_all_command_completed(
-            TimerCommand.by_seconds(7),
+            TimerCommand.by_seconds(5),
         )
 
     def execute(
@@ -141,11 +142,16 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
     def test_persistence_search_attributes_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-        self.client.start_workflow(PersistenceSearchAttributesWorkflow, wf_id, 100)
+        wf_opts = WorkflowOptions()
+        wf_opts.add_wait_for_completion_state_ids(SearchAttributeState1)
 
-        # TODO: Should be replaced with wait_for_state_execution_completed once implemented
-        # https://github.com/indeedeng/iwf-python-sdk/issues/48
-        time.sleep(5)
+        self.client.start_workflow(
+            PersistenceSearchAttributesWorkflow, wf_id, 100, None, wf_opts
+        )
+
+        self.client.wait_for_state_execution_completion_with_state_execution_id(
+            SearchAttributeState1, wf_id
+        )
 
         returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id

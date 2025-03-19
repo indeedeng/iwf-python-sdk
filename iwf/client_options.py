@@ -9,6 +9,7 @@ class ClientOptions:
     worker_url: str
     object_encoder: ObjectEncoder
     api_timeout: int = 60
+    long_poll_api_max_wait_time_seconds: int = 10
 
     @classmethod
     def local_default(cls):
