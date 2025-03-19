@@ -36,6 +36,7 @@ class StateMovement:
     state_id: str
     state_input: Any = None
     state_options_override: Optional[WorkflowStateOptions] = None
+    wait_for_key: Optional[str] = None
 
     dead_end: typing.ClassVar[StateMovement]
 
@@ -57,6 +58,7 @@ class StateMovement:
         state: Union[str, type[WorkflowState]],
         state_input: Any = None,
         state_options_override: Optional[WorkflowStateOptions] = None,
+        wait_for_key: Optional[str] = None,
     ) -> StateMovement:
         if isinstance(state, str):
             state_id = state
@@ -68,7 +70,7 @@ class StateMovement:
             state_id = get_state_id_by_class(state)
         if state_id.startswith(reserved_state_id_prefix):
             raise WorkflowDefinitionError("cannot use reserved stateId")
-        return StateMovement(state_id, state_input, state_options_override)
+        return StateMovement(state_id, state_input, state_options_override, wait_for_key)
 
 
 StateMovement.dead_end = StateMovement(dead_end_sys_state_id)
@@ -99,4 +101,7 @@ def _to_idl_state_movement(
         )
 
         idl_movement.state_options = idl_state_options
+
+        if movement.wait_for_key is not None:
+            idl_movement.wait_for_key = movement.wait_for_key
     return idl_movement

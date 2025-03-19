@@ -54,9 +54,10 @@ class StateDecision:
         state: Union[str, type[WorkflowState]],
         state_input: Any = None,
         state_options_override: Optional[WorkflowStateOptions] = None,
+        wait_for_key: Optional[str] = None,
     ) -> StateDecision:
         return StateDecision(
-            [StateMovement.create(state, state_input, state_options_override)]
+            [StateMovement.create(state, state_input, state_options_override, wait_for_key)]
         )
 
     @classmethod
