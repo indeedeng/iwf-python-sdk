@@ -71,8 +71,29 @@ class SearchAttributeState1(WorkflowState[None]):
         )
         return StateDecision.single_next_state(SearchAttributeState2)
 
-
 class SearchAttributeState2(WorkflowState[None]):
+    def wait_until(
+        self,
+        ctx: WorkflowContext,
+        input: T,
+        persistence: Persistence,
+        communication: Communication,
+    ) -> CommandRequest:
+        return CommandRequest.for_all_command_completed(
+            TimerCommand.by_seconds(2),
+        )
+
+    def execute(
+        self,
+        ctx: WorkflowContext,
+        input: T,
+        command_results: CommandResults,
+        persistence: Persistence,
+        communication: Communication,
+    ) -> StateDecision:
+        return StateDecision.single_next_state(SearchAttributeState3)
+
+class SearchAttributeState3(WorkflowState[None]):
     def wait_until(
         self,
         ctx: WorkflowContext,
@@ -106,7 +127,7 @@ class SearchAttributeState2(WorkflowState[None]):
 class PersistenceSearchAttributesWorkflow(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
         return StateSchema.with_starting_state(
-            SearchAttributeState1(), SearchAttributeState2()
+            SearchAttributeState1(), SearchAttributeState2(), SearchAttributeState3()
         )
 
     def get_persistence_schema(self) -> PersistenceSchema:
@@ -146,18 +167,15 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
         wf_opts = WorkflowOptions()
-        wf_opts.add_wait_for_completion_state_ids(SearchAttributeState1)
+        wf_opts.add_wait_for_completion_state_ids(SearchAttributeState2)
 
         self.client.start_workflow(
             PersistenceSearchAttributesWorkflow, wf_id, 100, None, wf_opts
         )
 
         self.client.wait_for_state_execution_completion_with_state_execution_id(
-            SearchAttributeState1, wf_id
+            SearchAttributeState2, wf_id
         )
-
-        # Short sleep to allow the search attributes to be updated
-        sleep(1)
 
         returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id
