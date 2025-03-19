@@ -86,7 +86,7 @@ class TestWaitForStateWithStateExecutionId(unittest.TestCase):
         )
 
         # Allow time for workflow to start
-        sleep(1)
+        #sleep(1)
 
         self.client.wait_for_state_execution_completion_with_state_execution_id(
             WaitForStateWithStateExecutionIdState1, wf_id
@@ -176,7 +176,7 @@ class TestWaitForStateWithWaitForKey(unittest.TestCase):
         )
 
         # Allow time for workflow to start
-        sleep(1)
+        #sleep(1)
 
         self.client.wait_for_state_execution_completion_with_wait_for_key(
             WaitForStateWithWaitForKeyState2, wf_id, "testKey"

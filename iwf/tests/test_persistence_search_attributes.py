@@ -1,6 +1,7 @@
 import inspect
 import time
 import unittest
+from time import sleep
 
 from iwf.client import Client
 from iwf.command_request import CommandRequest, TimerCommand
@@ -48,15 +49,9 @@ class SearchAttributeState1(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> CommandRequest:
-        persistence.set_search_attribute_keyword(sa_keyword_key, sa_keyword)
-        persistence.set_search_attribute_text(sa_text_key, sa_text)
-        persistence.set_search_attribute_double(sa_double_key, sa_double)
-        persistence.set_search_attribute_int64(sa_int_key, sa_int)
-        persistence.set_search_attribute_datetime(sa_datetime_key, sa_datetime)
-        persistence.set_search_attribute_keyword_array(
-            sa_keyword_array_key, sa_keyword_array
+        return CommandRequest.for_all_command_completed(
+            TimerCommand.by_seconds(2),
         )
-        return CommandRequest.empty()
 
     def execute(
         self,
@@ -66,6 +61,14 @@ class SearchAttributeState1(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
+        persistence.set_search_attribute_keyword(sa_keyword_key, sa_keyword)
+        persistence.set_search_attribute_text(sa_text_key, sa_text)
+        persistence.set_search_attribute_double(sa_double_key, sa_double)
+        persistence.set_search_attribute_int64(sa_int_key, sa_int)
+        persistence.set_search_attribute_datetime(sa_datetime_key, sa_datetime)
+        persistence.set_search_attribute_keyword_array(
+            sa_keyword_array_key, sa_keyword_array
+        )
         return StateDecision.single_next_state(SearchAttributeState2)
 
 
@@ -145,11 +148,11 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         wf_opts = WorkflowOptions()
         wf_opts.add_wait_for_completion_state_ids(SearchAttributeState1)
 
-        run_id = self.client.start_workflow(
+        self.client.start_workflow(
             PersistenceSearchAttributesWorkflow, wf_id, 100, None, wf_opts
         )
 
-        print(f"Workflow {run_id} started")
+        sleep(1)
 
         self.client.wait_for_state_execution_completion_with_state_execution_id(
             SearchAttributeState1, wf_id

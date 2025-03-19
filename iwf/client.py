@@ -53,7 +53,7 @@ class Client:
         timeout_seconds: int,
         input: Any = None,
         options: Optional[WorkflowOptions] = None,
-    ) -> str:
+    ) -> None:
         """
 
         Args:
@@ -107,7 +107,7 @@ class Client:
             )
             unreg_opts.start_state_options = starting_state_opts
 
-        return self._unregistered_client.start_workflow(
+        self._unregistered_client.start_workflow(
             wf_type, wf_id, starting_state_id, timeout_seconds, input, unreg_opts
         )
 
