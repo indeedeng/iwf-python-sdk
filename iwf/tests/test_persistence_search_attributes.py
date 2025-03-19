@@ -156,6 +156,9 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
             SearchAttributeState1, wf_id
         )
 
+        # Short sleep to allow the search attributes to be updated
+        sleep(1)
+
         returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id
         )
