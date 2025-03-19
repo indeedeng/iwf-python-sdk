@@ -78,7 +78,7 @@ class SearchAttributeState2(WorkflowState[None]):
         communication: Communication,
     ) -> CommandRequest:
         return CommandRequest.for_all_command_completed(
-            TimerCommand.by_seconds(5),
+            TimerCommand.by_seconds(2),
         )
 
     def execute(
@@ -145,9 +145,11 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         wf_opts = WorkflowOptions()
         wf_opts.add_wait_for_completion_state_ids(SearchAttributeState1)
 
-        self.client.start_workflow(
+        run_id = self.client.start_workflow(
             PersistenceSearchAttributesWorkflow, wf_id, 100, None, wf_opts
         )
+
+        print(f"Workflow {run_id} started")
 
         self.client.wait_for_state_execution_completion_with_state_execution_id(
             SearchAttributeState1, wf_id
