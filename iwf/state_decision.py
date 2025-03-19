@@ -57,7 +57,11 @@ class StateDecision:
         wait_for_key: Optional[str] = None,
     ) -> StateDecision:
         return StateDecision(
-            [StateMovement.create(state, state_input, state_options_override, wait_for_key)]
+            [
+                StateMovement.create(
+                    state, state_input, state_options_override, wait_for_key
+                )
+            ]
         )
 
     @classmethod

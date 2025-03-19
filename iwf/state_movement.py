@@ -70,7 +70,9 @@ class StateMovement:
             state_id = get_state_id_by_class(state)
         if state_id.startswith(reserved_state_id_prefix):
             raise WorkflowDefinitionError("cannot use reserved stateId")
-        return StateMovement(state_id, state_input, state_options_override, wait_for_key)
+        return StateMovement(
+            state_id, state_input, state_options_override, wait_for_key
+        )
 
 
 StateMovement.dead_end = StateMovement(dead_end_sys_state_id)

@@ -1,7 +1,6 @@
 import inspect
 import time
 import unittest
-from time import sleep
 
 from iwf.client import Client
 from iwf.command_request import CommandRequest, TimerCommand
@@ -15,6 +14,7 @@ from iwf.workflow import ObjectWorkflow
 from iwf.workflow_context import WorkflowContext
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import T, WorkflowState
+
 
 class WaitForStateWithStateExecutionIdState1(WorkflowState[None]):
     def wait_until(
@@ -65,8 +65,10 @@ class WaitForStateWithStateExecutionIdState2(WorkflowState[None]):
 class WaitForStateWithStateExecutionIdWorkflow(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
         return StateSchema.with_starting_state(
-            WaitForStateWithStateExecutionIdState1(), WaitForStateWithStateExecutionIdState2()
+            WaitForStateWithStateExecutionIdState1(),
+            WaitForStateWithStateExecutionIdState2(),
         )
+
 
 class TestWaitForStateWithStateExecutionId(unittest.TestCase):
     @classmethod
@@ -79,7 +81,9 @@ class TestWaitForStateWithStateExecutionId(unittest.TestCase):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
         wf_opts = WorkflowOptions()
-        wf_opts.add_wait_for_completion_state_ids(WaitForStateWithStateExecutionIdState1)
+        wf_opts.add_wait_for_completion_state_ids(
+            WaitForStateWithStateExecutionIdState1
+        )
 
         self.client.start_workflow(
             WaitForStateWithStateExecutionIdWorkflow, wf_id, 100, None, wf_opts
@@ -123,7 +127,9 @@ class WaitForStateWithWaitForKeyState1(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        return StateDecision.single_next_state(WaitForStateWithWaitForKeyState2, None, None, "testKey")
+        return StateDecision.single_next_state(
+            WaitForStateWithWaitForKeyState2, None, None, "testKey"
+        )
 
 
 class WaitForStateWithWaitForKeyState2(WorkflowState[None]):
@@ -154,6 +160,7 @@ class WaitForStateWithWaitForKeyWorkflow(ObjectWorkflow):
         return StateSchema.with_starting_state(
             WaitForStateWithWaitForKeyState1(), WaitForStateWithWaitForKeyState2()
         )
+
 
 class TestWaitForStateWithWaitForKey(unittest.TestCase):
     @classmethod

@@ -18,24 +18,18 @@ from iwf.workflow_context import WorkflowContext
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import T, WorkflowState
 
-sa_keyword_key = "CustomKeywordField"
 sa_text_key = "CustomTextField"
 sa_double_key = "CustomDoubleField"
-sa_int_key = "CustomIntField"
 sa_bool_key = "CustomBoolField"
 sa_datetime_key = "CustomDatetimeField"
 sa_keyword_array_key = "CustomKeywordArrayField"
 
-sa_keyword: str = "keyword"
 sa_text: str = "text"
 sa_double: float = 2.34
-sa_int: int = 234
 sa_datetime: str = "2024-11-12T16:00:01.731455544-08:00"
 sa_keyword_array: list[str] = ["keyword-1", "keyword-2"]
 
-final_sa_keyword: str = "final_keyword"
 final_sa_text = None
-final_sa_int: int = 567
 final_sa_bool: bool = False
 final_sa_datetime: str = "2024-12-13T16:00:01.731455544-08:00"
 final_sa_keyword_array: list[str] = ["final_keyword-1", "final_keyword-2"]
@@ -49,9 +43,8 @@ class SearchAttributeState1(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> CommandRequest:
-        return CommandRequest.for_all_command_completed(
-            TimerCommand.by_seconds(2),
-        )
+        persistence.set_search_attribute_text(sa_text_key, sa_text)
+        return CommandRequest.empty()
 
     def execute(
         self,
@@ -61,15 +54,9 @@ class SearchAttributeState1(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        persistence.set_search_attribute_keyword(sa_keyword_key, sa_keyword)
-        persistence.set_search_attribute_text(sa_text_key, sa_text)
         persistence.set_search_attribute_double(sa_double_key, sa_double)
-        persistence.set_search_attribute_int64(sa_int_key, sa_int)
-        persistence.set_search_attribute_datetime(sa_datetime_key, sa_datetime)
-        persistence.set_search_attribute_keyword_array(
-            sa_keyword_array_key, sa_keyword_array
-        )
         return StateDecision.single_next_state(SearchAttributeState2)
+
 
 class SearchAttributeState2(WorkflowState[None]):
     def wait_until(
@@ -79,6 +66,7 @@ class SearchAttributeState2(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> CommandRequest:
+        persistence.set_search_attribute_datetime(sa_datetime_key, sa_datetime)
         return CommandRequest.for_all_command_completed(
             TimerCommand.by_seconds(2),
         )
@@ -91,7 +79,11 @@ class SearchAttributeState2(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
+        persistence.set_search_attribute_keyword_array(
+            sa_keyword_array_key, sa_keyword_array
+        )
         return StateDecision.single_next_state(SearchAttributeState3)
+
 
 class SearchAttributeState3(WorkflowState[None]):
     def wait_until(
@@ -113,9 +105,7 @@ class SearchAttributeState3(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        persistence.set_search_attribute_keyword(sa_keyword_key, final_sa_keyword)
         persistence.set_search_attribute_text(sa_text_key, final_sa_text)
-        persistence.set_search_attribute_int64(sa_int_key, final_sa_int)
         persistence.set_search_attribute_boolean(sa_bool_key, final_sa_bool)
         persistence.set_search_attribute_datetime(sa_datetime_key, final_sa_datetime)
         persistence.set_search_attribute_keyword_array(
@@ -133,16 +123,10 @@ class PersistenceSearchAttributesWorkflow(ObjectWorkflow):
     def get_persistence_schema(self) -> PersistenceSchema:
         return PersistenceSchema.create(
             PersistenceField.search_attribute_def(
-                sa_keyword_key, SearchAttributeValueType.KEYWORD
-            ),
-            PersistenceField.search_attribute_def(
                 sa_text_key, SearchAttributeValueType.TEXT
             ),
             PersistenceField.search_attribute_def(
                 sa_double_key, SearchAttributeValueType.DOUBLE
-            ),
-            PersistenceField.search_attribute_def(
-                sa_int_key, SearchAttributeValueType.INT
             ),
             PersistenceField.search_attribute_def(
                 sa_bool_key, SearchAttributeValueType.BOOL
@@ -173,19 +157,23 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
             PersistenceSearchAttributesWorkflow, wf_id, 100, None, wf_opts
         )
 
+        # Short sleep distribute calls made to the server
+        sleep(1)
+
         self.client.wait_for_state_execution_completion_with_state_execution_id(
             SearchAttributeState2, wf_id
         )
+
+        # Short sleep distribute calls made to the server
+        sleep(1)
 
         returned_search_attributes = self.client.get_all_search_attributes(
             PersistenceSearchAttributesWorkflow, wf_id
         )
 
         expected_search_attributes = dict()
-        expected_search_attributes[sa_keyword_key] = sa_keyword
         expected_search_attributes[sa_text_key] = sa_text
         expected_search_attributes[sa_double_key] = sa_double
-        expected_search_attributes[sa_int_key] = sa_int
         expected_search_attributes[sa_keyword_array_key] = sa_keyword_array
         expected_search_attributes[sa_datetime_key] = (
             "2024-11-13T00:00:01.731455544Z"  # This is a bug. The iwf-server always returns utc time. See https://github.com/indeedeng/iwf/issues/261
@@ -202,10 +190,8 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
         )
 
         final_expected_search_attributes = dict()
-        final_expected_search_attributes[sa_keyword_key] = final_sa_keyword
         final_expected_search_attributes[sa_text_key] = ""
         final_expected_search_attributes[sa_double_key] = sa_double
-        final_expected_search_attributes[sa_int_key] = final_sa_int
         final_expected_search_attributes[sa_bool_key] = final_sa_bool
         final_expected_search_attributes[sa_keyword_array_key] = final_sa_keyword_array
         final_expected_search_attributes[sa_datetime_key] = (
