@@ -152,8 +152,6 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
             PersistenceSearchAttributesWorkflow, wf_id, 100, None, wf_opts
         )
 
-        sleep(1)
-
         self.client.wait_for_state_execution_completion_with_state_execution_id(
             SearchAttributeState1, wf_id
         )
