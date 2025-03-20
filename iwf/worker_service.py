@@ -1,7 +1,7 @@
 import traceback
 import typing
 from dataclasses import dataclass
-from typing import Union
+from typing import List, Union
 
 from iwf.command_request import _to_idl_command_request
 from iwf.command_results import from_idl_command_results
@@ -25,6 +25,7 @@ from iwf.persistence import Persistence
 from iwf.registry import Registry
 from iwf.search_attributes import SearchAttributes
 from iwf.state_decision import StateDecision, _to_idl_state_decision
+from iwf.state_execution_locals import StateExecutionLocals
 from iwf.utils.iwf_typing import assert_not_unset, unset_to_none
 from iwf.workflow_context import WorkflowContext, _from_idl_context
 from iwf.workflow_state import get_input_type
@@ -99,8 +100,13 @@ class WorkerService:
         search_attributes = SearchAttributes(
             search_attributes_types, unset_to_none(request.search_attributes)
         )
+        state_execution_locals = StateExecutionLocals(
+            to_map(None), self._options.object_encoder
+        )
 
-        persistence = Persistence(data_attributes, search_attributes)
+        persistence = Persistence(
+            data_attributes, search_attributes, state_execution_locals
+        )
 
         communication = Communication(
             internal_channel_types,
@@ -145,6 +151,9 @@ class WorkerService:
         )
         if upsert_sas:
             response.upsert_search_attributes = upsert_sas
+        record_events = state_execution_locals.get_record_events()
+        if len(record_events) > 0:
+            response.record_events = record_events
         if len(communication.get_to_trigger_state_movements()) > 0:
             movements = communication.get_to_trigger_state_movements()
             decision = StateDecision.multi_next_states(*movements)
@@ -188,8 +197,13 @@ class WorkerService:
         search_attributes = SearchAttributes(
             search_attributes_types, unset_to_none(request.search_attributes)
         )
+        state_execution_locals = StateExecutionLocals(
+            to_map(None), self._options.object_encoder
+        )
 
-        persistence = Persistence(data_attributes, search_attributes)
+        persistence = Persistence(
+            data_attributes, search_attributes, state_execution_locals
+        )
 
         communication = Communication(
             internal_channel_types,
@@ -211,6 +225,11 @@ class WorkerService:
             search_attributes.get_upsert_to_server_string_array_attribute_map(),
         )
 
+        upsert_state_locals = (
+            state_execution_locals.get_upsert_state_execution_local_attributes()
+        )
+        record_events = state_execution_locals.get_record_events()
+
         response = WorkflowStateWaitUntilResponse(
             command_request=_to_idl_command_request(command_request),
             publish_to_inter_state_channel=pubs,
@@ -218,6 +237,8 @@ class WorkerService:
                 KeyValue(k, v)
                 for (k, v) in data_attributes.get_updated_values_to_return().items()
             ],
+            upsert_state_locals=upsert_state_locals,
+            record_events=record_events,
         )
 
         if upsert_sas:
@@ -257,8 +278,13 @@ class WorkerService:
         search_attributes = SearchAttributes(
             search_attributes_types, unset_to_none(request.search_attributes)
         )
+        state_execution_locals = StateExecutionLocals(
+            to_map(request.state_locals), self._options.object_encoder
+        )
 
-        persistence = Persistence(data_attributes, search_attributes)
+        persistence = Persistence(
+            data_attributes, search_attributes, state_execution_locals
+        )
 
         communication = Communication(
             internal_channel_types,
@@ -288,6 +314,10 @@ class WorkerService:
             search_attributes.get_upsert_to_server_double_attribute_map(),
             search_attributes.get_upsert_to_server_string_array_attribute_map(),
         )
+        upsert_state_locals = (
+            state_execution_locals.get_upsert_state_execution_local_attributes()
+        )
+        record_events = state_execution_locals.get_record_events()
 
         response = WorkflowStateExecuteResponse(
             state_decision=_to_idl_state_decision(
@@ -301,6 +331,8 @@ class WorkerService:
                 KeyValue(k, v)
                 for (k, v) in data_attributes.get_updated_values_to_return().items()
             ],
+            upsert_state_locals=upsert_state_locals,
+            record_events=record_events,
         )
 
         if upsert_sas:
@@ -367,3 +399,15 @@ def _create_upsert_search_attributes(
         sas.append(sa)
 
     return sas
+
+
+def to_map(key_values: Union[None, Unset, List[KeyValue]]) -> dict[str, EncodedObject]:
+    key_values = unset_to_none(key_values) or []
+    kvs = {}
+    for kv in key_values:
+        k = unset_to_none(kv.key)
+        v = unset_to_none(kv.value)
+        if k and v:
+            kvs[k] = v
+
+    return kvs
