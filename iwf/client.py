@@ -4,7 +4,7 @@ from typing import Any, Callable, Optional, Type, TypeVar, Union
 from typing_extensions import deprecated
 
 from iwf.client_options import ClientOptions
-from iwf.errors import InvalidArgumentError
+from iwf.errors import InvalidArgumentError, WorkflowDefinitionError
 from iwf.iwf_api.models import (
     SearchAttribute,
     SearchAttributeKeyAndType,
@@ -16,6 +16,7 @@ from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
 from iwf.stop_workflow_options import StopWorkflowOptions
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
 from iwf.utils.iwf_typing import unset_to_none
+from iwf.utils.persistence_utils import get_search_attribute_value
 from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import (
@@ -94,7 +95,12 @@ class Client:
                 options.wait_for_completion_state_execution_ids
             )
 
-            # TODO: set initial search attributes here
+            if options.initial_search_attributes:
+                sa_types = self._registry.get_search_attribute_types(wf_type)
+                converted_sas = convert_to_sa_list(
+                    sa_types, options.initial_search_attributes
+                )
+                unreg_opts.initial_search_attributes = converted_sas
 
         starting_state_id = None
 
@@ -404,22 +410,55 @@ class Client:
         )
 
 
-def get_search_attribute_value(
-    sa_type: SearchAttributeValueType, attribute: SearchAttribute
+def convert_to_sa_list(
+    sa_types: dict[str, SearchAttributeValueType], initial_sas: dict[str, Any]
 ):
-    if (
-        sa_type == SearchAttributeValueType.KEYWORD
-        or sa_type == SearchAttributeValueType.DATETIME
-        or sa_type == SearchAttributeValueType.TEXT
-    ):
-        return unset_to_none(attribute.string_value)
-    elif sa_type == SearchAttributeValueType.INT:
-        return unset_to_none(attribute.integer_value)
-    elif sa_type == SearchAttributeValueType.DOUBLE:
-        return unset_to_none(attribute.double_value)
-    elif sa_type == SearchAttributeValueType.BOOL:
-        return unset_to_none(attribute.bool_value)
-    elif sa_type == SearchAttributeValueType.KEYWORD_ARRAY:
-        return unset_to_none(attribute.string_array_value)
-    else:
-        raise ValueError(f"not supported search attribute value type, {sa_type}")
+    converted_sas: list[SearchAttribute] = []
+    if initial_sas:
+        for initial_sa_key, initial_sa_val in initial_sas.items():
+            if initial_sa_key not in sa_types:
+                raise WorkflowDefinitionError(
+                    f"key {initial_sa_key} is not defined as search attribute, all keys are: {','.join(sa_types)}"
+                )
+
+            val_type = sa_types[initial_sa_key]
+            new_sa = SearchAttribute(key=initial_sa_key, value_type=val_type)
+            is_val_correct_type = False
+            if val_type == SearchAttributeValueType.INT:
+                if isinstance(initial_sa_val, int):
+                    new_sa.integer_value = initial_sa_val
+                    converted_sas.append(new_sa)
+                    is_val_correct_type = True
+            elif val_type == SearchAttributeValueType.DOUBLE:
+                if isinstance(initial_sa_val, float):
+                    new_sa.double_value = initial_sa_val
+                    converted_sas.append(new_sa)
+                    is_val_correct_type = True
+            elif val_type == SearchAttributeValueType.BOOL:
+                if isinstance(initial_sa_val, bool):
+                    new_sa.bool_value = initial_sa_val
+                    converted_sas.append(new_sa)
+                    is_val_correct_type = True
+            elif (
+                val_type == SearchAttributeValueType.KEYWORD
+                or val_type == SearchAttributeValueType.TEXT
+                or val_type == SearchAttributeValueType.DATETIME
+            ):
+                if isinstance(initial_sa_val, str):
+                    new_sa.string_value = initial_sa_val
+                    converted_sas.append(new_sa)
+                    is_val_correct_type = True
+            elif val_type == SearchAttributeValueType.KEYWORD_ARRAY:
+                if isinstance(initial_sa_val, list):
+                    new_sa.string_array_value = initial_sa_val
+                    converted_sas.append(new_sa)
+                    is_val_correct_type = True
+            else:
+                raise ValueError("unsupported type")
+
+            if not is_val_correct_type:
+                raise InvalidArgumentError(
+                    f"search attribute value is not set correctly for key {initial_sa_key} with value type {val_type}"
+                )
+
+    return converted_sas

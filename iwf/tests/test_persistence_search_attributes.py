@@ -4,7 +4,7 @@ import unittest
 from time import sleep
 
 from iwf.client import Client
-from iwf.command_request import CommandRequest
+from iwf.command_request import CommandRequest, TimerCommand
 from iwf.command_results import CommandResults
 from iwf.communication import Communication
 from iwf.iwf_api.models import SearchAttributeValueType
@@ -25,6 +25,13 @@ sa_bool_key = "CustomBoolField"
 sa_datetime_key = "CustomDatetimeField"
 sa_keyword_array_key = "CustomKeywordArrayField"
 
+initial_sa_keyword: str = "initial_keyword"
+initial_sa_double: float = 1.11
+initial_sa_int: int = 1
+initial_sa_bool: bool = True
+initial_sa_datetime: str = "2024-11-09T16:00:01.731455544-08:00"
+initial_sa_keyword_array: list[str] = ["initial_keyword-1", "initial_keyword-2"]
+
 sa_keyword: str = "keyword"
 sa_double: float = 2.34
 sa_int: int = 234
@@ -39,7 +46,7 @@ final_sa_datetime: str = "2024-12-13T16:00:01.731455544-08:00"
 final_sa_keyword_array: list[str] = ["final_keyword-1", "final_keyword-2"]
 
 
-class SearchAttributeState1(WorkflowState[None]):
+class SearchAttributeStateInit(WorkflowState[None]):
     def wait_until(
         self,
         ctx: WorkflowContext,
@@ -47,7 +54,9 @@ class SearchAttributeState1(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> CommandRequest:
-        return CommandRequest.empty()
+        return CommandRequest.for_all_command_completed(
+            TimerCommand.by_seconds(2),
+        )
 
     def execute(
         self,
@@ -65,6 +74,29 @@ class SearchAttributeState1(WorkflowState[None]):
         )
         persistence.set_search_attribute_int64(sa_int_key, sa_int)
         persistence.set_search_attribute_datetime(sa_datetime_key, sa_datetime)
+        return StateDecision.single_next_state(SearchAttributeState1)
+
+
+class SearchAttributeState1(WorkflowState[None]):
+    def wait_until(
+        self,
+        ctx: WorkflowContext,
+        input: T,
+        persistence: Persistence,
+        communication: Communication,
+    ) -> CommandRequest:
+        return CommandRequest.for_all_command_completed(
+            TimerCommand.by_seconds(2),
+        )
+
+    def execute(
+        self,
+        ctx: WorkflowContext,
+        input: T,
+        command_results: CommandResults,
+        persistence: Persistence,
+        communication: Communication,
+    ) -> StateDecision:
         return StateDecision.single_next_state(SearchAttributeState2)
 
 
@@ -86,7 +118,7 @@ class SearchAttributeState2(WorkflowState[None]):
         persistence: Persistence,
         communication: Communication,
     ) -> StateDecision:
-        # Delay updating search attributes to allow for the first assertion
+        # Delay updating search attributes to allow for the previous assertion
         sleep(1)
         persistence.set_search_attribute_keyword(sa_keyword_key, final_sa_keyword)
         persistence.set_search_attribute_boolean(sa_bool_key, final_sa_bool)
@@ -101,7 +133,7 @@ class SearchAttributeState2(WorkflowState[None]):
 class PersistenceSearchAttributesWorkflow(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
         return StateSchema.with_starting_state(
-            SearchAttributeState1(), SearchAttributeState2()
+            SearchAttributeStateInit(), SearchAttributeState1(), SearchAttributeState2()
         )
 
     def get_persistence_schema(self) -> PersistenceSchema:
@@ -137,11 +169,40 @@ class TestPersistenceSearchAttributes(unittest.TestCase):
     def test_persistence_search_attributes_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-        wf_opts = WorkflowOptions()
+        wf_opts = WorkflowOptions(
+            initial_search_attributes={
+                sa_keyword_key: initial_sa_keyword,
+                sa_double_key: initial_sa_double,
+                sa_int_key: initial_sa_int,
+                sa_bool_key: initial_sa_bool,
+                sa_datetime_key: initial_sa_datetime,
+                sa_keyword_array_key: initial_sa_keyword_array,
+            }
+        )
         wf_opts.add_wait_for_completion_state_ids(SearchAttributeState1)
         self.client.start_workflow(
             PersistenceSearchAttributesWorkflow, wf_id, 100, None, wf_opts
         )
+
+        initial_returned_search_attributes = self.client.get_all_search_attributes(
+            PersistenceSearchAttributesWorkflow,
+            wf_id,
+        )
+
+        initial_expected_search_attributes = dict()
+        initial_expected_search_attributes[sa_keyword_key] = initial_sa_keyword
+        initial_expected_search_attributes[sa_double_key] = initial_sa_double
+        initial_expected_search_attributes[sa_bool_key] = initial_sa_bool
+        initial_expected_search_attributes[sa_keyword_array_key] = (
+            initial_sa_keyword_array
+        )
+        initial_expected_search_attributes[sa_int_key] = initial_sa_int
+        initial_expected_search_attributes[sa_datetime_key] = (
+            "2024-11-10T00:00:01.731455544Z"  # This is a bug. The iwf-server always returns utc time. See https://github.com/indeedeng/iwf/issues/261
+            # "2024-11-09T18:00:01.731455544-06:00"
+        )
+
+        assert initial_expected_search_attributes == initial_returned_search_attributes
 
         self.client.wait_for_state_execution_completion_with_state_execution_id(
             SearchAttributeState1, wf_id

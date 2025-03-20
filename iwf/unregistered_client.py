@@ -12,6 +12,7 @@ from iwf.errors import (
     parse_unexpected_error,
     process_http_error,
     process_workflow_abnormal_exit_error,
+    InvalidArgumentError,
 )
 from iwf.iwf_api import Client, errors
 from iwf.iwf_api.api.default import (
@@ -62,6 +63,8 @@ from iwf.iwf_api.models import (
 from iwf.iwf_api.types import Response
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
 from iwf.stop_workflow_options import StopWorkflowOptions
+from iwf.utils.iwf_typing import assert_not_unset
+from iwf.utils.persistence_utils import get_search_attribute_value
 
 
 @dataclass
@@ -76,6 +79,7 @@ class UnregisteredWorkflowOptions:
     initial_data_attributes: Optional[dict[str, Any]] = None
     wait_for_completion_state_execution_ids: Optional[list[str]] = None
     wait_for_completion_state_ids: Optional[list[str]] = None
+    initial_search_attributes: Optional[list[SearchAttribute]] = None
 
 
 T = TypeVar("T")
@@ -156,6 +160,17 @@ class UnregisteredClient:
                 start_options.workflow_already_started_options = (
                     options.workflow_already_started_options
                 )
+
+            if options.initial_search_attributes:
+                for search_attribute in options.initial_search_attributes:
+                    val = get_search_attribute_value(
+                        assert_not_unset(search_attribute.value_type), search_attribute
+                    )
+                    if val is None:
+                        raise InvalidArgumentError(
+                            f"search attribute value is not set correctly for key {search_attribute.key} with value type {search_attribute.value_type}"
+                        )
+                start_options.search_attributes = options.initial_search_attributes
 
             if options.initial_data_attributes:
                 das = []
