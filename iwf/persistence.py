@@ -1,4 +1,4 @@
-from typing import Any, List, Tuple, Union
+from typing import Any, Tuple, Union
 
 from iwf.data_attributes import DataAttributes
 from iwf.search_attributes import SearchAttributes
