@@ -114,3 +114,7 @@ def get_input_type(state):
         if b.__origin__ == WorkflowState:
             return get_args(b)[0]
     return None
+
+
+def get_state_execution_id(state: type[WorkflowState], number: int):
+    return f"{get_state_id_by_class(state)}-{number}"

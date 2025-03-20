@@ -26,6 +26,7 @@ from iwf.iwf_api.api.default import (
     post_api_v1_workflow_stop,
     post_api_v1_workflow_timer_skip,
     post_api_v_1_workflow_get_with_wait,
+    post_api_v_1_workflow_wait_for_state_completion,
 )
 from iwf.iwf_api.models import (
     EncodedObject,
@@ -56,6 +57,7 @@ from iwf.iwf_api.models import (
     WorkflowAlreadyStartedOptions,
     KeyValue,
     WorkflowSetSearchAttributesRequest,
+    WorkflowWaitForStateCompletionRequest,
 )
 from iwf.iwf_api.types import Response
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
@@ -72,6 +74,8 @@ class UnregisteredWorkflowOptions:
     workflow_config_override: Optional[WorkflowConfig] = None
     workflow_already_started_options: Optional[WorkflowAlreadyStartedOptions] = None
     initial_data_attributes: Optional[dict[str, Any]] = None
+    wait_for_completion_state_execution_ids: Optional[list[str]] = None
+    wait_for_completion_state_ids: Optional[list[str]] = None
 
 
 T = TypeVar("T")
@@ -162,6 +166,16 @@ class UnregisteredClient:
                 start_options.data_attributes = das
 
             request.workflow_start_options = start_options
+
+            if options.wait_for_completion_state_execution_ids:
+                request.wait_for_completion_state_execution_ids = (
+                    options.wait_for_completion_state_execution_ids
+                )
+
+            if options.wait_for_completion_state_ids:
+                request.wait_for_completion_state_ids = (
+                    options.wait_for_completion_state_ids
+                )
 
         response = post_api_v1_workflow_start.sync_detailed(
             client=self.api_client,
@@ -447,6 +461,39 @@ class UnregisteredClient:
             client=self.api_client,
             json_body=request,
         )
+        return handler_error_and_return(response)
+
+    def wait_for_state_execution_completion_with_state_execution_id(
+        self, workflow_id: str, state_execution_id: str
+    ):
+        request = WorkflowWaitForStateCompletionRequest(
+            workflow_id=workflow_id,
+            state_execution_id=state_execution_id,
+            wait_time_seconds=self.client_options.long_poll_api_max_wait_time_seconds,
+        )
+
+        response = post_api_v_1_workflow_wait_for_state_completion.sync_detailed(
+            client=self.api_client,
+            json_body=request,
+        )
+
+        return handler_error_and_return(response)
+
+    def wait_for_state_execution_completion_with_wait_for_key(
+        self, workflow_id: str, state_id: str, wait_for_key: str
+    ):
+        request = WorkflowWaitForStateCompletionRequest(
+            workflow_id=workflow_id,
+            state_id=state_id,
+            wait_for_key=wait_for_key,
+            wait_time_seconds=self.client_options.long_poll_api_max_wait_time_seconds,
+        )
+
+        response = post_api_v_1_workflow_wait_for_state_completion.sync_detailed(
+            client=self.api_client,
+            json_body=request,
+        )
+
         return handler_error_and_return(response)
 
 

@@ -22,6 +22,7 @@ from iwf.workflow_state import (
     WorkflowState,
     get_state_id,
     get_state_id_by_class,
+    get_state_execution_id,
     should_skip_wait_until,
 )
 from iwf.workflow_state_options import _to_idl_state_options
@@ -85,6 +86,13 @@ class Client:
             unreg_opts.initial_data_attributes = options.initial_data_attributes
 
             unreg_opts.workflow_config_override = options.workflow_config_override
+
+            unreg_opts.wait_for_completion_state_ids = (
+                options.wait_for_completion_state_ids
+            )
+            unreg_opts.wait_for_completion_state_execution_ids = (
+                options.wait_for_completion_state_execution_ids
+            )
 
             # TODO: set initial search attributes here
 
@@ -315,6 +323,47 @@ class Client:
 
         return self._do_set_workflow_search_attributes(
             workflow_class, workflow_id, run_id, search_attributes
+        )
+
+    """A long poll API to wait for the completion of the state.
+    Note 1 The state_completion to wait for is needed to registered on starting workflow due to limitation in https://github.com/indeedeng/iwf/issues/349
+    Note 2 The max polling time is configured in client_options (default to 10s)
+
+    Args:
+        state_class the state class.
+        workflow_id the workflowId
+        state_execution_number the state execution number. E.g. if it's 2, it means the 2nd execution of the state
+    """
+
+    def wait_for_state_execution_completion_with_state_execution_id(
+        self,
+        state_class: type[WorkflowState],
+        workflow_id: str,
+        state_execution_number: int = 1,
+    ):
+        state_execution_id = get_state_execution_id(state_class, state_execution_number)
+
+        self._unregistered_client.wait_for_state_execution_completion_with_state_execution_id(
+            workflow_id, state_execution_id
+        )
+
+    """A long poll API to wait for the completion of the state.
+    Note 1 The state_completion to wait for is needed to registered on starting workflow due to limitation in https://github.com/indeedeng/iwf/issues/349
+    Note 2 The max polling time is configured in client_options (default to 10s)
+
+    Args:
+        state_class the state class.
+        workflow_id the workflowId
+        wait_for_key key provided by the client and to identity workflow
+    """
+
+    def wait_for_state_execution_completion_with_wait_for_key(
+        self, state_class: type[WorkflowState], workflow_id: str, wait_for_key: str
+    ):
+        state_id = get_state_id_by_class(state_class)
+
+        self._unregistered_client.wait_for_state_execution_completion_with_wait_for_key(
+            workflow_id, state_id, wait_for_key
         )
 
     def _do_set_workflow_search_attributes(
