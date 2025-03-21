@@ -44,7 +44,6 @@ class PersistenceStateExecutionLocalRWState(WorkflowState[None]):
         communication: Communication,
     ):
         value = persistence.get_state_execution_local(PERSISTENCE_LOCAL_KEY)
-        print(value)
         persistence.set_data_attribute(PERSISTENCE_DATA_ATTRIBUTE_KEY, value)
         return StateDecision.graceful_complete_workflow()
 
