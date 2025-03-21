@@ -45,9 +45,12 @@ class StateExecutionLocals:
 
     def get_upsert_state_execution_local_attributes(self) -> List[KeyValue]:
         return [
-            KeyValue(item[0], item[1])
-            for item in self._upsert_attributes_to_return_to_server.items()
+            KeyValue(item_key, item_value)
+            for item_key, item_value in self._upsert_attributes_to_return_to_server.items()
         ]
 
     def get_record_events(self) -> List[KeyValue]:
-        return [KeyValue(item[0], item[1]) for item in self._record_events.items()]
+        return [
+            KeyValue(item_key, item_value)
+            for item_key, item_value in self._record_events.items()
+        ]
