@@ -25,6 +25,7 @@ class WorkflowOptions:
     initial_data_attributes: Optional[dict[str, Any]] = None
     _wait_for_completion_state_ids: list[str] = field(default_factory=list)
     _wait_for_completion_state_execution_ids: list[str] = field(default_factory=list)
+    initial_search_attributes: Optional[dict[str, Any]] = None
 
     @property
     def wait_for_completion_state_ids(self) -> Optional[list[str]]:
