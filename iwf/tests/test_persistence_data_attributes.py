@@ -30,6 +30,12 @@ final_test_da_value_2 = 1234
 final_initial_da_value_1 = initial_da_value_1
 final_initial_da_value_2 = "no-more-init"
 
+test_da_prefix = "test-da-prefix"
+test_da_prefix_key_1 = "test-da-prefix-1"
+test_da_prefix_key_2 = "test-da-prefix-2"
+test_da_prefix_value_1 = "test-da-value-1"
+test_da_prefix_value_2 = "test-da-value-2"
+
 
 class DataAttributeRWState(WorkflowState[None]):
     def wait_until(
@@ -60,6 +66,8 @@ class DataAttributeRWState(WorkflowState[None]):
         persistence.set_data_attribute(test_da_1, final_test_da_value_1)
         persistence.set_data_attribute(test_da_2, final_test_da_value_2)
         persistence.set_data_attribute(initial_da_2, final_initial_da_value_2)
+        persistence.set_data_attribute(test_da_prefix_key_1, test_da_prefix_value_1)
+        persistence.set_data_attribute(test_da_prefix_key_2, test_da_prefix_value_2)
         return StateDecision.graceful_complete_workflow()
 
 
@@ -73,6 +81,7 @@ class PersistenceDataAttributesWorkflow(ObjectWorkflow):
             PersistenceField.data_attribute_def(initial_da_2, str),
             PersistenceField.data_attribute_def(test_da_1, str),
             PersistenceField.data_attribute_def(test_da_2, int),
+            PersistenceField.data_attribute_prefix_def(test_da_prefix, str),
         )
 
     @rpc()
@@ -82,6 +91,8 @@ class PersistenceDataAttributesWorkflow(ObjectWorkflow):
             pers.get_data_attribute(initial_da_2),
             pers.get_data_attribute(test_da_1),
             pers.get_data_attribute(test_da_2),
+            pers.get_data_attribute(test_da_prefix_key_1),
+            pers.get_data_attribute(test_da_prefix_key_2),
         )
 
 
@@ -115,4 +126,6 @@ class TestPersistenceDataAttributes(unittest.TestCase):
             final_initial_da_value_2,
             final_test_da_value_1,
             final_test_da_value_2,
+            test_da_prefix_value_1,
+            test_da_prefix_value_2,
         ]

@@ -78,6 +78,9 @@ class WorkerService:
         internal_channel_types = self._registry.get_internal_channel_type_store(wf_type)
         signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
+        data_attributes_prefix_types = self._registry.get_data_attribute_prefix_types(
+            wf_type
+        )
 
         context = _from_idl_context(request.context)
         _input = self._options.object_encoder.decode(
@@ -92,7 +95,10 @@ class WorkerService:
             }
 
         data_attributes = DataAttributes(
-            data_attributes_types, self._options.object_encoder, current_data_attributes
+            data_attributes_types,
+            data_attributes_prefix_types,
+            self._options.object_encoder,
+            current_data_attributes,
         )
 
         search_attributes_types = self._registry.get_search_attribute_types(wf_type)
@@ -167,6 +173,9 @@ class WorkerService:
         internal_channel_types = self._registry.get_internal_channel_type_store(wf_type)
         signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
+        data_attributes_prefix_types = self._registry.get_data_attribute_prefix_types(
+            wf_type
+        )
 
         context = _from_idl_context(request.context)
         _input = self._options.object_encoder.decode(
@@ -181,7 +190,10 @@ class WorkerService:
             }
 
         data_attributes = DataAttributes(
-            data_attributes_types, self._options.object_encoder, current_data_attributes
+            data_attributes_types,
+            data_attributes_prefix_types,
+            self._options.object_encoder,
+            current_data_attributes,
         )
 
         search_attributes_types = self._registry.get_search_attribute_types(wf_type)
@@ -236,6 +248,9 @@ class WorkerService:
         internal_channel_types = self._registry.get_internal_channel_type_store(wf_type)
         signal_channel_types = self._registry.get_signal_channel_types(wf_type)
         data_attributes_types = self._registry.get_data_attribute_types(wf_type)
+        data_attributes_prefix_types = self._registry.get_data_attribute_prefix_types(
+            wf_type
+        )
         context = _from_idl_context(request.context)
 
         _input = self._options.object_encoder.decode(
@@ -250,7 +265,10 @@ class WorkerService:
             }
 
         data_attributes = DataAttributes(
-            data_attributes_types, self._options.object_encoder, current_data_attributes
+            data_attributes_types,
+            data_attributes_prefix_types,
+            self._options.object_encoder,
+            current_data_attributes,
         )
 
         search_attributes_types = self._registry.get_search_attribute_types(wf_type)
