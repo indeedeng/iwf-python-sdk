@@ -18,6 +18,7 @@ from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOpti
 from iwf.utils.iwf_typing import unset_to_none
 from iwf.utils.persistence_utils import get_search_attribute_value
 from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
+from iwf.workflow_info import WorkflowInfo
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import (
     WorkflowState,
@@ -198,6 +199,19 @@ class Client:
         return self._unregistered_client.reset_workflow(
             workflow_id, "", reset_workflow_type_and_options
         )
+
+    def describe_workflow(
+        self,
+        workflow_id: str,
+        workflow_run_id: Optional[str] = None,
+    ):
+        run_id = workflow_run_id if workflow_run_id is not None else ""
+
+        response = self._unregistered_client.get_workflow(
+            workflow_id, run_id
+        )
+
+        return WorkflowInfo(workflow_status=response.workflow_status)
 
     def skip_timer_by_command_id(
         self,

@@ -17,6 +17,7 @@ from iwf.errors import (
 from iwf.iwf_api import Client, errors
 from iwf.iwf_api.api.default import (
     post_api_v1_workflow_dataobjects_get,
+    post_api_v1_workflow_get,
     post_api_v1_workflow_reset,
     post_api_v1_workflow_rpc,
     post_api_v1_workflow_search,
@@ -96,7 +97,7 @@ def add_http_status(name, value, phrase, description=""):
         HTTPStatus.__class__
     )  # store the enum's member parent class
     setattr(HTTPStatus, name, new_status)  # add it to the global HTTPStatus namespace
-    HTTPStatus._member_map_[name] = new_status  #  add it to the name=>member map
+    HTTPStatus._member_map_[name] = new_status  # add it to the name=>member map
     HTTPStatus._member_names_.append(
         name
     )  # append the names so it appears in __members__
@@ -410,6 +411,21 @@ class UnregisteredClient:
             request.stop_type = options.workflow_stop_type
             request.reason = options.reason
         response = post_api_v1_workflow_stop.sync_detailed(
+            client=self.api_client,
+            json_body=request,
+        )
+        return handler_error_and_return(response)
+
+    def get_workflow(
+        self,
+        workflow_id: str,
+        workflow_run_id: str,
+    ) -> WorkflowGetResponse:
+        request = WorkflowGetRequest(
+            workflow_id=workflow_id,
+            workflow_run_id=workflow_run_id,
+        )
+        response = post_api_v1_workflow_get.sync_detailed(
             client=self.api_client,
             json_body=request,
         )
