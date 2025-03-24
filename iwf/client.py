@@ -207,10 +207,7 @@ class Client:
     ):
         run_id = workflow_run_id if workflow_run_id is not None else ""
 
-        response = self._unregistered_client.get_workflow(
-            workflow_id, run_id
-        )
-
+        response = self._unregistered_client.get_workflow(workflow_id, run_id)
         return WorkflowInfo(workflow_status=response.workflow_status)
 
     def skip_timer_by_command_id(
