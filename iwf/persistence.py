@@ -1,20 +1,24 @@
-from typing import Any, Union
+from typing import Any, Tuple, Union
 
 from iwf.data_attributes import DataAttributes
 from iwf.search_attributes import SearchAttributes
+from iwf.state_execution_locals import StateExecutionLocals
 
 
 class Persistence:
     _data_attributes: DataAttributes
     _search_attributes: SearchAttributes
+    _state_execution_locals: StateExecutionLocals
 
     def __init__(
         self,
         data_attributes: DataAttributes,
         search_attributes: SearchAttributes,
+        state_execution_locals: StateExecutionLocals,
     ):
         self._data_attributes = data_attributes
         self._search_attributes = search_attributes
+        self._state_execution_locals = state_execution_locals
 
     def get_data_attribute(self, key: str) -> Any:
         return self._data_attributes.get_data_attribute(key)
@@ -65,3 +69,12 @@ class Persistence:
         self, key: str, value: Union[None, list[str]]
     ):
         self._search_attributes.set_search_attribute_keyword_array(key, value)
+
+    def get_state_execution_local(self, key: str) -> Any:
+        return self._state_execution_locals.get_state_execution_local(key)
+
+    def set_state_execution_local(self, key: str, value: Any):
+        self._state_execution_locals.set_state_execution_local(key, value)
+
+    def record_event(self, key: str, *event_data: Tuple[Any, ...]):
+        self._state_execution_locals.record_event(key, *event_data)
