@@ -50,6 +50,7 @@ wf = DescribeWorkflow()
 registry.add_workflow(wf)
 client = Client(registry)
 
+
 class TestDescribeWorkflow(unittest.TestCase):
     def test_describe_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
