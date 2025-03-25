@@ -3,6 +3,7 @@ from typing import Optional, Union
 
 from iwf.errors import WorkflowDefinitionError
 from iwf.iwf_api.models import CommandWaitingType
+from iwf.iwf_api.models.command_combination import CommandCombination
 from iwf.iwf_api.models.command_request import (
     CommandRequest as IdlCommandRequest,
 )
@@ -21,8 +22,7 @@ class TimerCommand:
     @classmethod
     def by_seconds(cls, duration_seconds: int, command_id: Optional[str] = None):
         return TimerCommand(
-            command_id if command_id is not None else "",
-            duration_seconds,
+            command_id if command_id is not None else "", duration_seconds
         )
 
 
@@ -46,7 +46,8 @@ class SignalChannelCommand:
     @classmethod
     def by_name(cls, channel_name: str, command_id: Optional[str] = None):
         return SignalChannelCommand(
-            command_id if command_id is not None else "", channel_name
+            command_id if command_id is not None else "",
+            channel_name,
         )
 
 
@@ -57,20 +58,31 @@ BaseCommand = Union[TimerCommand, InternalChannelCommand, SignalChannelCommand]
 class CommandRequest:
     commands: list[BaseCommand]
     command_waiting_type: CommandWaitingType
+    command_combinations: list[CommandCombination]
 
     @classmethod
     def for_any_command_completed(cls, *commands: BaseCommand):
         bc = [c for c in commands]
-        return CommandRequest(bc, CommandWaitingType.ANY_COMPLETED)
+        return CommandRequest(bc, CommandWaitingType.ANY_COMPLETED, [])
 
     @classmethod
     def for_all_command_completed(cls, *commands: BaseCommand):
         bc = [c for c in commands]
-        return CommandRequest(bc, CommandWaitingType.ALL_COMPLETED)
+        return CommandRequest(bc, CommandWaitingType.ALL_COMPLETED, [])
+
+    @classmethod
+    def for_any_command_combination_completed(
+        cls, command_combinations_list: list[list[str]], *commands: BaseCommand
+    ):
+        return CommandRequest(
+            list(commands),
+            CommandWaitingType.ANY_COMBINATION_COMPLETED,
+            [CommandCombination(c) for c in command_combinations_list],
+        )
 
     @classmethod
     def empty(cls):
-        return CommandRequest(list(), CommandWaitingType.ALL_COMPLETED)
+        return CommandRequest(list(), CommandWaitingType.ALL_COMPLETED, [])
 
 
 def _to_idl_command_request(request: CommandRequest) -> IdlCommandRequest:
@@ -99,4 +111,6 @@ def _to_idl_command_request(request: CommandRequest) -> IdlCommandRequest:
         req.inter_state_channel_commands = internal_channel_commands
     if len(signal_commands) > 0:
         req.signal_commands = signal_commands
+    if len(request.command_combinations) > 0:
+        req.command_combinations = request.command_combinations
     return req
