@@ -82,7 +82,7 @@ class CommandRequest:
 
     @classmethod
     def empty(cls):
-        return CommandRequest(list(), CommandWaitingType.ALL_COMPLETED)
+        return CommandRequest(list(), CommandWaitingType.ALL_COMPLETED, [])
 
 
 def _to_idl_command_request(request: CommandRequest) -> IdlCommandRequest:
