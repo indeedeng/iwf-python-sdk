@@ -85,9 +85,15 @@ class TestWorkflowErrors(unittest.TestCase):
             workflow_already_started_options_1
         )
 
-        client.start_workflow(BasicWorkflow, wf_id, 100, "input", start_options_1)
+        wf_run_id = client.start_workflow(
+            BasicWorkflow, wf_id, 100, "input", start_options_1
+        )
+        assert wf_run_id
 
-        client.start_workflow(BasicWorkflow, wf_id, 100, "input", start_options_1)
+        wf_run_id = client.start_workflow(
+            BasicWorkflow, wf_id, 100, "input", start_options_1
+        )
+        assert wf_run_id
 
         workflow_already_started_options_2 = WorkflowAlreadyStartedOptions(
             ignore_already_started_error=True
@@ -100,7 +106,10 @@ class TestWorkflowErrors(unittest.TestCase):
         )
 
         with self.assertRaises(WorkflowAlreadyStartedError):
-            client.start_workflow(BasicWorkflow, wf_id, 100, "input", start_options_2)
+            wf_run_id = client.start_workflow(
+                BasicWorkflow, wf_id, 100, "input", start_options_2
+            )
+            assert wf_run_id
 
-        res = client.get_simple_workflow_result_with_wait(wf_id, str)
+        res = client.wait_for_workflow_completion(wf_id, str)
         assert res == "done"

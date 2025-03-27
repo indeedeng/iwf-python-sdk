@@ -61,10 +61,11 @@ from iwf.iwf_api.models import (
     WorkflowSetSearchAttributesRequest,
     WorkflowWaitForStateCompletionRequest,
 )
+from iwf.iwf_api.models.workflow_start_response import WorkflowStartResponse
 from iwf.iwf_api.types import Response
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
 from iwf.stop_workflow_options import StopWorkflowOptions
-from iwf.utils.iwf_typing import assert_not_unset
+from iwf.utils.iwf_typing import assert_not_unset, unset_to_none
 from iwf.utils.persistence_utils import get_search_attribute_value
 
 
@@ -193,11 +194,17 @@ class UnregisteredClient:
                     options.wait_for_completion_state_ids
                 )
 
-        response = post_api_v1_workflow_start.sync_detailed(
-            client=self.api_client,
-            json_body=request,
+        workflow_start_response = unset_to_none(
+            handler_error_and_return(
+                post_api_v1_workflow_start.sync_detailed(
+                    client=self.api_client,
+                    json_body=request,
+                )
+            )
         )
-        return handler_error_and_return(response)
+
+        assert isinstance(workflow_start_response, WorkflowStartResponse)
+        return workflow_start_response.workflow_run_id
 
     def get_simple_workflow_result_with_wait(
         self,
