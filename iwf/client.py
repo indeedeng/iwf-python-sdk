@@ -55,7 +55,7 @@ class Client:
         timeout_seconds: int,
         input: Any = None,
         options: Optional[WorkflowOptions] = None,
-    ) -> None:
+    ) -> str:
         """
 
         Args:
@@ -64,6 +64,9 @@ class Client:
             timeout_seconds: the timeout. Use zero for infinite timeout(only works for Temporal as backend)
             input: input of the workflow, aka, the input of the starting state of the workflow
             options: advanced options
+
+        Returns:
+            workflow_run_id: the run id of the started workflow
 
         Raises:
             ClientSideError for non-retryable error
@@ -114,7 +117,7 @@ class Client:
             )
             unreg_opts.start_state_options = starting_state_opts
 
-        self._unregistered_client.start_workflow(
+        return self._unregistered_client.start_workflow(
             wf_type, wf_id, starting_state_id, timeout_seconds, input, unreg_opts
         )
 
