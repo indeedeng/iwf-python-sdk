@@ -116,7 +116,6 @@ class TestInternalChannelWithNoPrefix(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             client.wait_for_workflow_completion(wf_id, None)
 
-        print(context.exception.error_message)
         self.assertIn("FAILED", context.exception.workflow_status)
         self.assertIn(
             f"WorkerExecutionError: InternalChannel channel_name is not defined {test_non_prefix_channel_name_with_suffix}",
