@@ -32,7 +32,9 @@ class TypeStore:
             raise NotRegisteredError(f"{self._class_type} not registered: {name}")
 
         t = self._do_get_type(name)
-        assert t is not None
+        if t is None:
+            raise NotRegisteredError(f"{self._class_type} not registered: {name}")
+
         return t
 
     def add_internal_channel_def(self, obj: CommunicationMethod):
