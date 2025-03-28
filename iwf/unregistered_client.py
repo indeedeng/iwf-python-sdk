@@ -17,6 +17,7 @@ from iwf.errors import (
 from iwf.iwf_api import Client, errors
 from iwf.iwf_api.api.default import (
     post_api_v1_workflow_dataobjects_get,
+    post_api_v1_workflow_dataobjects_set,
     post_api_v1_workflow_get,
     post_api_v1_workflow_reset,
     post_api_v1_workflow_rpc,
@@ -60,6 +61,12 @@ from iwf.iwf_api.models import (
     KeyValue,
     WorkflowSetSearchAttributesRequest,
     WorkflowWaitForStateCompletionRequest,
+)
+from iwf.iwf_api.models.workflow_get_data_objects_response import (
+    WorkflowGetDataObjectsResponse,
+)
+from iwf.iwf_api.models.workflow_set_data_objects_request import (
+    WorkflowSetDataObjectsRequest,
 )
 from iwf.iwf_api.models.workflow_start_response import WorkflowStartResponse
 from iwf.iwf_api.types import Response
@@ -444,7 +451,7 @@ class UnregisteredClient:
         workflow_id: str,
         workflow_run_id: str,
         attribute_keys: Optional[List[str]] = None,
-    ):
+    ) -> WorkflowGetDataObjectsResponse:
         request = WorkflowGetDataObjectsRequest(
             workflow_id=workflow_id,
             workflow_run_id=workflow_run_id,
@@ -454,6 +461,25 @@ class UnregisteredClient:
         response = post_api_v1_workflow_dataobjects_get.sync_detailed(
             client=self.api_client,
             json_body=request,
+        )
+        return handler_error_and_return(response)
+
+    def set_workflow_data_attributes(
+        self, workflow_id: str, workflow_run_id: str, attrs: dict[str, Any]
+    ):
+        objects = [
+            KeyValue(key, self.client_options.object_encoder.encode(value))
+            for key, value in attrs.items()
+        ]
+
+        request = WorkflowSetDataObjectsRequest(
+            workflow_id,
+            workflow_run_id,
+            objects,
+        )
+
+        response = post_api_v1_workflow_dataobjects_set.sync_detailed(
+            client=self.api_client, json_body=request
         )
         return handler_error_and_return(response)
 
