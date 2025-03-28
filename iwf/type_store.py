@@ -3,12 +3,13 @@ from enum import Enum
 
 from iwf.communication_schema import CommunicationMethod
 from iwf.errors import WorkflowDefinitionError, NotRegisteredError
+from iwf.persistence_schema import PersistenceField, PersistenceFieldType
 
 
 class Type(Enum):
     INTERNAL_CHANNEL = 1
+    DATA_ATTRIBUTE = 2
     # TODO: extend to other types
-    # DATA_ATTRIBUTE = 2
     # SIGNAL_CHANNEL = 3
 
 
@@ -43,6 +44,17 @@ class TypeStore:
                 f"Cannot add internal channel definition to {self._class_type}"
             )
         self._do_add_to_store(obj.is_prefix, obj.name, obj.value_type)
+
+    def add_data_attribute_def(self, obj: PersistenceField):
+        if self._class_type != Type.DATA_ATTRIBUTE:
+            raise ValueError(
+                f"Cannot add internal channel definition to {self._class_type}"
+            )
+        self._do_add_to_store(
+            obj.field_type == PersistenceFieldType.DataAttributePrefix,
+            obj.key,
+            obj.value_type,
+        )
 
     def _validate_name(self, name: str) -> bool:
         if name in self._name_to_type_store:
