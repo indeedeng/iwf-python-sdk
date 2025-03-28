@@ -23,15 +23,15 @@ class TypeStore:
         self._prefix_to_type_store = dict()
 
     def is_valid_name_or_prefix(self, name: str) -> bool:
-        is_registered, _ = self._validate_name_and_get_type(name)
-        return is_registered
+        return self._validate_name(name)
 
     def get_type(self, name: str) -> type:
-        is_registered, t = self._validate_name_and_get_type(name)
+        is_registered = self._validate_name(name)
 
         if not is_registered:
             raise NotRegisteredError(f"{self._class_type} not registered: {name}")
 
+        t = self._do_get_type(name)
         assert t is not None
         return t
 
@@ -42,16 +42,26 @@ class TypeStore:
             )
         self._do_add_to_store(obj.is_prefix, obj.name, obj.value_type)
 
-    def _validate_name_and_get_type(self, name: str) -> tuple[bool, Optional[type]]:
+    def _validate_name(self, name: str) -> bool:
+        if name in self._name_to_type_store:
+            return True
+
+        for prefix in self._prefix_to_type_store.keys():
+            if name.startswith(prefix):
+                return True
+
+        return False
+
+    def _do_get_type(self, name: str) -> Optional[type]:
         if name in self._name_to_type_store:
             t = self._name_to_type_store[name]
-            return (True, t if t is not None else type(None))
+            return t if t is not None else type(None)
 
         for prefix, t in self._prefix_to_type_store.items():
             if name.startswith(prefix):
-                return (True, t if t is not None else type(None))
+                return t if t is not None else type(None)
 
-        return (False, None)
+        return None
 
     def _do_add_to_store(self, is_prefix: bool, name: str, t: Optional[type]):
         if is_prefix:
