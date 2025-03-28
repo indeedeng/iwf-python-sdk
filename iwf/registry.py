@@ -16,8 +16,7 @@ class Registry:
     _state_store: dict[str, dict[str, WorkflowState]]
     _internal_channel_type_store: dict[str, TypeStore]
     _signal_channel_type_store: dict[str, dict[str, Optional[type]]]
-    _data_attribute_types: dict[str, dict[str, Optional[type]]]
-    _data_attribute_prefix_types: dict[str, dict[str, Optional[type]]]
+    _data_attribute_types: dict[str, TypeStore]
     _search_attribute_types: dict[str, dict[str, SearchAttributeValueType]]
     _rpc_infos: dict[str, dict[str, RPCInfo]]
 
@@ -28,7 +27,6 @@ class Registry:
         self._internal_channel_type_store = dict()
         self._signal_channel_type_store = dict()
         self._data_attribute_types = dict()
-        self._data_attribute_prefix_types = dict()
         self._search_attribute_types = {}
         self._rpc_infos = dict()
 
@@ -38,7 +36,6 @@ class Registry:
         self._register_internal_channels(wf)
         self._register_signal_channels(wf)
         self._register_data_attributes(wf)
-        self._register_data_attribute_prefix_types(wf)
         self._register_search_attributes(wf)
         self._register_workflow_rpcs(wf)
 
@@ -77,18 +74,13 @@ class Registry:
     def get_signal_channel_types(self, wf_type: str) -> dict[str, Optional[type]]:
         return self._signal_channel_type_store[wf_type]
 
-    def get_data_attribute_types(self, wf_type: str) -> dict[str, Optional[type]]:
+    def get_data_attribute_types(self, wf_type: str) -> TypeStore:
         return self._data_attribute_types[wf_type]
 
     def get_search_attribute_types(
         self, wf_type: str
     ) -> dict[str, SearchAttributeValueType]:
         return self._search_attribute_types[wf_type]
-
-    def get_data_attribute_prefix_types(
-        self, wf_type: str
-    ) -> dict[str, Optional[type]]:
-        return self._data_attribute_prefix_types[wf_type]
 
     def get_rpc_infos(self, wf_type: str) -> dict[str, RPCInfo]:
         return self._rpc_infos[wf_type]
@@ -123,10 +115,13 @@ class Registry:
 
     def _register_data_attributes(self, wf: ObjectWorkflow):
         wf_type = get_workflow_type(wf)
-        data_attribute_types: dict[str, Optional[type]] = {}
+        data_attribute_types: TypeStore = TypeStore(Type.DATA_ATTRIBUTE)
         for field in wf.get_persistence_schema().persistence_fields:
-            if field.field_type == PersistenceFieldType.DataAttribute:
-                data_attribute_types[field.key] = field.value_type
+            if (
+                field.field_type == PersistenceFieldType.DataAttribute
+                or field.field_type == PersistenceFieldType.DataAttributePrefix
+            ):
+                data_attribute_types.add_data_attribute_def(field)
         self._data_attribute_types[wf_type] = data_attribute_types
 
     def _register_search_attributes(self, wf: ObjectWorkflow):
@@ -145,14 +140,6 @@ class Registry:
                     )
                 types[field.key] = sa_type
         self._search_attribute_types[wf_type] = types
-
-    def _register_data_attribute_prefix_types(self, wf: ObjectWorkflow):
-        wf_type = get_workflow_type(wf)
-        data_attribute_prefix_types: dict[str, Optional[type]] = {}
-        for field in wf.get_persistence_schema().persistence_fields:
-            if field.field_type == PersistenceFieldType.DataAttributePrefix:
-                data_attribute_prefix_types[field.key] = field.value_type
-        self._data_attribute_prefix_types[wf_type] = data_attribute_prefix_types
 
     def _register_workflow_state(self, wf):
         wf_type = get_workflow_type(wf)

@@ -1,10 +1,10 @@
 import inspect
-from typing import Any, Callable, Optional, Type, TypeVar, Union
+from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 
 from typing_extensions import deprecated
 
 from iwf.client_options import ClientOptions
-from iwf.errors import InvalidArgumentError, WorkflowDefinitionError
+from iwf.errors import InvalidArgumentError, NotRegisteredError, WorkflowDefinitionError
 from iwf.iwf_api.models import (
     SearchAttribute,
     SearchAttributeKeyAndType,
@@ -161,6 +161,71 @@ class Client:
         options: Optional[StopWorkflowOptions] = None,
     ):
         return self._unregistered_client.stop_workflow(workflow_id, "", options)
+
+    def get_all_workflow_data_attributes(
+        self,
+        workflow_class: type[ObjectWorkflow],
+        workflow_id: str,
+        workflow_run_id: str = "",
+    ):
+        return self.get_workflow_data_attributes(
+            workflow_class, workflow_id, workflow_run_id, None
+        )
+
+    def get_workflow_data_attributes(
+        self,
+        workflow_class: type[ObjectWorkflow],
+        workflow_id: str,
+        workflow_run_id: str = "",
+        keys: Optional[List[str]] = None,
+    ):
+        wf_type = get_workflow_type_by_class(workflow_class)
+        data_attr_type_store = self._registry.get_data_attribute_types(wf_type)
+        if keys:
+            for key in keys:
+                if not data_attr_type_store.is_valid_name_or_prefix(key):
+                    raise NotRegisteredError(
+                        f"key {key} is not registered in workflow {wf_type}"
+                    )
+
+        response = self._unregistered_client.get_workflow_data_attributes(
+            workflow_id, workflow_run_id, keys
+        )
+
+        if not response.objects:
+            raise RuntimeError("data attributes not returned")
+
+        res = {}
+        for kv in response.objects:
+            k = unset_to_none(kv.key)
+            if k and kv.value:
+                res[kv.key] = self._options.object_encoder.decode(
+                    kv.value, data_attr_type_store.get_type(k)
+                )
+
+        return res
+
+    def set_workflow_data_attributes(
+        self,
+        workflow_class: type[ObjectWorkflow],
+        workflow_id: str,
+        workflow_run_id: str = "",
+        data_attributes: dict[str, Any] = dict(),
+    ):
+        wf_type = get_workflow_type_by_class(workflow_class)
+        data_attr_type_store = self._registry.get_data_attribute_types(wf_type)
+        for key, value in data_attributes.items():
+            if not data_attr_type_store.is_valid_name_or_prefix(key):
+                raise NotRegisteredError(f"data attribute {key} is not registered")
+
+            data_attr_type = data_attr_type_store.get_type(key)
+            if not isinstance(value, data_attr_type):
+                raise NotRegisteredError(
+                    f"data attribute {key} is not registered as {type(value)}"
+                )
+        return self._unregistered_client.set_workflow_data_attributes(
+            workflow_id, workflow_run_id, data_attributes
+        )
 
     def invoke_rpc(
         self,
