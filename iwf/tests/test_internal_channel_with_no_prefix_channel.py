@@ -94,7 +94,7 @@ class InternalChannelWorkflowWithNoPrefixChannel(ObjectWorkflow):
 
     def get_communication_schema(self) -> CommunicationSchema:
         return CommunicationSchema.create(
-            CommunicationMethod.internal_channel_def(internal_channel_name, type(None)),
+            CommunicationMethod.internal_channel_def(internal_channel_name, None),
             # Defining a standard channel (non-prefix) to make sure messages to the channel with a suffix added will not be accepted
             CommunicationMethod.internal_channel_def(test_non_prefix_channel_name, str),
         )
@@ -116,6 +116,7 @@ class TestInternalChannelWithNoPrefix(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             client.wait_for_workflow_completion(wf_id, None)
 
+        print(context.exception.error_message)
         self.assertIn("FAILED", context.exception.workflow_status)
         self.assertIn(
             f"WorkerExecutionError: InternalChannel channel_name is not defined {test_non_prefix_channel_name_with_suffix}",

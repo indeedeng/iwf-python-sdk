@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Union
 
 
 class CommunicationMethodType(Enum):
@@ -22,15 +22,23 @@ class CommunicationMethod:
         )
 
     @classmethod
-    def internal_channel_def(cls, name: str, value_type: type):
+    def internal_channel_def(cls, name: str, value_type: Union[type, None]):
         return CommunicationMethod(
-            name, CommunicationMethodType.InternalChannel, value_type, False
+            name,
+            CommunicationMethodType.InternalChannel,
+            value_type if value_type is not None else type(None),
+            False,
         )
 
     @classmethod
-    def internal_channel_def_by_prefix(cls, name_prefix: str, value_type: type):
+    def internal_channel_def_by_prefix(
+        cls, name_prefix: str, value_type: Union[type, None]
+    ):
         return CommunicationMethod(
-            name_prefix, CommunicationMethodType.InternalChannel, value_type, True
+            name_prefix,
+            CommunicationMethodType.InternalChannel,
+            value_type if value_type is not None else type(None),
+            True,
         )
 
 

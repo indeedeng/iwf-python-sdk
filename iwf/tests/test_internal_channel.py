@@ -120,7 +120,7 @@ class InternalChannelWorkflow(ObjectWorkflow):
     def get_communication_schema(self) -> CommunicationSchema:
         return CommunicationSchema.create(
             CommunicationMethod.internal_channel_def(test_channel_name1, int),
-            CommunicationMethod.internal_channel_def(test_channel_name2, type(None)),
+            CommunicationMethod.internal_channel_def(test_channel_name2, None),
             CommunicationMethod.internal_channel_def(test_channel_name3, int),
             CommunicationMethod.internal_channel_def(test_channel_name4, str),
             CommunicationMethod.internal_channel_def_by_prefix(
