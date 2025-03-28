@@ -94,7 +94,7 @@ class InternalChannelWorkflowWithNoPrefixChannel(ObjectWorkflow):
 
     def get_communication_schema(self) -> CommunicationSchema:
         return CommunicationSchema.create(
-            CommunicationMethod.internal_channel_def(internal_channel_name, type(None)),
+            CommunicationMethod.internal_channel_def(internal_channel_name, None),
             # Defining a standard channel (non-prefix) to make sure messages to the channel with a suffix added will not be accepted
             CommunicationMethod.internal_channel_def(test_non_prefix_channel_name, str),
         )
