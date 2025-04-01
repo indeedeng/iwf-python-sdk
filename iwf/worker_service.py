@@ -64,9 +64,7 @@ class WorkerService:
                 return _worker_service.handle_worker_error(exception), 500
         """
         stacktrace = traceback.format_exc()
-        index = stacktrace.find("iwf-python-sdk/iwf/worker_service.py")
-        if index == -1:
-            index = 0
+        index = max(0, stacktrace.find("iwf-python-sdk/iwf/worker_service.py"))
         return "WorkerExecutionError: {0}; StackTrace:{1}".format(
             exception, stacktrace[index:]
         )
