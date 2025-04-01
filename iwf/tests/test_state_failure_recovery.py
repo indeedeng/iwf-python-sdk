@@ -6,6 +6,7 @@ from iwf.client import Client
 from iwf.command_results import CommandResults
 from iwf.communication import Communication
 from iwf.iwf_api.models import RetryPolicy
+from iwf.iwf_api.models.wait_until_api_failure_policy import WaitUntilApiFailurePolicy
 from iwf.persistence import Persistence
 from iwf.state_decision import StateDecision
 from iwf.state_schema import StateSchema
@@ -16,7 +17,35 @@ from iwf.workflow_state import T, WorkflowState
 from iwf.workflow_state_options import WorkflowStateOptions
 
 
-class FailState(WorkflowState[None]):
+class FailWaitUntilState(WorkflowState[None]):
+    def wait_until(
+        self,
+        ctx: WorkflowContext,
+        input: T,
+        persistence: Persistence,
+        communication: Communication,
+    ):
+        raise RuntimeError("failed wait_until")
+
+    def execute(
+        self,
+        ctx: WorkflowContext,
+        input: T,
+        command_results: CommandResults,
+        persistence: Persistence,
+        communication: Communication,
+    ):
+        return StateDecision.single_next_state(FailExecuteState)
+
+    def get_state_options(self) -> WorkflowStateOptions:
+        return WorkflowStateOptions(
+            execute_api_retry_policy=RetryPolicy(maximum_attempts=1),
+            wait_until_api_retry_policy=RetryPolicy(maximum_attempts=1),
+            proceed_to_execute_when_wait_until_retry_exhausted=WaitUntilApiFailurePolicy.PROCEED_ON_FAILURE,
+        )
+
+
+class FailExecuteState(WorkflowState[None]):
     def execute(
         self,
         ctx: WorkflowContext,
@@ -48,17 +77,20 @@ class RecoveryState(WorkflowState[None]):
 
 class RecoveryWorkflow(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
-        return StateSchema.with_starting_state(FailState(), RecoveryState())
-
-
-wf = RecoveryWorkflow()
-registry.add_workflow(wf)
-client = Client(registry)
+        return StateSchema.with_starting_state(
+            FailWaitUntilState(), FailExecuteState(), RecoveryState()
+        )
 
 
 class Test(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        wf = RecoveryWorkflow()
+        registry.add_workflow(wf)
+        cls.client = Client(registry)
+
     def test_workflow_recovery(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
-        client.start_workflow(RecoveryWorkflow, wf_id, 10)
-        result = client.get_simple_workflow_result_with_wait(wf_id, str)
+        self.client.start_workflow(RecoveryWorkflow, wf_id, 10)
+        result = self.client.wait_for_workflow_completion(wf_id, str)
         assert result == "done"
