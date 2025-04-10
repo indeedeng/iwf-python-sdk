@@ -16,12 +16,14 @@ class WorkflowConfig:
         continue_as_new_threshold (Union[Unset, int]):
         continue_as_new_page_size_in_bytes (Union[Unset, int]):
         optimize_activity (Union[Unset, bool]):
+        optimize_timer (Union[Unset, bool]):
     """
 
     executing_state_id_mode: Union[Unset, ExecutingStateIdMode] = UNSET
     continue_as_new_threshold: Union[Unset, int] = UNSET
     continue_as_new_page_size_in_bytes: Union[Unset, int] = UNSET
     optimize_activity: Union[Unset, bool] = UNSET
+    optimize_timer: Union[Unset, bool] = UNSET
     additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -32,6 +34,7 @@ class WorkflowConfig:
         continue_as_new_threshold = self.continue_as_new_threshold
         continue_as_new_page_size_in_bytes = self.continue_as_new_page_size_in_bytes
         optimize_activity = self.optimize_activity
+        optimize_timer = self.optimize_timer
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -46,6 +49,8 @@ class WorkflowConfig:
             )
         if optimize_activity is not UNSET:
             field_dict["optimizeActivity"] = optimize_activity
+        if optimize_timer is not UNSET:
+            field_dict["optimizeTimer"] = optimize_timer
 
         return field_dict
 
@@ -67,11 +72,14 @@ class WorkflowConfig:
 
         optimize_activity = d.pop("optimizeActivity", UNSET)
 
+        optimize_timer = d.pop("optimizeTimer", UNSET)
+
         workflow_config = cls(
             executing_state_id_mode=executing_state_id_mode,
             continue_as_new_threshold=continue_as_new_threshold,
             continue_as_new_page_size_in_bytes=continue_as_new_page_size_in_bytes,
             optimize_activity=optimize_activity,
+            optimize_timer=optimize_timer,
         )
 
         workflow_config.additional_properties = d
