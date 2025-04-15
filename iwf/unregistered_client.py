@@ -122,11 +122,7 @@ class UnregisteredClient:
         self.client_options = client_options
         self.api_client = Client(
             base_url=client_options.server_url,
-            timeout=(
-                Timeout(client_options.api_timeout)
-                if client_options.api_timeout
-                else None
-            ),
+            timeout=Timeout(client_options.api_timeout),
             raise_on_unexpected_status=True,
         )
 
