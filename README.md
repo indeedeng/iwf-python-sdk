@@ -100,7 +100,7 @@ This project uses [openapi-python-client](https://github.com/openapi-generators/
 
 ```bash
 mkdir iwf/iwf_api/iwf_api
-cd iwf && poetry run openapi-python-client update --path ../iwf-idl/iwf-sdk.yaml --config .openapi-python-client-config.yaml
+cd iwf && poetry run openapi-python-client generate --path iwf-idl/iwf-sdk.yaml --config iwf/.openapi-python-client-config.yaml
 cd .. && cp -R iwf/iwf_api/iwf_api/* iwf/iwf_api && rm -R iwf/iwf_api/iwf_api && poetry update
 ```
 

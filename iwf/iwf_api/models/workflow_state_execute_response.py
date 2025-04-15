@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
@@ -14,85 +16,71 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="WorkflowStateExecuteResponse")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class WorkflowStateExecuteResponse:
     """
     Attributes:
         local_activity_input (Union[Unset, str]):
         state_decision (Union[Unset, StateDecision]):
-        upsert_search_attributes (Union[Unset, List['SearchAttribute']]):
-        upsert_data_objects (Union[Unset, List['KeyValue']]):
-        record_events (Union[Unset, List['KeyValue']]):
-        upsert_state_locals (Union[Unset, List['KeyValue']]):
-        publish_to_inter_state_channel (Union[Unset, List['InterStateChannelPublishing']]):
+        upsert_search_attributes (Union[Unset, list['SearchAttribute']]):
+        upsert_data_objects (Union[Unset, list['KeyValue']]):
+        record_events (Union[Unset, list['KeyValue']]):
+        upsert_state_locals (Union[Unset, list['KeyValue']]):
+        publish_to_inter_state_channel (Union[Unset, list['InterStateChannelPublishing']]):
     """
 
     local_activity_input: Union[Unset, str] = UNSET
     state_decision: Union[Unset, "StateDecision"] = UNSET
-    upsert_search_attributes: Union[Unset, List["SearchAttribute"]] = UNSET
-    upsert_data_objects: Union[Unset, List["KeyValue"]] = UNSET
-    record_events: Union[Unset, List["KeyValue"]] = UNSET
-    upsert_state_locals: Union[Unset, List["KeyValue"]] = UNSET
-    publish_to_inter_state_channel: Union[
-        Unset, List["InterStateChannelPublishing"]
-    ] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    upsert_search_attributes: Union[Unset, list["SearchAttribute"]] = UNSET
+    upsert_data_objects: Union[Unset, list["KeyValue"]] = UNSET
+    record_events: Union[Unset, list["KeyValue"]] = UNSET
+    upsert_state_locals: Union[Unset, list["KeyValue"]] = UNSET
+    publish_to_inter_state_channel: Union[Unset, list["InterStateChannelPublishing"]] = UNSET
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         local_activity_input = self.local_activity_input
-        state_decision: Union[Unset, Dict[str, Any]] = UNSET
+
+        state_decision: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.state_decision, Unset):
             state_decision = self.state_decision.to_dict()
 
-        upsert_search_attributes: Union[Unset, List[Dict[str, Any]]] = UNSET
+        upsert_search_attributes: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.upsert_search_attributes, Unset):
             upsert_search_attributes = []
             for upsert_search_attributes_item_data in self.upsert_search_attributes:
-                upsert_search_attributes_item = (
-                    upsert_search_attributes_item_data.to_dict()
-                )
-
+                upsert_search_attributes_item = upsert_search_attributes_item_data.to_dict()
                 upsert_search_attributes.append(upsert_search_attributes_item)
 
-        upsert_data_objects: Union[Unset, List[Dict[str, Any]]] = UNSET
+        upsert_data_objects: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.upsert_data_objects, Unset):
             upsert_data_objects = []
             for upsert_data_objects_item_data in self.upsert_data_objects:
                 upsert_data_objects_item = upsert_data_objects_item_data.to_dict()
-
                 upsert_data_objects.append(upsert_data_objects_item)
 
-        record_events: Union[Unset, List[Dict[str, Any]]] = UNSET
+        record_events: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.record_events, Unset):
             record_events = []
             for record_events_item_data in self.record_events:
                 record_events_item = record_events_item_data.to_dict()
-
                 record_events.append(record_events_item)
 
-        upsert_state_locals: Union[Unset, List[Dict[str, Any]]] = UNSET
+        upsert_state_locals: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.upsert_state_locals, Unset):
             upsert_state_locals = []
             for upsert_state_locals_item_data in self.upsert_state_locals:
                 upsert_state_locals_item = upsert_state_locals_item_data.to_dict()
-
                 upsert_state_locals.append(upsert_state_locals_item)
 
-        publish_to_inter_state_channel: Union[Unset, List[Dict[str, Any]]] = UNSET
+        publish_to_inter_state_channel: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.publish_to_inter_state_channel, Unset):
             publish_to_inter_state_channel = []
-            for (
-                publish_to_inter_state_channel_item_data
-            ) in self.publish_to_inter_state_channel:
-                publish_to_inter_state_channel_item = (
-                    publish_to_inter_state_channel_item_data.to_dict()
-                )
+            for publish_to_inter_state_channel_item_data in self.publish_to_inter_state_channel:
+                publish_to_inter_state_channel_item = publish_to_inter_state_channel_item_data.to_dict()
+                publish_to_inter_state_channel.append(publish_to_inter_state_channel_item)
 
-                publish_to_inter_state_channel.append(
-                    publish_to_inter_state_channel_item
-                )
-
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
         if local_activity_input is not UNSET:
@@ -113,13 +101,13 @@ class WorkflowStateExecuteResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.inter_state_channel_publishing import InterStateChannelPublishing
         from ..models.key_value import KeyValue
         from ..models.search_attribute import SearchAttribute
         from ..models.state_decision import StateDecision
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         local_activity_input = d.pop("localActivityInput", UNSET)
 
         _state_decision = d.pop("stateDecision", UNSET)
@@ -132,9 +120,7 @@ class WorkflowStateExecuteResponse:
         upsert_search_attributes = []
         _upsert_search_attributes = d.pop("upsertSearchAttributes", UNSET)
         for upsert_search_attributes_item_data in _upsert_search_attributes or []:
-            upsert_search_attributes_item = SearchAttribute.from_dict(
-                upsert_search_attributes_item_data
-            )
+            upsert_search_attributes_item = SearchAttribute.from_dict(upsert_search_attributes_item_data)
 
             upsert_search_attributes.append(upsert_search_attributes_item)
 
@@ -161,9 +147,7 @@ class WorkflowStateExecuteResponse:
 
         publish_to_inter_state_channel = []
         _publish_to_inter_state_channel = d.pop("publishToInterStateChannel", UNSET)
-        for publish_to_inter_state_channel_item_data in (
-            _publish_to_inter_state_channel or []
-        ):
+        for publish_to_inter_state_channel_item_data in _publish_to_inter_state_channel or []:
             publish_to_inter_state_channel_item = InterStateChannelPublishing.from_dict(
                 publish_to_inter_state_channel_item_data
             )
@@ -184,7 +168,7 @@ class WorkflowStateExecuteResponse:
         return workflow_state_execute_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

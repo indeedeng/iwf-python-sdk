@@ -1,4 +1,4 @@
-""" A client library for accessing Workflow APIs """
+"""A client library for accessing Workflow APIs"""
 
 from .client import AuthenticatedClient, Client
 

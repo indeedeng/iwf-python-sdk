@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union, cast
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
@@ -13,7 +15,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="WorkflowStartRequest")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class WorkflowStartRequest:
     """
     Attributes:
@@ -22,8 +24,8 @@ class WorkflowStartRequest:
         workflow_timeout_seconds (int):
         iwf_worker_url (str):
         start_state_id (Union[Unset, str]):
-        wait_for_completion_state_ids (Union[Unset, List[str]]):
-        wait_for_completion_state_execution_ids (Union[Unset, List[str]]):
+        wait_for_completion_state_ids (Union[Unset, list[str]]):
+        wait_for_completion_state_execution_ids (Union[Unset, list[str]]):
         state_input (Union[Unset, EncodedObject]):
         state_options (Union[Unset, WorkflowStateOptions]):
         workflow_start_options (Union[Unset, WorkflowStartOptions]):
@@ -34,42 +36,45 @@ class WorkflowStartRequest:
     workflow_timeout_seconds: int
     iwf_worker_url: str
     start_state_id: Union[Unset, str] = UNSET
-    wait_for_completion_state_ids: Union[Unset, List[str]] = UNSET
-    wait_for_completion_state_execution_ids: Union[Unset, List[str]] = UNSET
+    wait_for_completion_state_ids: Union[Unset, list[str]] = UNSET
+    wait_for_completion_state_execution_ids: Union[Unset, list[str]] = UNSET
     state_input: Union[Unset, "EncodedObject"] = UNSET
     state_options: Union[Unset, "WorkflowStateOptions"] = UNSET
     workflow_start_options: Union[Unset, "WorkflowStartOptions"] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         workflow_id = self.workflow_id
+
         iwf_workflow_type = self.iwf_workflow_type
+
         workflow_timeout_seconds = self.workflow_timeout_seconds
+
         iwf_worker_url = self.iwf_worker_url
+
         start_state_id = self.start_state_id
-        wait_for_completion_state_ids: Union[Unset, List[str]] = UNSET
+
+        wait_for_completion_state_ids: Union[Unset, list[str]] = UNSET
         if not isinstance(self.wait_for_completion_state_ids, Unset):
             wait_for_completion_state_ids = self.wait_for_completion_state_ids
 
-        wait_for_completion_state_execution_ids: Union[Unset, List[str]] = UNSET
+        wait_for_completion_state_execution_ids: Union[Unset, list[str]] = UNSET
         if not isinstance(self.wait_for_completion_state_execution_ids, Unset):
-            wait_for_completion_state_execution_ids = (
-                self.wait_for_completion_state_execution_ids
-            )
+            wait_for_completion_state_execution_ids = self.wait_for_completion_state_execution_ids
 
-        state_input: Union[Unset, Dict[str, Any]] = UNSET
+        state_input: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.state_input, Unset):
             state_input = self.state_input.to_dict()
 
-        state_options: Union[Unset, Dict[str, Any]] = UNSET
+        state_options: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.state_options, Unset):
             state_options = self.state_options.to_dict()
 
-        workflow_start_options: Union[Unset, Dict[str, Any]] = UNSET
+        workflow_start_options: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.workflow_start_options, Unset):
             workflow_start_options = self.workflow_start_options.to_dict()
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -84,9 +89,7 @@ class WorkflowStartRequest:
         if wait_for_completion_state_ids is not UNSET:
             field_dict["waitForCompletionStateIds"] = wait_for_completion_state_ids
         if wait_for_completion_state_execution_ids is not UNSET:
-            field_dict["waitForCompletionStateExecutionIds"] = (
-                wait_for_completion_state_execution_ids
-            )
+            field_dict["waitForCompletionStateExecutionIds"] = wait_for_completion_state_execution_ids
         if state_input is not UNSET:
             field_dict["stateInput"] = state_input
         if state_options is not UNSET:
@@ -97,12 +100,12 @@ class WorkflowStartRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.encoded_object import EncodedObject
         from ..models.workflow_start_options import WorkflowStartOptions
         from ..models.workflow_state_options import WorkflowStateOptions
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         workflow_id = d.pop("workflowId")
 
         iwf_workflow_type = d.pop("iwfWorkflowType")
@@ -113,13 +116,9 @@ class WorkflowStartRequest:
 
         start_state_id = d.pop("startStateId", UNSET)
 
-        wait_for_completion_state_ids = cast(
-            List[str], d.pop("waitForCompletionStateIds", UNSET)
-        )
+        wait_for_completion_state_ids = cast(list[str], d.pop("waitForCompletionStateIds", UNSET))
 
-        wait_for_completion_state_execution_ids = cast(
-            List[str], d.pop("waitForCompletionStateExecutionIds", UNSET)
-        )
+        wait_for_completion_state_execution_ids = cast(list[str], d.pop("waitForCompletionStateExecutionIds", UNSET))
 
         _state_input = d.pop("stateInput", UNSET)
         state_input: Union[Unset, EncodedObject]
@@ -140,9 +139,7 @@ class WorkflowStartRequest:
         if isinstance(_workflow_start_options, Unset):
             workflow_start_options = UNSET
         else:
-            workflow_start_options = WorkflowStartOptions.from_dict(
-                _workflow_start_options
-            )
+            workflow_start_options = WorkflowStartOptions.from_dict(_workflow_start_options)
 
         workflow_start_request = cls(
             workflow_id=workflow_id,
@@ -161,7 +158,7 @@ class WorkflowStartRequest:
         return workflow_start_request
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
@@ -11,26 +13,25 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="WorkflowGetSearchAttributesResponse")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class WorkflowGetSearchAttributesResponse:
     """
     Attributes:
-        search_attributes (Union[Unset, List['SearchAttribute']]):
+        search_attributes (Union[Unset, list['SearchAttribute']]):
     """
 
-    search_attributes: Union[Unset, List["SearchAttribute"]] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    search_attributes: Union[Unset, list["SearchAttribute"]] = UNSET
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        search_attributes: Union[Unset, List[Dict[str, Any]]] = UNSET
+    def to_dict(self) -> dict[str, Any]:
+        search_attributes: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.search_attributes, Unset):
             search_attributes = []
             for search_attributes_item_data in self.search_attributes:
                 search_attributes_item = search_attributes_item_data.to_dict()
-
                 search_attributes.append(search_attributes_item)
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
         if search_attributes is not UNSET:
@@ -39,16 +40,14 @@ class WorkflowGetSearchAttributesResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.search_attribute import SearchAttribute
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         search_attributes = []
         _search_attributes = d.pop("searchAttributes", UNSET)
         for search_attributes_item_data in _search_attributes or []:
-            search_attributes_item = SearchAttribute.from_dict(
-                search_attributes_item_data
-            )
+            search_attributes_item = SearchAttribute.from_dict(search_attributes_item_data)
 
             search_attributes.append(search_attributes_item)
 
@@ -60,7 +59,7 @@ class WorkflowGetSearchAttributesResponse:
         return workflow_get_search_attributes_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

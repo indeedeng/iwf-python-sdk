@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
@@ -11,7 +13,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="StateCompletionOutput")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class StateCompletionOutput:
     """
     Attributes:
@@ -23,16 +25,18 @@ class StateCompletionOutput:
     completed_state_id: str
     completed_state_execution_id: str
     completed_state_output: Union[Unset, "EncodedObject"] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         completed_state_id = self.completed_state_id
+
         completed_state_execution_id = self.completed_state_execution_id
-        completed_state_output: Union[Unset, Dict[str, Any]] = UNSET
+
+        completed_state_output: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.completed_state_output, Unset):
             completed_state_output = self.completed_state_output.to_dict()
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -46,10 +50,10 @@ class StateCompletionOutput:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.encoded_object import EncodedObject
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         completed_state_id = d.pop("completedStateId")
 
         completed_state_execution_id = d.pop("completedStateExecutionId")
@@ -71,7 +75,7 @@ class StateCompletionOutput:
         return state_completion_output
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

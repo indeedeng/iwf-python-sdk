@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..models.channel_request_status import ChannelRequestStatus
 from ..types import UNSET, Unset
@@ -12,7 +14,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="SignalResult")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class SignalResult:
     """
     Attributes:
@@ -26,18 +28,20 @@ class SignalResult:
     signal_request_status: ChannelRequestStatus
     signal_channel_name: str
     signal_value: Union[Unset, "EncodedObject"] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         command_id = self.command_id
+
         signal_request_status = self.signal_request_status.value
 
         signal_channel_name = self.signal_channel_name
-        signal_value: Union[Unset, Dict[str, Any]] = UNSET
+
+        signal_value: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.signal_value, Unset):
             signal_value = self.signal_value.to_dict()
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -52,10 +56,10 @@ class SignalResult:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.encoded_object import EncodedObject
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         command_id = d.pop("commandId")
 
         signal_request_status = ChannelRequestStatus(d.pop("signalRequestStatus"))
@@ -80,7 +84,7 @@ class SignalResult:
         return signal_result
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

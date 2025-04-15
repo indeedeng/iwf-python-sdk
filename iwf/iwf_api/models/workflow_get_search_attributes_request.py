@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
@@ -11,32 +13,33 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="WorkflowGetSearchAttributesRequest")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class WorkflowGetSearchAttributesRequest:
     """
     Attributes:
         workflow_id (str):
         workflow_run_id (Union[Unset, str]):
-        keys (Union[Unset, List['SearchAttributeKeyAndType']]):
+        keys (Union[Unset, list['SearchAttributeKeyAndType']]):
     """
 
     workflow_id: str
     workflow_run_id: Union[Unset, str] = UNSET
-    keys: Union[Unset, List["SearchAttributeKeyAndType"]] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    keys: Union[Unset, list["SearchAttributeKeyAndType"]] = UNSET
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         workflow_id = self.workflow_id
+
         workflow_run_id = self.workflow_run_id
-        keys: Union[Unset, List[Dict[str, Any]]] = UNSET
+
+        keys: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.keys, Unset):
             keys = []
             for keys_item_data in self.keys:
                 keys_item = keys_item_data.to_dict()
-
                 keys.append(keys_item)
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -51,10 +54,10 @@ class WorkflowGetSearchAttributesRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.search_attribute_key_and_type import SearchAttributeKeyAndType
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         workflow_id = d.pop("workflowId")
 
         workflow_run_id = d.pop("workflowRunId", UNSET)
@@ -76,7 +79,7 @@ class WorkflowGetSearchAttributesRequest:
         return workflow_get_search_attributes_request
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:
