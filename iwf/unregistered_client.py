@@ -1,6 +1,7 @@
 import http
 from dataclasses import dataclass
 from http import HTTPStatus
+from httpx import Timeout
 from typing import Any, List, Optional, Type, TypeVar
 
 from iwf.client_options import ClientOptions
@@ -121,7 +122,11 @@ class UnregisteredClient:
         self.client_options = client_options
         self.api_client = Client(
             base_url=client_options.server_url,
-            timeout=client_options.api_timeout,
+            timeout=(
+                Timeout(client_options.api_timeout)
+                if client_options.api_timeout
+                else None
+            ),
             raise_on_unexpected_status=True,
         )
 
