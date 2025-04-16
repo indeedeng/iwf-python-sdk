@@ -1,3 +1,4 @@
+import json as jsonlib
 from httpx import Response
 
 from iwf.iwf_api.models import (
@@ -110,5 +111,8 @@ def process_workflow_abnormal_exit_error(
 
 
 def parse_unexpected_error(err) -> ErrorResponse:
-    response = Response(err.status_code, content=err.content)
-    return ErrorResponse.from_dict(response.json())
+    try:
+        response = Response(err.status_code, content=err.content)
+        return ErrorResponse.from_dict(response.json())
+    except Exception:
+        return ErrorResponse.from_dict(jsonlib.loads(err.content))
