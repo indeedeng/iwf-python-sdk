@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
@@ -12,32 +14,31 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="StateDecision")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class StateDecision:
     """
     Attributes:
-        next_states (Union[Unset, List['StateMovement']]):
+        next_states (Union[Unset, list['StateMovement']]):
         conditional_close (Union[Unset, WorkflowConditionalClose]):
     """
 
-    next_states: Union[Unset, List["StateMovement"]] = UNSET
+    next_states: Union[Unset, list["StateMovement"]] = UNSET
     conditional_close: Union[Unset, "WorkflowConditionalClose"] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        next_states: Union[Unset, List[Dict[str, Any]]] = UNSET
+    def to_dict(self) -> dict[str, Any]:
+        next_states: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.next_states, Unset):
             next_states = []
             for next_states_item_data in self.next_states:
                 next_states_item = next_states_item_data.to_dict()
-
                 next_states.append(next_states_item)
 
-        conditional_close: Union[Unset, Dict[str, Any]] = UNSET
+        conditional_close: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.conditional_close, Unset):
             conditional_close = self.conditional_close.to_dict()
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
         if next_states is not UNSET:
@@ -48,11 +49,11 @@ class StateDecision:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.state_movement import StateMovement
         from ..models.workflow_conditional_close import WorkflowConditionalClose
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         next_states = []
         _next_states = d.pop("nextStates", UNSET)
         for next_states_item_data in _next_states or []:
@@ -76,7 +77,7 @@ class StateDecision:
         return state_decision
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

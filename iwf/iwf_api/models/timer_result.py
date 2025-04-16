@@ -1,13 +1,15 @@
-from typing import Any, Dict, List, Type, TypeVar
+from collections.abc import Mapping
+from typing import Any, TypeVar
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..models.timer_status import TimerStatus
 
 T = TypeVar("T", bound="TimerResult")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class TimerResult:
     """
     Attributes:
@@ -17,13 +19,14 @@ class TimerResult:
 
     command_id: str
     timer_status: TimerStatus
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         command_id = self.command_id
+
         timer_status = self.timer_status.value
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -35,8 +38,8 @@ class TimerResult:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         command_id = d.pop("commandId")
 
         timer_status = TimerStatus(d.pop("timerStatus"))
@@ -50,7 +53,7 @@ class TimerResult:
         return timer_result
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

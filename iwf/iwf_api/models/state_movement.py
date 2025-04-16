@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
@@ -12,7 +14,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="StateMovement")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class StateMovement:
     """
     Attributes:
@@ -26,21 +28,22 @@ class StateMovement:
     state_input: Union[Unset, "EncodedObject"] = UNSET
     state_options: Union[Unset, "WorkflowStateOptions"] = UNSET
     wait_for_key: Union[Unset, str] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         state_id = self.state_id
-        state_input: Union[Unset, Dict[str, Any]] = UNSET
+
+        state_input: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.state_input, Unset):
             state_input = self.state_input.to_dict()
 
-        state_options: Union[Unset, Dict[str, Any]] = UNSET
+        state_options: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.state_options, Unset):
             state_options = self.state_options.to_dict()
 
         wait_for_key = self.wait_for_key
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -57,11 +60,11 @@ class StateMovement:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.encoded_object import EncodedObject
         from ..models.workflow_state_options import WorkflowStateOptions
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         state_id = d.pop("stateId")
 
         _state_input = d.pop("stateInput", UNSET)
@@ -91,7 +94,7 @@ class StateMovement:
         return state_movement
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

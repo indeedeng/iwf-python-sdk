@@ -1,51 +1,44 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import httpx
 
 from ... import errors
-from ...client import Client
+from ...client import AuthenticatedClient, Client
 from ...models.error_response import ErrorResponse
-from ...models.workflow_get_search_attributes_request import (
-    WorkflowGetSearchAttributesRequest,
-)
-from ...models.workflow_get_search_attributes_response import (
-    WorkflowGetSearchAttributesResponse,
-)
+from ...models.workflow_get_search_attributes_request import WorkflowGetSearchAttributesRequest
+from ...models.workflow_get_search_attributes_response import WorkflowGetSearchAttributesResponse
 from ...types import Response
 
 
 def _get_kwargs(
     *,
-    client: Client,
-    json_body: WorkflowGetSearchAttributesRequest,
-) -> Dict[str, Any]:
-    url = "{}/api/v1/workflow/searchattributes/get".format(client.base_url)
+    body: WorkflowGetSearchAttributesRequest,
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
 
-    headers: Dict[str, str] = client.get_headers()
-    cookies: Dict[str, Any] = client.get_cookies()
-
-    json_json_body = json_body.to_dict()
-
-    return {
+    _kwargs: dict[str, Any] = {
         "method": "post",
-        "url": url,
-        "headers": headers,
-        "cookies": cookies,
-        "timeout": client.get_timeout(),
-        "follow_redirects": client.follow_redirects,
-        "json": json_json_body,
+        "url": "/api/v1/workflow/searchattributes/get",
     }
+
+    _body = body.to_dict()
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
-    *, client: Client, response: httpx.Response
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Optional[Union[ErrorResponse, WorkflowGetSearchAttributesResponse]]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = WorkflowGetSearchAttributesResponse.from_dict(response.json())
 
         return response_200
-    if response.status_code == HTTPStatus.BAD_REQUEST:
+    if response.status_code == 400:
         response_400 = ErrorResponse.from_dict(response.json())
 
         return response_400
@@ -56,7 +49,7 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Client, response: httpx.Response
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Response[Union[ErrorResponse, WorkflowGetSearchAttributesResponse]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
@@ -68,13 +61,13 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Client,
-    json_body: WorkflowGetSearchAttributesRequest,
+    client: Union[AuthenticatedClient, Client],
+    body: WorkflowGetSearchAttributesRequest,
 ) -> Response[Union[ErrorResponse, WorkflowGetSearchAttributesResponse]]:
     """get workflow search attributes
 
     Args:
-        json_body (WorkflowGetSearchAttributesRequest):
+        body (WorkflowGetSearchAttributesRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -85,12 +78,10 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
-        client=client,
-        json_body=json_body,
+        body=body,
     )
 
-    response = httpx.request(
-        verify=client.verify_ssl,
+    response = client.get_httpx_client().request(
         **kwargs,
     )
 
@@ -99,13 +90,13 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Client,
-    json_body: WorkflowGetSearchAttributesRequest,
+    client: Union[AuthenticatedClient, Client],
+    body: WorkflowGetSearchAttributesRequest,
 ) -> Optional[Union[ErrorResponse, WorkflowGetSearchAttributesResponse]]:
     """get workflow search attributes
 
     Args:
-        json_body (WorkflowGetSearchAttributesRequest):
+        body (WorkflowGetSearchAttributesRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -117,19 +108,19 @@ def sync(
 
     return sync_detailed(
         client=client,
-        json_body=json_body,
+        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
-    client: Client,
-    json_body: WorkflowGetSearchAttributesRequest,
+    client: Union[AuthenticatedClient, Client],
+    body: WorkflowGetSearchAttributesRequest,
 ) -> Response[Union[ErrorResponse, WorkflowGetSearchAttributesResponse]]:
     """get workflow search attributes
 
     Args:
-        json_body (WorkflowGetSearchAttributesRequest):
+        body (WorkflowGetSearchAttributesRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -140,25 +131,23 @@ async def asyncio_detailed(
     """
 
     kwargs = _get_kwargs(
-        client=client,
-        json_body=json_body,
+        body=body,
     )
 
-    async with httpx.AsyncClient(verify=client.verify_ssl) as _client:
-        response = await _client.request(**kwargs)
+    response = await client.get_async_httpx_client().request(**kwargs)
 
     return _build_response(client=client, response=response)
 
 
 async def asyncio(
     *,
-    client: Client,
-    json_body: WorkflowGetSearchAttributesRequest,
+    client: Union[AuthenticatedClient, Client],
+    body: WorkflowGetSearchAttributesRequest,
 ) -> Optional[Union[ErrorResponse, WorkflowGetSearchAttributesResponse]]:
     """get workflow search attributes
 
     Args:
-        json_body (WorkflowGetSearchAttributesRequest):
+        body (WorkflowGetSearchAttributesRequest):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -171,6 +160,6 @@ async def asyncio(
     return (
         await asyncio_detailed(
             client=client,
-            json_body=json_body,
+            body=body,
         )
     ).parsed

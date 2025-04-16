@@ -1,6 +1,8 @@
-from typing import Any, Dict, List, Type, TypeVar, Union, cast
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union, cast
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..models.search_attribute_value_type import SearchAttributeValueType
 from ..types import UNSET, Unset
@@ -8,7 +10,7 @@ from ..types import UNSET, Unset
 T = TypeVar("T", bound="SearchAttribute")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class SearchAttribute:
     """
     Attributes:
@@ -17,7 +19,7 @@ class SearchAttribute:
         integer_value (Union[Unset, int]):
         double_value (Union[Unset, float]):
         bool_value (Union[Unset, bool]):
-        string_array_value (Union[Unset, List[str]]):
+        string_array_value (Union[Unset, list[str]]):
         value_type (Union[Unset, SearchAttributeValueType]):
     """
 
@@ -26,17 +28,22 @@ class SearchAttribute:
     integer_value: Union[Unset, int] = UNSET
     double_value: Union[Unset, float] = UNSET
     bool_value: Union[Unset, bool] = UNSET
-    string_array_value: Union[Unset, List[str]] = UNSET
+    string_array_value: Union[Unset, list[str]] = UNSET
     value_type: Union[Unset, SearchAttributeValueType] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         key = self.key
+
         string_value = self.string_value
+
         integer_value = self.integer_value
+
         double_value = self.double_value
+
         bool_value = self.bool_value
-        string_array_value: Union[Unset, List[str]] = UNSET
+
+        string_array_value: Union[Unset, list[str]] = UNSET
         if not isinstance(self.string_array_value, Unset):
             string_array_value = self.string_array_value
 
@@ -44,7 +51,7 @@ class SearchAttribute:
         if not isinstance(self.value_type, Unset):
             value_type = self.value_type.value
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
         if key is not UNSET:
@@ -65,8 +72,8 @@ class SearchAttribute:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         key = d.pop("key", UNSET)
 
         string_value = d.pop("stringValue", UNSET)
@@ -77,7 +84,7 @@ class SearchAttribute:
 
         bool_value = d.pop("boolValue", UNSET)
 
-        string_array_value = cast(List[str], d.pop("stringArrayValue", UNSET))
+        string_array_value = cast(list[str], d.pop("stringArrayValue", UNSET))
 
         _value_type = d.pop("valueType", UNSET)
         value_type: Union[Unset, SearchAttributeValueType]
@@ -100,7 +107,7 @@ class SearchAttribute:
         return search_attribute
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

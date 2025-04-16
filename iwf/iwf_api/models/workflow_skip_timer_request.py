@@ -1,13 +1,15 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="WorkflowSkipTimerRequest")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class WorkflowSkipTimerRequest:
     """
     Attributes:
@@ -23,16 +25,20 @@ class WorkflowSkipTimerRequest:
     workflow_run_id: Union[Unset, str] = UNSET
     timer_command_id: Union[Unset, str] = UNSET
     timer_command_index: Union[Unset, int] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         workflow_id = self.workflow_id
+
         workflow_state_execution_id = self.workflow_state_execution_id
+
         workflow_run_id = self.workflow_run_id
+
         timer_command_id = self.timer_command_id
+
         timer_command_index = self.timer_command_index
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -50,8 +56,8 @@ class WorkflowSkipTimerRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         workflow_id = d.pop("workflowId")
 
         workflow_state_execution_id = d.pop("workflowStateExecutionId")
@@ -74,7 +80,7 @@ class WorkflowSkipTimerRequest:
         return workflow_skip_timer_request
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

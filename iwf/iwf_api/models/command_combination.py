@@ -1,28 +1,30 @@
-from typing import Any, Dict, List, Type, TypeVar, Union, cast
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union, cast
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="CommandCombination")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class CommandCombination:
     """
     Attributes:
-        command_ids (Union[Unset, List[str]]):
+        command_ids (Union[Unset, list[str]]):
     """
 
-    command_ids: Union[Unset, List[str]] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    command_ids: Union[Unset, list[str]] = UNSET
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
-        command_ids: Union[Unset, List[str]] = UNSET
+    def to_dict(self) -> dict[str, Any]:
+        command_ids: Union[Unset, list[str]] = UNSET
         if not isinstance(self.command_ids, Unset):
             command_ids = self.command_ids
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
         if command_ids is not UNSET:
@@ -31,9 +33,9 @@ class CommandCombination:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        command_ids = cast(List[str], d.pop("commandIds", UNSET))
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        command_ids = cast(list[str], d.pop("commandIds", UNSET))
 
         command_combination = cls(
             command_ids=command_ids,
@@ -43,7 +45,7 @@ class CommandCombination:
         return command_combination
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
@@ -11,7 +13,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="WorkflowSignalRequest")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class WorkflowSignalRequest:
     """
     Attributes:
@@ -25,17 +27,20 @@ class WorkflowSignalRequest:
     signal_channel_name: str
     workflow_run_id: Union[Unset, str] = UNSET
     signal_value: Union[Unset, "EncodedObject"] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         workflow_id = self.workflow_id
+
         signal_channel_name = self.signal_channel_name
+
         workflow_run_id = self.workflow_run_id
-        signal_value: Union[Unset, Dict[str, Any]] = UNSET
+
+        signal_value: Union[Unset, dict[str, Any]] = UNSET
         if not isinstance(self.signal_value, Unset):
             signal_value = self.signal_value.to_dict()
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -51,10 +56,10 @@ class WorkflowSignalRequest:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.encoded_object import EncodedObject
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         workflow_id = d.pop("workflowId")
 
         signal_channel_name = d.pop("signalChannelName")
@@ -79,7 +84,7 @@ class WorkflowSignalRequest:
         return workflow_signal_request
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

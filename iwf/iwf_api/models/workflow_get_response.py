@@ -1,6 +1,8 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..models.workflow_error_type import WorkflowErrorType
 from ..models.workflow_status import WorkflowStatus
@@ -13,34 +15,34 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="WorkflowGetResponse")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class WorkflowGetResponse:
     """
     Attributes:
         workflow_run_id (str):
         workflow_status (WorkflowStatus):
-        results (Union[Unset, List['StateCompletionOutput']]):
+        results (Union[Unset, list['StateCompletionOutput']]):
         error_type (Union[Unset, WorkflowErrorType]):
         error_message (Union[Unset, str]):
     """
 
     workflow_run_id: str
     workflow_status: WorkflowStatus
-    results: Union[Unset, List["StateCompletionOutput"]] = UNSET
+    results: Union[Unset, list["StateCompletionOutput"]] = UNSET
     error_type: Union[Unset, WorkflowErrorType] = UNSET
     error_message: Union[Unset, str] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         workflow_run_id = self.workflow_run_id
+
         workflow_status = self.workflow_status.value
 
-        results: Union[Unset, List[Dict[str, Any]]] = UNSET
+        results: Union[Unset, list[dict[str, Any]]] = UNSET
         if not isinstance(self.results, Unset):
             results = []
             for results_item_data in self.results:
                 results_item = results_item_data.to_dict()
-
                 results.append(results_item)
 
         error_type: Union[Unset, str] = UNSET
@@ -49,7 +51,7 @@ class WorkflowGetResponse:
 
         error_message = self.error_message
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -67,10 +69,10 @@ class WorkflowGetResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.state_completion_output import StateCompletionOutput
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         workflow_run_id = d.pop("workflowRunId")
 
         workflow_status = WorkflowStatus(d.pop("workflowStatus"))
@@ -103,7 +105,7 @@ class WorkflowGetResponse:
         return workflow_get_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -1,6 +1,7 @@
 import http
 from dataclasses import dataclass
 from http import HTTPStatus
+from httpx import Timeout
 from typing import Any, List, Optional, Type, TypeVar
 
 from iwf.client_options import ClientOptions
@@ -121,7 +122,7 @@ class UnregisteredClient:
         self.client_options = client_options
         self.api_client = Client(
             base_url=client_options.server_url,
-            timeout=client_options.api_timeout,
+            timeout=Timeout(client_options.api_timeout),
             raise_on_unexpected_status=True,
         )
 
@@ -204,7 +205,7 @@ class UnregisteredClient:
         workflow_start_response = handler_error_and_return(
             post_api_v1_workflow_start.sync_detailed(
                 client=self.api_client,
-                json_body=request,
+                body=request,
             )
         )
         if workflow_start_response is None or not isinstance(
@@ -231,7 +232,7 @@ class UnregisteredClient:
         try:
             response = post_api_v_1_workflow_get_with_wait.sync_detailed(
                 client=self.api_client,
-                json_body=request,
+                body=request,
             )
         except errors.UnexpectedStatus as err:
             err_resp = parse_unexpected_error(err)
@@ -297,7 +298,7 @@ class UnregisteredClient:
         try:
             response = post_api_v1_workflow_rpc.sync_detailed(
                 client=self.api_client,
-                json_body=request,
+                body=request,
             )
         except errors.UnexpectedStatus as err:
             err_resp = parse_unexpected_error(err)
@@ -333,7 +334,7 @@ class UnregisteredClient:
 
         response = post_api_v1_workflow_signal.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
         handler_error_and_return(response)
 
@@ -368,7 +369,7 @@ class UnregisteredClient:
 
         response = post_api_v1_workflow_reset.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
         return handler_error_and_return(response)
 
@@ -388,7 +389,7 @@ class UnregisteredClient:
         )
         response = post_api_v1_workflow_timer_skip.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
         handler_error_and_return(response)
 
@@ -408,7 +409,7 @@ class UnregisteredClient:
         )
         response = post_api_v1_workflow_timer_skip.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
         handler_error_and_return(response)
 
@@ -427,7 +428,7 @@ class UnregisteredClient:
             request.reason = options.reason
         response = post_api_v1_workflow_stop.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
         return handler_error_and_return(response)
 
@@ -442,7 +443,7 @@ class UnregisteredClient:
         )
         response = post_api_v1_workflow_get.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
         return handler_error_and_return(response)
 
@@ -460,7 +461,7 @@ class UnregisteredClient:
             request.keys = attribute_keys
         response = post_api_v1_workflow_dataobjects_get.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
         return handler_error_and_return(response)
 
@@ -479,7 +480,7 @@ class UnregisteredClient:
         )
 
         response = post_api_v1_workflow_dataobjects_set.sync_detailed(
-            client=self.api_client, json_body=request
+            client=self.api_client, body=request
         )
         return handler_error_and_return(response)
 
@@ -489,7 +490,7 @@ class UnregisteredClient:
     ) -> WorkflowSearchResponse:
         response = post_api_v1_workflow_search.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
         return handler_error_and_return(response)
 
@@ -507,7 +508,7 @@ class UnregisteredClient:
             request.keys = attribute_keys
         response = post_api_v1_workflow_searchattributes_get.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
         return handler_error_and_return(response)
 
@@ -524,7 +525,7 @@ class UnregisteredClient:
         )
         response = post_api_v1_workflow_searchattributes_set.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
         return handler_error_and_return(response)
 
@@ -539,7 +540,7 @@ class UnregisteredClient:
 
         response = post_api_v_1_workflow_wait_for_state_completion.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
 
         return handler_error_and_return(response)
@@ -556,7 +557,7 @@ class UnregisteredClient:
 
         response = post_api_v_1_workflow_wait_for_state_completion.sync_detailed(
             client=self.api_client,
-            json_body=request,
+            body=request,
         )
 
         return handler_error_and_return(response)

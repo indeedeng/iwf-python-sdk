@@ -1,6 +1,8 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..models.executing_state_id_mode import ExecutingStateIdMode
 from ..types import UNSET, Unset
@@ -8,7 +10,7 @@ from ..types import UNSET, Unset
 T = TypeVar("T", bound="WorkflowConfig")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class WorkflowConfig:
     """
     Attributes:
@@ -24,19 +26,22 @@ class WorkflowConfig:
     continue_as_new_page_size_in_bytes: Union[Unset, int] = UNSET
     optimize_activity: Union[Unset, bool] = UNSET
     optimize_timer: Union[Unset, bool] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         executing_state_id_mode: Union[Unset, str] = UNSET
         if not isinstance(self.executing_state_id_mode, Unset):
             executing_state_id_mode = self.executing_state_id_mode.value
 
         continue_as_new_threshold = self.continue_as_new_threshold
+
         continue_as_new_page_size_in_bytes = self.continue_as_new_page_size_in_bytes
+
         optimize_activity = self.optimize_activity
+
         optimize_timer = self.optimize_timer
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
         if executing_state_id_mode is not UNSET:
@@ -44,9 +49,7 @@ class WorkflowConfig:
         if continue_as_new_threshold is not UNSET:
             field_dict["continueAsNewThreshold"] = continue_as_new_threshold
         if continue_as_new_page_size_in_bytes is not UNSET:
-            field_dict["continueAsNewPageSizeInBytes"] = (
-                continue_as_new_page_size_in_bytes
-            )
+            field_dict["continueAsNewPageSizeInBytes"] = continue_as_new_page_size_in_bytes
         if optimize_activity is not UNSET:
             field_dict["optimizeActivity"] = optimize_activity
         if optimize_timer is not UNSET:
@@ -55,8 +58,8 @@ class WorkflowConfig:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         _executing_state_id_mode = d.pop("executingStateIdMode", UNSET)
         executing_state_id_mode: Union[Unset, ExecutingStateIdMode]
         if isinstance(_executing_state_id_mode, Unset):
@@ -66,9 +69,7 @@ class WorkflowConfig:
 
         continue_as_new_threshold = d.pop("continueAsNewThreshold", UNSET)
 
-        continue_as_new_page_size_in_bytes = d.pop(
-            "continueAsNewPageSizeInBytes", UNSET
-        )
+        continue_as_new_page_size_in_bytes = d.pop("continueAsNewPageSizeInBytes", UNSET)
 
         optimize_activity = d.pop("optimizeActivity", UNSET)
 
@@ -86,7 +87,7 @@ class WorkflowConfig:
         return workflow_config
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

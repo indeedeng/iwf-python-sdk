@@ -1,13 +1,15 @@
-from typing import Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union
 
-import attr
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="RetryPolicy")
 
 
-@attr.s(auto_attribs=True)
+@_attrs_define
 class RetryPolicy:
     """
     Attributes:
@@ -23,16 +25,20 @@ class RetryPolicy:
     maximum_interval_seconds: Union[Unset, int] = UNSET
     maximum_attempts: Union[Unset, int] = UNSET
     maximum_attempts_duration_seconds: Union[Unset, int] = UNSET
-    additional_properties: Dict[str, Any] = attr.ib(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         initial_interval_seconds = self.initial_interval_seconds
+
         backoff_coefficient = self.backoff_coefficient
+
         maximum_interval_seconds = self.maximum_interval_seconds
+
         maximum_attempts = self.maximum_attempts
+
         maximum_attempts_duration_seconds = self.maximum_attempts_duration_seconds
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
         if initial_interval_seconds is not UNSET:
@@ -44,15 +50,13 @@ class RetryPolicy:
         if maximum_attempts is not UNSET:
             field_dict["maximumAttempts"] = maximum_attempts
         if maximum_attempts_duration_seconds is not UNSET:
-            field_dict["maximumAttemptsDurationSeconds"] = (
-                maximum_attempts_duration_seconds
-            )
+            field_dict["maximumAttemptsDurationSeconds"] = maximum_attempts_duration_seconds
 
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         initial_interval_seconds = d.pop("initialIntervalSeconds", UNSET)
 
         backoff_coefficient = d.pop("backoffCoefficient", UNSET)
@@ -61,9 +65,7 @@ class RetryPolicy:
 
         maximum_attempts = d.pop("maximumAttempts", UNSET)
 
-        maximum_attempts_duration_seconds = d.pop(
-            "maximumAttemptsDurationSeconds", UNSET
-        )
+        maximum_attempts_duration_seconds = d.pop("maximumAttemptsDurationSeconds", UNSET)
 
         retry_policy = cls(
             initial_interval_seconds=initial_interval_seconds,
@@ -77,7 +79,7 @@ class RetryPolicy:
         return retry_policy
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

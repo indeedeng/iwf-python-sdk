@@ -1,6 +1,5 @@
 import json as jsonlib
-
-from httpx._utils import guess_json_utf
+from httpx import Response
 
 from iwf.iwf_api.models import (
     ErrorResponse,
@@ -112,9 +111,8 @@ def process_workflow_abnormal_exit_error(
 
 
 def parse_unexpected_error(err) -> ErrorResponse:
-    encoding = guess_json_utf(err.content)
-    if encoding is not None:
-        err_dict = jsonlib.loads(err.content.decode(encoding))
-    else:
-        err_dict = jsonlib.loads(err.content)
-    return ErrorResponse.from_dict(err_dict)
+    try:
+        response = Response(err.status_code, content=err.content)
+        return ErrorResponse.from_dict(response.json())
+    except Exception:
+        return ErrorResponse.from_dict(jsonlib.loads(err.content))
