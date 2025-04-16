@@ -112,8 +112,5 @@ def process_workflow_abnormal_exit_error(
 
 
 def parse_unexpected_error(err) -> ErrorResponse:
-    try:
-        response = Response(err.status_code, content=err.content)
-        return ErrorResponse.from_dict(response.json())
-    except:
-        return ErrorResponse.from_dict(jsonlib.loads(err.content))
+    response = Response(err.status_code, content=err.content)
+    return ErrorResponse.from_dict(response.json())
