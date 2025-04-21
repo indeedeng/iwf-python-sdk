@@ -3,9 +3,6 @@ import time
 import unittest
 
 from iwf.client import Client
-from iwf.command_request import CommandRequest, InternalChannelCommand
-from iwf.command_results import CommandResults
-from iwf.communication import Communication
 from iwf.errors import (
     WorkflowAlreadyStartedError,
     WorkflowCanceled,
@@ -16,51 +13,16 @@ from iwf.errors import (
     WorkflowTimeout,
 )
 from iwf.iwf_api.models import WorkflowStopType
-from iwf.persistence import Persistence
-from iwf.state_decision import StateDecision
-from iwf.state_schema import StateSchema
 from iwf.stop_workflow_options import StopWorkflowOptions
 from iwf.tests.worker_server import registry
-from iwf.workflow import ObjectWorkflow
-from iwf.workflow_context import WorkflowContext
-from iwf.workflow_state import T, WorkflowState
-
-test_channel_name = "test-name"
-
-
-class WaitState(WorkflowState[None]):
-    def wait_until(
-        self,
-        ctx: WorkflowContext,
-        input: T,
-        persistence: Persistence,
-        communication: Communication,
-    ) -> CommandRequest:
-        return CommandRequest.for_all_command_completed(
-            InternalChannelCommand.by_name(test_channel_name)
-        )
-
-    def execute(
-        self,
-        ctx: WorkflowContext,
-        input: T,
-        command_results: CommandResults,
-        persistence: Persistence,
-        communication: Communication,
-    ) -> StateDecision:
-        return StateDecision.graceful_complete_workflow()
-
-
-class WaitInternalChannelWorkflow(ObjectWorkflow):
-    def get_workflow_states(self) -> StateSchema:
-        return StateSchema.with_starting_state(WaitState())
+from iwf.tests.workflows.wait_internal_channel_workflow import (
+    WaitInternalChannelWorkflow,
+)
 
 
 class TestWorkflowErrors(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        wf = WaitInternalChannelWorkflow()
-        registry.add_workflow(wf)
         cls.client = Client(registry)
 
     def test_workflow_timeout(self):

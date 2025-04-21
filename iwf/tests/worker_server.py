@@ -7,7 +7,7 @@ from iwf.iwf_api.models import (
     WorkflowStateWaitUntilRequest,
     WorkflowWorkerRpcRequest,
 )
-from iwf.registry import Registry
+from iwf.tests import registry
 from iwf.worker_service import (
     WorkerService,
 )
@@ -15,8 +15,6 @@ from iwf.worker_service import (
 # NOTE: set this to true when debugging(using breakpoints)
 # so that it keep the thread running so that we can see the error in history
 debug_mode: bool = False
-
-registry = Registry()
 
 _flask_app = Flask(__name__)
 

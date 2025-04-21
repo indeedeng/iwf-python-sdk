@@ -1,55 +1,19 @@
 import inspect
 import time
 import unittest
-from typing import Union
 
 from iwf.client import Client
-from iwf.command_results import CommandResults
-from iwf.communication import Communication
 from iwf.errors import WorkflowFailed
-from iwf.iwf_api.models import RetryPolicy
 from iwf.iwf_api.models.id_reuse_policy import IDReusePolicy
-from iwf.persistence import Persistence
-from iwf.state_decision import StateDecision
-from iwf.state_schema import StateSchema
-from iwf.tests.test_basic_workflow import BasicWorkflow
 from iwf.tests.worker_server import registry
-from iwf.workflow import ObjectWorkflow
-from iwf.workflow_context import WorkflowContext
+from iwf.tests.workflows.abnormal_exit_workflow import AbnormalExitWorkflow
+from iwf.tests.workflows.basic_workflow import BasicWorkflow
 from iwf.workflow_options import WorkflowOptions
-from iwf.workflow_state import T, WorkflowState
-from iwf.workflow_state_options import WorkflowStateOptions
-
-
-class AbnormalExitState1(WorkflowState[Union[int, str]]):
-    def execute(
-        self,
-        ctx: WorkflowContext,
-        input: T,
-        command_results: CommandResults,
-        persistence: Persistence,
-        communication: Communication,
-    ) -> StateDecision:
-        raise RuntimeError("abnormal exit state")
-
-    def get_state_options(self) -> WorkflowStateOptions:
-        return WorkflowStateOptions(
-            execute_api_retry_policy=RetryPolicy(maximum_attempts=1)
-        )
-
-
-class AbnormalExitWorkflow(ObjectWorkflow):
-    def get_workflow_states(self) -> StateSchema:
-        return StateSchema.with_starting_state(AbnormalExitState1())
 
 
 class TestAbnormalWorkflow(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        abnormal_exit_wf = AbnormalExitWorkflow()
-        basic_wf = BasicWorkflow()
-        registry.add_workflow(abnormal_exit_wf)
-        registry.add_workflow(basic_wf)
         cls.client = Client(registry)
 
     def test_abnormal_exit_workflow(self):

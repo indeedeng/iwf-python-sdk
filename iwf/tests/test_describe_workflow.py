@@ -3,54 +3,15 @@ import time
 import unittest
 
 from iwf.client import Client
-from iwf.command_request import CommandRequest, TimerCommand
-from iwf.command_results import CommandResults
-from iwf.communication import Communication
 from iwf.errors import WorkflowNotExistsError
 from iwf.iwf_api.models import WorkflowStatus
-from iwf.persistence import Persistence
-from iwf.state_decision import StateDecision
-from iwf.state_schema import StateSchema
+from iwf.tests.workflows.describe_workflow import DescribeWorkflow
 from iwf.tests.worker_server import registry
-from iwf.workflow import ObjectWorkflow
-from iwf.workflow_context import WorkflowContext
-from iwf.workflow_state import T, WorkflowState
-
-
-class WaitState(WorkflowState[None]):
-    def wait_until(
-        self,
-        ctx: WorkflowContext,
-        input: T,
-        persistence: Persistence,
-        communication: Communication,
-    ) -> CommandRequest:
-        return CommandRequest.for_all_command_completed(
-            TimerCommand.by_seconds(10),
-        )
-
-    def execute(
-        self,
-        ctx: WorkflowContext,
-        input: T,
-        command_results: CommandResults,
-        persistence: Persistence,
-        communication: Communication,
-    ) -> StateDecision:
-
-        return StateDecision.graceful_complete_workflow()
-
-
-class DescribeWorkflow(ObjectWorkflow):
-    def get_workflow_states(self) -> StateSchema:
-        return StateSchema.with_starting_state(WaitState())
 
 
 class TestDescribeWorkflow(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        wf = DescribeWorkflow()
-        registry.add_workflow(wf)
         cls.client = Client(registry)
 
     def test_describe_workflow(self):
