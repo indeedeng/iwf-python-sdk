@@ -162,5 +162,5 @@ class TestRPCs(unittest.TestCase):
         assert res2 == 2
 
         self.client.invoke_rpc(wf_id, RPCWorkflow.test_rpc_publish_channel)
-        result = self.client.get_simple_workflow_result_with_wait(wf_id, str)
+        result = self.client.wait_for_workflow_completion(wf_id, str)
         assert result == "done"

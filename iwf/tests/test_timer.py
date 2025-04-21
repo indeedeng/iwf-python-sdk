@@ -1,5 +1,6 @@
 import inspect
 import time
+import unittest
 
 from iwf.client import Client
 from iwf.command_request import CommandRequest, TimerCommand
@@ -43,18 +44,22 @@ class TimerWorkflow(ObjectWorkflow):
         return StateSchema.with_starting_state(WaitState())
 
 
-wf = TimerWorkflow()
-registry.add_workflow(wf)
-client = Client(registry)
+class TestTimer(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        wf = TimerWorkflow()
+        registry.add_workflow(wf)
+        cls.client = Client(registry)
 
+    def test_timer(self):
+        wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-def test_timer_workflow():
-    wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
-
-    client.start_workflow(TimerWorkflow, wf_id, 100, 5)
-    time.sleep(1)
-    client.skip_timer_at_command_index(wf_id, WaitState)
-    start_ms = time.time_ns() / 1000000
-    client.get_simple_workflow_result_with_wait(wf_id, None)
-    elapsed_ms = time.time_ns() / 1000000 - start_ms
-    assert 3000 <= elapsed_ms <= 6000, f"expected 5000 ms timer, actual is {elapsed_ms}"
+        self.client.start_workflow(TimerWorkflow, wf_id, 100, 5)
+        time.sleep(1)
+        self.client.skip_timer_at_command_index(wf_id, WaitState)
+        start_ms = time.time_ns() / 1000000
+        self.client.wait_for_workflow_completion(wf_id, None)
+        elapsed_ms = time.time_ns() / 1000000 - start_ms
+        assert (
+            3000 <= elapsed_ms <= 6000
+        ), f"expected 5000 ms timer, actual is {elapsed_ms}"

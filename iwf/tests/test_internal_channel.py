@@ -129,14 +129,15 @@ class InternalChannelWorkflow(ObjectWorkflow):
         )
 
 
-wf = InternalChannelWorkflow()
-registry.add_workflow(wf)
-client = Client(registry)
-
-
 class TestConditionalComplete(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        wf = InternalChannelWorkflow()
+        registry.add_workflow(wf)
+        cls.client = Client(registry)
+
     def test_internal_channel_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-        client.start_workflow(InternalChannelWorkflow, wf_id, 100, None)
-        client.get_simple_workflow_result_with_wait(wf_id, None)
+        self.client.start_workflow(InternalChannelWorkflow, wf_id, 100, None)
+        self.client.wait_for_workflow_completion(wf_id, None)

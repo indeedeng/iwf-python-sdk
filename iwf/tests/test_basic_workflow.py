@@ -63,12 +63,11 @@ class BasicWorkflow(ObjectWorkflow):
         return StateSchema.with_starting_state(State1(), State2())
 
 
-hello_wf = BasicWorkflow()
-registry.add_workflow(hello_wf)
-client = Client(registry)
-
-
 class TestWorkflowErrors(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.client = Client(registry)
+
     def test_basic_workflow(self):
         original_request_id = "1"
         later_request_id = "2"
@@ -85,12 +84,12 @@ class TestWorkflowErrors(unittest.TestCase):
             workflow_already_started_options_1
         )
 
-        wf_run_id = client.start_workflow(
+        wf_run_id = self.client.start_workflow(
             BasicWorkflow, wf_id, 100, "input", start_options_1
         )
         assert wf_run_id
 
-        wf_run_id = client.start_workflow(
+        wf_run_id = self.client.start_workflow(
             BasicWorkflow, wf_id, 100, "input", start_options_1
         )
         assert wf_run_id
@@ -106,10 +105,10 @@ class TestWorkflowErrors(unittest.TestCase):
         )
 
         with self.assertRaises(WorkflowAlreadyStartedError):
-            wf_run_id = client.start_workflow(
+            wf_run_id = self.client.start_workflow(
                 BasicWorkflow, wf_id, 100, "input", start_options_2
             )
             assert wf_run_id
 
-        res = client.wait_for_workflow_completion(wf_id, str)
+        res = self.client.wait_for_workflow_completion(wf_id, str)
         assert res == "done"

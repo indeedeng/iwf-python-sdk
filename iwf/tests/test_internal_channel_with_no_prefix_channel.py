@@ -100,21 +100,22 @@ class InternalChannelWorkflowWithNoPrefixChannel(ObjectWorkflow):
         )
 
 
-wf = InternalChannelWorkflowWithNoPrefixChannel()
-registry.add_workflow(wf)
-client = Client(registry)
-
-
 class TestInternalChannelWithNoPrefix(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        wf = InternalChannelWorkflowWithNoPrefixChannel()
+        registry.add_workflow(wf)
+        cls.client = Client(registry)
+
     def test_internal_channel_workflow_with_no_prefix_channel(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-        client.start_workflow(
+        self.client.start_workflow(
             InternalChannelWorkflowWithNoPrefixChannel, wf_id, 5, None
         )
 
         with self.assertRaises(Exception) as context:
-            client.wait_for_workflow_completion(wf_id, None)
+            self.client.wait_for_workflow_completion(wf_id, None)
 
         self.assertIn("FAILED", context.exception.workflow_status)
         self.assertIn(

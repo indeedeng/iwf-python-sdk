@@ -121,5 +121,5 @@ class TestConditionalComplete(unittest.TestCase):
                 # wait for a second so that the workflow is in execute state
                 time.sleep(1)
 
-        res = self.client.get_simple_workflow_result_with_wait(wf_id)
+        res = self.client.wait_for_workflow_completion(wf_id)
         assert res == 3

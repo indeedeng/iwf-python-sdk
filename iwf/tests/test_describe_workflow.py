@@ -46,24 +46,25 @@ class DescribeWorkflow(ObjectWorkflow):
         return StateSchema.with_starting_state(WaitState())
 
 
-wf = DescribeWorkflow()
-registry.add_workflow(wf)
-client = Client(registry)
-
-
 class TestDescribeWorkflow(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        wf = DescribeWorkflow()
+        registry.add_workflow(wf)
+        cls.client = Client(registry)
+
     def test_describe_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
-        client.start_workflow(DescribeWorkflow, wf_id, 100)
-        workflow_info = client.describe_workflow(wf_id)
+        self.client.start_workflow(DescribeWorkflow, wf_id, 100)
+        workflow_info = self.client.describe_workflow(wf_id)
         assert workflow_info.workflow_status == WorkflowStatus.RUNNING
 
         # Stop the workflow
-        client.stop_workflow(wf_id)
+        self.client.stop_workflow(wf_id)
 
     def test_describe_workflow_when_workflow_not_exists(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
 
         with self.assertRaises(WorkflowNotExistsError):
-            client.describe_workflow(wf_id)
+            self.client.describe_workflow(wf_id)

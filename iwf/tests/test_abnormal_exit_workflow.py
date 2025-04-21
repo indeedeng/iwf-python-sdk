@@ -43,23 +43,28 @@ class AbnormalExitWorkflow(ObjectWorkflow):
         return StateSchema.with_starting_state(AbnormalExitState1())
 
 
-abnormal_exit_wf = AbnormalExitWorkflow()
-registry.add_workflow(abnormal_exit_wf)
-client = Client(registry)
-
-
 class TestAbnormalWorkflow(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        abnormal_exit_wf = AbnormalExitWorkflow()
+        basic_wf = BasicWorkflow()
+        registry.add_workflow(abnormal_exit_wf)
+        registry.add_workflow(basic_wf)
+        cls.client = Client(registry)
+
     def test_abnormal_exit_workflow(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
-        startOptions = WorkflowOptions(
+        start_options = WorkflowOptions(
             workflow_id_reuse_policy=IDReusePolicy.ALLOW_IF_PREVIOUS_EXITS_ABNORMALLY
         )
 
-        client.start_workflow(AbnormalExitWorkflow, wf_id, 100, "input", startOptions)
+        self.client.start_workflow(
+            AbnormalExitWorkflow, wf_id, 100, "input", start_options
+        )
         with self.assertRaises(WorkflowFailed):
-            client.get_simple_workflow_result_with_wait(wf_id, str)
+            self.client.wait_for_workflow_completion(wf_id, str)
 
         # Starting a workflow with the same ID should be allowed since the previous failed abnormally
-        client.start_workflow(BasicWorkflow, wf_id, 100, "input", startOptions)
-        res = client.get_simple_workflow_result_with_wait(wf_id, str)
+        self.client.start_workflow(BasicWorkflow, wf_id, 100, "input", start_options)
+        res = self.client.wait_for_workflow_completion(wf_id, str)
         assert res == "done"
