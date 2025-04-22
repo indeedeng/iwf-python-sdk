@@ -47,6 +47,9 @@ class Registry:
         for wf in wfs:
             self.add_workflow(wf)
 
+    def get_workflow_types(self) -> dict[str, ObjectWorkflow]:
+        return self._workflow_store
+
     def get_workflow_with_check(self, wf_type: str) -> ObjectWorkflow:
         wf = self._workflow_store.get(wf_type)
         if wf is None:

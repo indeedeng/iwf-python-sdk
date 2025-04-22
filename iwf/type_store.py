@@ -38,6 +38,12 @@ class TypeStore:
 
         return t
 
+    def get_key_to_type_store(self) -> dict[str, Optional[type]]:
+        return self._name_to_type_store
+
+    def get_prefix_to_type_store(self) -> dict[str, Optional[type]]:
+        return self._prefix_to_type_store
+
     def add_internal_channel_def(self, obj: CommunicationMethod):
         if self._class_type != Type.INTERNAL_CHANNEL:
             raise ValueError(

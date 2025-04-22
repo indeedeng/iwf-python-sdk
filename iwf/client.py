@@ -4,20 +4,24 @@ from typing import Any, Callable, List, Optional, Type, TypeVar, Union
 from typing_extensions import deprecated
 
 from iwf.client_options import ClientOptions
+from iwf.data_attribute_state import DataAttributePrefixState, DataAttributeState
 from iwf.errors import InvalidArgumentError, NotRegisteredError, WorkflowDefinitionError
 from iwf.iwf_api.models import (
     SearchAttribute,
     SearchAttributeKeyAndType,
     SearchAttributeValueType,
 )
+from iwf.iwf_api.models.encoded_object import EncodedObject
 from iwf.iwf_api.types import Unset
 from iwf.registry import Registry
 from iwf.reset_workflow_type_and_options import ResetWorkflowTypeAndOptions
+from iwf.search_attribute_state import SearchAttributeState
 from iwf.stop_workflow_options import StopWorkflowOptions
 from iwf.unregistered_client import UnregisteredClient, UnregisteredWorkflowOptions
 from iwf.utils.iwf_typing import unset_to_none
 from iwf.utils.persistence_utils import get_search_attribute_value
 from iwf.workflow import ObjectWorkflow, get_workflow_type_by_class
+from iwf.workflow_definition import WorkflowDefinition
 from iwf.workflow_info import WorkflowInfo
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state import (
@@ -288,6 +292,106 @@ class Client:
 
         response = self._unregistered_client.get_workflow(workflow_id, run_id)
         return WorkflowInfo(workflow_status=response.workflow_status)
+
+    def get_workflow_types(self) -> list[type[ObjectWorkflow]]:
+        return [w.__class__ for w in self._registry.get_workflow_types().values()]
+
+    def get_workflow_definition(
+        self,
+        workflow_class: type[ObjectWorkflow],
+        workflow_id: Optional[str] = None,
+        workflow_run_id: Optional[str] = None,
+    ) -> WorkflowDefinition:
+        wf_type = get_workflow_type_by_class(workflow_class)
+        run_id = workflow_run_id if workflow_run_id is not None else ""
+
+        sa_states = self._build_search_attribute_states(wf_type, workflow_id, run_id)
+        da_states, da_prefix_states = self._build_data_attribute_states(
+            wf_type,
+            workflow_id,
+            run_id,
+        )
+        signal_channel_types = self._registry.get_signal_channel_types(wf_type)
+        rpc_infos = self._registry.get_rpc_infos(wf_type)
+
+        workflow_status = (
+            None
+            if not workflow_id
+            else self._unregistered_client.get_workflow(
+                workflow_id, run_id
+            ).workflow_status
+        )
+
+        return WorkflowDefinition(
+            workflow_status=workflow_status,
+            search_attributes=sa_states,
+            data_attributes=da_states,
+            data_attribute_prefixes=da_prefix_states,
+            signal_channel_types=signal_channel_types,
+            rpc_infos=rpc_infos,
+        )
+
+    def _build_search_attribute_states(
+        self, wf_type: str, workflow_id: Optional[str], workflow_run_id: str
+    ) -> dict[str, SearchAttributeState]:
+        declared_sas = self._registry.get_search_attribute_types(wf_type)
+        set_sas = {}
+        if workflow_id:
+            sa_dicts = self._unregistered_client.get_workflow_search_attributes(
+                workflow_id,
+                workflow_run_id,
+                [
+                    SearchAttributeKeyAndType(key=key, value_type=t)
+                    for key, t in declared_sas.items()
+                ],
+            ).to_dict()["searchAttributes"]
+            set_sas = {
+                sa_dict["key"]: SearchAttribute.from_dict(sa_dict)
+                for sa_dict in sa_dicts
+            }
+        return {
+            key: SearchAttributeState(key, sa_type, set_sas.get(key))
+            for key, sa_type in declared_sas.items()
+        }
+
+    def _build_data_attribute_states(
+        self,
+        wf_type: str,
+        workflow_id: Optional[str],
+        workflow_run_id: str,
+    ) -> tuple[dict[str, DataAttributeState], dict[str, DataAttributePrefixState]]:
+        da_type_store = self._registry.get_data_attribute_types(wf_type)
+        set_das = {}
+        if workflow_id:
+            kvs = self._unregistered_client.get_workflow_data_attributes(
+                workflow_id,
+                workflow_run_id,
+                None,
+            ).to_dict()["objects"]
+            set_das = {
+                kv["key"]: self._options.object_encoder.decode(
+                    EncodedObject(**kv["value"])
+                )
+                for kv in kvs
+            }
+        da_states = {
+            key: DataAttributeState(key, da_type, set_das.get(key))
+            for key, da_type in da_type_store.get_key_to_type_store().items()
+        }
+
+        da_prefix_states = {
+            prefix: DataAttributePrefixState(
+                prefix,
+                da_type,
+                [
+                    DataAttributeState(key, da_type, da)
+                    for key, da in set_das.items()
+                    if key.startswith(prefix)
+                ],
+            )
+            for prefix, da_type in da_type_store.get_prefix_to_type_store().items()
+        }
+        return da_states, da_prefix_states
 
     def skip_timer_by_command_id(
         self,
