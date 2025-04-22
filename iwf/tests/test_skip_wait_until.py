@@ -1,3 +1,5 @@
+import unittest
+
 from iwf.command_request import CommandRequest
 from iwf.command_results import CommandResults
 from iwf.communication import Communication
@@ -55,14 +57,15 @@ class IndirectStateNotSkip(DirectStateSkip):
         raise NotImplementedError
 
 
-def test_should_skip_wait_until() -> None:
-    direct_skip = DirectStateSkip()
-    direct_not_skip = DirectStateNotSkip()
-    indirect_skip = IndirectStateSkip()
-    indirect_not_skip = IndirectStateNotSkip()
+class TestSkipWaitUntil(unittest.TestCase):
+    def test_should_skip_wait_until(self) -> None:
+        direct_skip = DirectStateSkip()
+        direct_not_skip = DirectStateNotSkip()
+        indirect_skip = IndirectStateSkip()
+        indirect_not_skip = IndirectStateNotSkip()
 
-    assert should_skip_wait_until(direct_skip)
-    assert should_skip_wait_until(indirect_skip)
+        assert should_skip_wait_until(direct_skip)
+        assert should_skip_wait_until(indirect_skip)
 
-    assert not should_skip_wait_until(direct_not_skip)
-    assert not should_skip_wait_until(indirect_not_skip)
+        assert not should_skip_wait_until(direct_not_skip)
+        assert not should_skip_wait_until(indirect_not_skip)
