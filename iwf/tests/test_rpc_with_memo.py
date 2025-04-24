@@ -1,5 +1,6 @@
 import inspect
 import time
+from typing import Optional
 import unittest
 
 from iwf.command_request import CommandRequest, InternalChannelCommand
@@ -189,7 +190,7 @@ class RpcMemoWorkflow(ObjectWorkflow):
         input: str,
         persistence: Persistence,
         communication: Communication,
-    ) -> str | None:
+    ) -> Optional[str]:
         if not ctx.workflow_id or not ctx.workflow_run_id:
             raise RuntimeError("invalid context")
         return persistence.get_search_attribute_keyword(TEST_SEARCH_ATTRIBUTE_KEY)
@@ -201,7 +202,7 @@ class RpcMemoWorkflow(ObjectWorkflow):
         input: str,
         persistence: Persistence,
         communication: Communication,
-    ) -> str | None:
+    ) -> Optional[str] | None:
         if not ctx.workflow_id or not ctx.workflow_run_id:
             raise RuntimeError("invalid context")
         return persistence.get_search_attribute_keyword(TEST_SEARCH_ATTRIBUTE_KEY)
