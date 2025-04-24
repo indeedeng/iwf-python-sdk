@@ -38,12 +38,18 @@ class DataAttributes:
     def set_data_attribute(self, key: str, value: Any):
         is_registered = self._type_store.is_valid_name_or_prefix(key)
         if not is_registered:
-            raise WorkflowDefinitionError(f"data attribute %s is not registered {key}")
+            raise WorkflowDefinitionError(
+                f"data attribute {key} is not registered {key}"
+            )
 
         registered_type = self._type_store.get_type(key)
-        if registered_type is not None and not isinstance(value, registered_type):
+        if (
+            value is not None
+            and registered_type is not None
+            and not isinstance(value, registered_type)
+        ):
             raise WorkflowDefinitionError(
-                f"data attribute %s is of the right type {registered_type}"
+                f"data attribute {key} is of the right type {registered_type}"
             )
 
         encoded_value = self._object_encoder.encode(value)
