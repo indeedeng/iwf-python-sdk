@@ -106,6 +106,10 @@ class Client:
                 )
                 unreg_opts.initial_search_attributes = converted_sas
 
+        schema_options = self._registry.get_persistence_options(wf_type)
+        if schema_options.enable_caching:
+            unreg_opts.using_memo_for_data_attributes = schema_options.enable_caching
+
         starting_state_id = None
 
         if starting_state is not None:
@@ -188,8 +192,10 @@ class Client:
                         f"key {key} is not registered in workflow {wf_type}"
                     )
 
+        schema_options = self._registry.get_persistence_options(wf_type)
+
         response = self._unregistered_client.get_workflow_data_attributes(
-            workflow_id, workflow_run_id, keys
+            workflow_id, workflow_run_id, keys, schema_options.enable_caching
         )
 
         if not response.objects:
@@ -237,6 +243,10 @@ class Client:
         wf_type = get_workflow_type_by_rpc_method(rpc)
         rpc_name = rpc.__name__
         rpc_info = self._registry.get_rpc_infos(wf_type)[rpc_name]
+        schema_options = self._registry.get_persistence_options(wf_type)
+        use_memo = schema_options.enable_caching
+        if rpc_info.bypass_caching_for_strong_consistency:
+            use_memo = False
 
         return self._unregistered_client.invoke_rpc(
             input=input,
@@ -245,6 +255,7 @@ class Client:
             rpc_name=rpc_name,
             timeout_seconds=rpc_info.timeout_seconds,
             data_attribute_policy=rpc_info.data_attribute_loading_policy,
+            use_memo_for_data_attributes=use_memo,
             all_defined_search_attribute_types=[],
             return_type_hint=return_type_hint,
         )

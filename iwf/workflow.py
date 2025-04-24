@@ -1,6 +1,7 @@
 from abc import ABC
 
 from iwf.communication_schema import CommunicationSchema
+from iwf.persistence_options import PersistenceOptions
 from iwf.persistence_schema import PersistenceSchema
 from iwf.state_schema import StateSchema
 
@@ -42,6 +43,9 @@ class ObjectWorkflow(ABC):
             A persistence schema. Default to empty.
         """
         return PersistenceSchema()
+
+    def get_persistence_options(self) -> PersistenceOptions:
+        return PersistenceOptions.get_default()
 
     def get_communication_schema(self) -> CommunicationSchema:
         """
