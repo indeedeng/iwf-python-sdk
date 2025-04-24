@@ -202,7 +202,7 @@ class RpcMemoWorkflow(ObjectWorkflow):
         input: str,
         persistence: Persistence,
         communication: Communication,
-    ) -> Optional[str] | None:
+    ) -> Optional[str]:
         if not ctx.workflow_id or not ctx.workflow_run_id:
             raise RuntimeError("invalid context")
         return persistence.get_search_attribute_keyword(TEST_SEARCH_ATTRIBUTE_KEY)
