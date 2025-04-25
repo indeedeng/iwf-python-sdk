@@ -21,6 +21,14 @@ from iwf.workflow_context import WorkflowContext
 from iwf.workflow_state import WorkflowState
 
 
+"""
+NOTE: This workflow and its tests were translated from iwf-java-sdk, but currently, there is a
+discrepency between the sdks in their handling of empty graceful complete workflow
+messages. These tests will not pass, so they are curretly being skipped. They were added
+here for posterity.
+"""
+
+
 INTERNAL_CHANNEL_NAME = "test-channel-1"
 TEST_DATA_OBJECT_KEY = "data-obj-1"
 TEST_SEARCH_ATTRIBUTE_KEY = "CustomKeywordField"
