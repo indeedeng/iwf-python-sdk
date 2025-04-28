@@ -90,6 +90,7 @@ class UnregisteredWorkflowOptions:
     wait_for_completion_state_execution_ids: Optional[list[str]] = None
     wait_for_completion_state_ids: Optional[list[str]] = None
     initial_search_attributes: Optional[list[SearchAttribute]] = None
+    using_memo_for_data_attributes: Optional[bool] = None
 
 
 T = TypeVar("T")
@@ -190,6 +191,11 @@ class UnregisteredClient:
                     )
                 start_options.data_attributes = das
 
+            if options.using_memo_for_data_attributes:
+                start_options.use_memo_for_data_attributes = (
+                    options.using_memo_for_data_attributes
+                )
+
             request.workflow_start_options = start_options
 
             if options.wait_for_completion_state_execution_ids:
@@ -280,6 +286,7 @@ class UnregisteredClient:
         data_attribute_policy: Optional[PersistenceLoadingPolicy],
         all_defined_search_attribute_types: list[SearchAttributeKeyAndType],
         return_type_hint: Optional[Type[T]] = None,
+        use_memo_for_data_attributes: bool = False,
         search_attribute_policy: Optional[PersistenceLoadingPolicy] = None,
     ) -> Optional[T]:
         request = WorkflowRpcRequest(
@@ -288,6 +295,7 @@ class UnregisteredClient:
             workflow_run_id=workflow_run_id,
             rpc_name=rpc_name,
             timeout_seconds=timeout_seconds,
+            use_memo_for_data_attributes=use_memo_for_data_attributes,
             search_attributes=all_defined_search_attribute_types,
         )
         if data_attribute_policy is not None:
@@ -452,6 +460,7 @@ class UnregisteredClient:
         workflow_id: str,
         workflow_run_id: str,
         attribute_keys: Optional[List[str]] = None,
+        use_memo_for_data_attributes: Optional[bool] = None,
     ) -> WorkflowGetDataObjectsResponse:
         request = WorkflowGetDataObjectsRequest(
             workflow_id=workflow_id,
@@ -459,6 +468,8 @@ class UnregisteredClient:
         )
         if attribute_keys:
             request.keys = attribute_keys
+        if use_memo_for_data_attributes is not None:
+            request.use_memo_for_data_attributes = use_memo_for_data_attributes
         response = post_api_v1_workflow_dataobjects_get.sync_detailed(
             client=self.api_client,
             body=request,

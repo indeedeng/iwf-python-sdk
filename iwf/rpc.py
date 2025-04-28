@@ -16,6 +16,7 @@ class RPCInfo:
     params_order: Optional[list] = (
         None  # store this so that the rpc can be invoked with correct parameters
     )
+    bypass_caching_for_strong_consistency: bool = False
 
 
 rpc_definition_err = WorkflowDefinitionError(
@@ -27,6 +28,7 @@ rpc_definition_err = WorkflowDefinitionError(
 def rpc(
     timeout_seconds: int = 10,
     data_attribute_loading_policy: Optional[PersistenceLoadingPolicy] = None,
+    bypass_caching_for_strong_consistency: bool = False,
 ):
     def decorator(func):
         # preserve the properties of the original function.
@@ -40,6 +42,7 @@ def rpc(
             method_func=func,
             timeout_seconds=timeout_seconds,
             data_attribute_loading_policy=data_attribute_loading_policy,
+            bypass_caching_for_strong_consistency=bypass_caching_for_strong_consistency,
         )
         params = signature(func).parameters
 
