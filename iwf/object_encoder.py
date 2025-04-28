@@ -237,8 +237,8 @@ class BinaryNullPayloadConverter(EncodingPayloadConverter):
     def to_payload(self, value: Any) -> tuple[bool, Union[EncodedObject, Unset]]:
         """See base class."""
         if value is None:
-            return (True, Unset())
-        return (False, Unset())
+            return (True, UNSET)
+        return (False, UNSET)
 
     def from_payload(
         self,
@@ -269,7 +269,7 @@ class BinaryPlainPayloadConverter(EncodingPayloadConverter):
                     data=str(value),
                 ),
             )
-        return (False, Unset())
+        return (False, UNSET)
 
     def from_payload(
         self,
