@@ -22,7 +22,6 @@ class TestRpcWithMemo(unittest.TestCase):
     def setUpClass(cls):
         cls.client = Client(registry)
 
-    @unittest.skip("Currently broken: difference in behavior with the iwf-java-sdk")
     def test_rpc_memo_workflow_func1(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
         run_id = self.client.start_workflow(

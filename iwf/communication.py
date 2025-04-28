@@ -7,6 +7,7 @@ from iwf.iwf_api.models import (
     WorkflowWorkerRpcRequestInternalChannelInfos,
     WorkflowWorkerRpcRequestSignalChannelInfos,
 )
+from iwf.iwf_api.types import Unset
 from iwf.object_encoder import ObjectEncoder
 from iwf.state_movement import StateMovement
 from iwf.type_store import TypeStore
@@ -16,7 +17,7 @@ class Communication:
     _internal_channel_type_store: TypeStore
     _signal_channel_type_store: dict[str, Optional[type]]
     _object_encoder: ObjectEncoder
-    _to_publish_internal_channel: dict[str, list[EncodedObject]]
+    _to_publish_internal_channel: dict[str, list[Union[EncodedObject, Unset]]]
     _state_movements: list[StateMovement]
     _internal_channel_infos: Optional[WorkflowWorkerRpcRequestInternalChannelInfos]
     _signal_channel_infos: Optional[WorkflowWorkerRpcRequestSignalChannelInfos]

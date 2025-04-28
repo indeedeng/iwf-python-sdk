@@ -85,7 +85,9 @@ class WorkerService:
             unset_to_none(request.input_), rpc_info.input_type
         )
 
-        current_data_attributes: dict[str, typing.Union[EncodedObject, None]] = {}
+        current_data_attributes: dict[str, typing.Union[EncodedObject, None, Unset]] = (
+            {}
+        )
         if not isinstance(request.data_attributes, Unset):
             current_data_attributes = {
                 assert_not_unset(attr.key): unset_to_none(attr.value)
@@ -184,7 +186,9 @@ class WorkerService:
             unset_to_none(request.state_input), get_input_type(state)
         )
 
-        current_data_attributes: dict[str, typing.Union[EncodedObject, None]] = {}
+        current_data_attributes: dict[str, typing.Union[EncodedObject, None, Unset]] = (
+            {}
+        )
         if not isinstance(request.data_objects, Unset):
             current_data_attributes = {
                 assert_not_unset(attr.key): unset_to_none(attr.value)
@@ -267,7 +271,9 @@ class WorkerService:
             unset_to_none(request.state_input), get_input_type(state)
         )
 
-        current_data_attributes: dict[str, typing.Union[EncodedObject, None]] = {}
+        current_data_attributes: dict[str, typing.Union[EncodedObject, None, Unset]] = (
+            {}
+        )
         if not isinstance(request.data_objects, Unset):
             current_data_attributes = {
                 assert_not_unset(attr.key): unset_to_none(attr.value)
@@ -407,9 +413,11 @@ def _create_upsert_search_attributes(
     return sas
 
 
-def to_map(key_values: Union[None, Unset, List[KeyValue]]) -> dict[str, EncodedObject]:
+def to_map(
+    key_values: Union[None, Unset, List[KeyValue]],
+) -> dict[str, Union[EncodedObject, Unset]]:
     key_values = unset_to_none(key_values) or []
-    kvs = {}
+    kvs: dict[str, Union[EncodedObject, Unset]] = {}
     for kv in key_values:
         k = unset_to_none(kv.key)
         v = unset_to_none(kv.value)
