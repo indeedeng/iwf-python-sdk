@@ -1,19 +1,20 @@
-from typing import Any, List, Tuple
+from typing import Any, List, Tuple, Union
 
 from iwf.errors import WorkflowDefinitionError
 from iwf.iwf_api.models import EncodedObject, KeyValue
+from iwf.iwf_api.types import Unset
 from iwf.object_encoder import ObjectEncoder
 
 
 class StateExecutionLocals:
-    _record_events: dict[str, EncodedObject]
-    _attribute_name_to_encoded_object_map: dict[str, EncodedObject]
-    _upsert_attributes_to_return_to_server: dict[str, EncodedObject]
+    _record_events: dict[str, Union[EncodedObject, Unset]]
+    _attribute_name_to_encoded_object_map: dict[str, Union[EncodedObject, Unset]]
+    _upsert_attributes_to_return_to_server: dict[str, Union[EncodedObject, Unset]]
     _object_encoder: ObjectEncoder
 
     def __init__(
         self,
-        attribute_name_to_encoded_object_map: dict[str, EncodedObject],
+        attribute_name_to_encoded_object_map: dict[str, Union[EncodedObject, Unset]],
         object_encoder: ObjectEncoder,
     ):
         self._object_encoder = object_encoder

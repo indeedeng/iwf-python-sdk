@@ -33,7 +33,7 @@ from typing import (
 from typing_extensions import Literal
 
 from iwf.iwf_api.models import EncodedObject
-from iwf.iwf_api.types import Unset
+from iwf.iwf_api.types import UNSET, Unset
 
 # StrEnum is available in 3.11+
 if sys.version_info >= (3, 11):
@@ -50,14 +50,15 @@ class PayloadConverter(ABC):
     def to_payload(
         self,
         value: Any,
-    ) -> EncodedObject:
+    ) -> Union[EncodedObject, Unset]:
         """Encode values into payloads.
 
         Args:
             value: value to be converted
 
         Returns:
-            Converted payload.
+            A boolean to indicate if the payload was converted and the converted value
+            or Unset
 
         Raises:
             Exception: Any issue during conversion.
@@ -90,19 +91,20 @@ class EncodingPayloadConverter(ABC):
 
     @property
     @abstractmethod
-    def encoding(self) -> str:
+    def encoding(self) -> Union[str, Unset]:
         """Encoding for the payload this converter works with."""
         raise NotImplementedError
 
     @abstractmethod
-    def to_payload(self, value: Any) -> Optional[EncodedObject]:
+    def to_payload(self, value: Any) -> tuple[bool, Union[EncodedObject, Unset]]:
         """Encode a single value to a payload or None.
 
         Args:
             value: Value to be converted.
 
         Returns:
-            Payload of the value or None if unable to convert.
+            A boolean to indicate if the payload was converted and the converted value
+            or Unset
 
         Raises:
             TypeError: Value is not the expected type.
@@ -145,7 +147,7 @@ class CompositePayloadConverter(PayloadConverter):
         converters: List of payload converters to delegate to, in order.
     """
 
-    converters: Mapping[str, EncodingPayloadConverter]
+    converters: Mapping[Union[str, Unset], EncodingPayloadConverter]
 
     def __init__(self, *converters: EncodingPayloadConverter) -> None:
         """Initializes the data converter.
@@ -159,7 +161,7 @@ class CompositePayloadConverter(PayloadConverter):
     def to_payload(
         self,
         value: Any,
-    ) -> EncodedObject:
+    ) -> Union[EncodedObject, Unset]:
         """Encode values trying each converter.
 
         See base class. Always returns the same number of payloads as values.
@@ -169,12 +171,13 @@ class CompositePayloadConverter(PayloadConverter):
         """
         # We intentionally attempt these serially just in case a stateful
         # converter may rely on the previous values
-        payload = None
+        payload: Union[EncodedObject, Unset] = Unset()
+        is_encoded = False
         for converter in self.converters.values():
-            payload = converter.to_payload(value)
-            if payload is not None:
+            is_encoded, payload = converter.to_payload(value)
+            if is_encoded:
                 break
-        if payload is None:
+        if not is_encoded:
             raise RuntimeError(
                 f"Value of type {type(value)} has no known converter",
             )
@@ -194,7 +197,7 @@ class CompositePayloadConverter(PayloadConverter):
             RuntimeError: Error during decode
         """
         encoding = payload.encoding
-        assert isinstance(encoding, str)
+        assert isinstance(encoding, (str, Unset))
         converter = self.converters.get(encoding)
         if converter is None:
             raise KeyError(f"Unknown payload encoding {encoding}")
@@ -229,17 +232,15 @@ class BinaryNullPayloadConverter(EncodingPayloadConverter):
     """Converter for 'binary/null' payloads supporting None values."""
 
     @property
-    def encoding(self) -> str:
+    def encoding(self) -> Union[str, Unset]:
         """See base class."""
-        return "binary/null"
+        return UNSET
 
-    def to_payload(self, value: Any) -> Optional[EncodedObject]:
+    def to_payload(self, value: Any) -> tuple[bool, Union[EncodedObject, Unset]]:
         """See base class."""
         if value is None:
-            return EncodedObject(
-                encoding=self.encoding,
-            )
-        return None
+            return (True, UNSET)
+        return (False, UNSET)
 
     def from_payload(
         self,
@@ -256,18 +257,21 @@ class BinaryPlainPayloadConverter(EncodingPayloadConverter):
     """Converter for 'binary/plain' payloads supporting bytes values."""
 
     @property
-    def encoding(self) -> str:
+    def encoding(self) -> Union[str, Unset]:
         """See base class."""
         return "binary/plain"
 
-    def to_payload(self, value: Any) -> Optional[EncodedObject]:
+    def to_payload(self, value: Any) -> tuple[bool, Union[EncodedObject, Unset]]:
         """See base class."""
         if isinstance(value, bytes):
-            return EncodedObject(
-                encoding=self.encoding,
-                data=str(value),
+            return (
+                True,
+                EncodedObject(
+                    encoding=self.encoding,
+                    data=str(value),
+                ),
             )
-        return None
+        return (False, UNSET)
 
     def from_payload(
         self,
@@ -345,11 +349,11 @@ class JSONPlainPayloadConverter(EncodingPayloadConverter):
         self._custom_type_converters = custom_type_converters
 
     @property
-    def encoding(self) -> str:
+    def encoding(self) -> Union[str, Unset]:
         """See base class."""
         return self._encoding
 
-    def to_payload(self, value: Any) -> Optional[EncodedObject]:
+    def to_payload(self, value: Any) -> tuple[bool, Union[EncodedObject, Unset]]:
         """See base class."""
         # Check for pydantic then send warning
         if hasattr(value, "parse_obj"):
@@ -358,13 +362,16 @@ class JSONPlainPayloadConverter(EncodingPayloadConverter):
                 "https://github.com/temporalio/samples-python/tree/main/pydantic_converter for better support",
             )
         # We let JSON conversion errors be thrown to caller
-        return EncodedObject(
-            encoding=self.encoding,
-            data=json.dumps(
-                value,
-                cls=self._encoder,
-                separators=(",", ":"),
-                sort_keys=True,
+        return (
+            True,
+            EncodedObject(
+                encoding=self.encoding,
+                data=json.dumps(
+                    value,
+                    cls=self._encoder,
+                    separators=(",", ":"),
+                    sort_keys=True,
+                ),
             ),
         )
 
@@ -428,7 +435,7 @@ class PayloadCodec(ABC):
     @abstractmethod
     def encode(
         self,
-        payload: EncodedObject,
+        payload: Union[EncodedObject, Unset],
     ) -> EncodedObject:
         """Encode the given payloads.
 
@@ -486,7 +493,7 @@ class ObjectEncoder:
     def encode(
         self,
         value: Any,
-    ) -> EncodedObject:
+    ) -> Union[EncodedObject, Unset]:
         """Encode values into payloads.
 
         First converts values to payload then encodes payload using codec.
