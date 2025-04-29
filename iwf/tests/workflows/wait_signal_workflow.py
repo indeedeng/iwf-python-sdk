@@ -125,11 +125,11 @@ class WaitSignalWorkflow(ObjectWorkflow):
     def get_communication_schema(self) -> CommunicationSchema:
         return CommunicationSchema.create(
             CommunicationMethod.signal_channel_def(test_channel_int, int),
-            CommunicationMethod.signal_channel_def(test_channel_none, type(None)),
+            CommunicationMethod.signal_channel_def(test_channel_none, None),
             CommunicationMethod.signal_channel_def(test_channel_str, str),
-            CommunicationMethod.signal_channel_def(test_idle_channel_none, type(None)),
-            CommunicationMethod.signal_channel_def(test_channel1, type(None)),
-            CommunicationMethod.signal_channel_def(test_channel2, type(None)),
+            CommunicationMethod.signal_channel_def(test_idle_channel_none, None),
+            CommunicationMethod.signal_channel_def(test_channel1, None),
+            CommunicationMethod.signal_channel_def(test_channel2, None),
         )
 
     def get_workflow_states(self) -> StateSchema:

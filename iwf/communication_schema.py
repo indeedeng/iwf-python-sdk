@@ -16,9 +16,12 @@ class CommunicationMethod:
     is_prefix: bool
 
     @classmethod
-    def signal_channel_def(cls, name: str, value_type: type):
+    def signal_channel_def(cls, name: str, value_type: Union[type, None]):
         return CommunicationMethod(
-            name, CommunicationMethodType.SignalChannel, value_type, False
+            name,
+            CommunicationMethodType.SignalChannel,
+            value_type if value_type is not None else type(None),
+            False,
         )
 
     @classmethod
