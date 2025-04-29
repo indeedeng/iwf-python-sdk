@@ -57,7 +57,8 @@ class PayloadConverter(ABC):
             value: value to be converted
 
         Returns:
-            Converted payload or Unset.
+            A boolean to indicate if the payload was converted and the converted value
+            or Unset
 
         Raises:
             Exception: Any issue during conversion.
@@ -102,7 +103,8 @@ class EncodingPayloadConverter(ABC):
             value: Value to be converted.
 
         Returns:
-            Payload of the value or Unset if unable to convert.
+            A boolean to indicate if the payload was converted and the converted value
+            or Unset
 
         Raises:
             TypeError: Value is not the expected type.
