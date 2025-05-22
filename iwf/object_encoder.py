@@ -228,8 +228,8 @@ class DefaultPayloadConverter(CompositePayloadConverter):
         super().__init__(*DefaultPayloadConverter.default_encoding_payload_converters)
 
 
-class BinaryNullPayloadConverter(EncodingPayloadConverter):
-    """Converter for 'binary/null' payloads supporting None values."""
+class UnsetPayloadConverter(EncodingPayloadConverter):
+    """Converter for 'unset' payloads supporting None values."""
 
     @property
     def encoding(self) -> Union[str, Unset]:
@@ -251,6 +251,15 @@ class BinaryNullPayloadConverter(EncodingPayloadConverter):
         if isinstance(payload.data, str) and len(payload.data) > 0:
             raise RuntimeError("Expected empty data set for binary/null")
         return None
+
+
+class BinaryNullPayloadConverter(UnsetPayloadConverter):
+    """Converter for 'binary/null' payloads supporting None values."""
+
+    @property
+    def encoding(self) -> Union[str, Unset]:
+        """See base class."""
+        return "binary/null"
 
 
 class BinaryPlainPayloadConverter(EncodingPayloadConverter):
@@ -533,6 +542,7 @@ class ObjectEncoder:
 
 
 DefaultPayloadConverter.default_encoding_payload_converters = (
+    UnsetPayloadConverter(),
     BinaryNullPayloadConverter(),
     BinaryPlainPayloadConverter(),
     JSONPlainPayloadConverter(),
