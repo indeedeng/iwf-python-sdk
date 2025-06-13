@@ -23,12 +23,14 @@ class CommandResults:
         inter_state_channel_results (Union[Unset, list['InterStateChannelResult']]):
         timer_results (Union[Unset, list['TimerResult']]):
         state_start_api_succeeded (Union[Unset, bool]):
+        state_wait_until_failed (Union[Unset, bool]):
     """
 
     signal_results: Union[Unset, list["SignalResult"]] = UNSET
     inter_state_channel_results: Union[Unset, list["InterStateChannelResult"]] = UNSET
     timer_results: Union[Unset, list["TimerResult"]] = UNSET
     state_start_api_succeeded: Union[Unset, bool] = UNSET
+    state_wait_until_failed: Union[Unset, bool] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -55,6 +57,8 @@ class CommandResults:
 
         state_start_api_succeeded = self.state_start_api_succeeded
 
+        state_wait_until_failed = self.state_wait_until_failed
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -66,6 +70,8 @@ class CommandResults:
             field_dict["timerResults"] = timer_results
         if state_start_api_succeeded is not UNSET:
             field_dict["stateStartApiSucceeded"] = state_start_api_succeeded
+        if state_wait_until_failed is not UNSET:
+            field_dict["stateWaitUntilFailed"] = state_wait_until_failed
 
         return field_dict
 
@@ -99,11 +105,14 @@ class CommandResults:
 
         state_start_api_succeeded = d.pop("stateStartApiSucceeded", UNSET)
 
+        state_wait_until_failed = d.pop("stateWaitUntilFailed", UNSET)
+
         command_results = cls(
             signal_results=signal_results,
             inter_state_channel_results=inter_state_channel_results,
             timer_results=timer_results,
             state_start_api_succeeded=state_start_api_succeeded,
+            state_wait_until_failed=state_wait_until_failed,
         )
 
         command_results.additional_properties = d
