@@ -1,6 +1,6 @@
 import typing
 from dataclasses import dataclass
-from typing import Any, Union
+from typing import Any, Union, Optional
 
 from iwf.errors import WorkflowDefinitionError, NotRegisteredError
 from iwf.iwf_api.models import (
@@ -40,6 +40,7 @@ class CommandResults:
     timer_commands: list[TimerCommandResult]
     internal_channel_commands: list[InternalChannelCommandResult]
     signal_channel_commands: list[SignalChannelCommandResult]
+    wait_until_api_succeeded: Optional[bool] = None
 
 
 def from_idl_command_results(
@@ -48,9 +49,10 @@ def from_idl_command_results(
     signal_channel_types: dict[str, typing.Optional[type]],
     object_encoder: ObjectEncoder,
 ) -> CommandResults:
-    results = CommandResults(list(), list(), list())
+    results = CommandResults(list(), list(), list(), None)
     if isinstance(idl_results, Unset):
         return results
+
     if not isinstance(idl_results.timer_results, Unset):
         for timer in idl_results.timer_results:
             results.timer_commands.append(
@@ -91,4 +93,10 @@ def from_idl_command_results(
                     sig.command_id,
                 )
             )
+
+    if not isinstance(idl_results.state_wait_until_failed, Unset):
+        # The server will set state_wait_until_failed to true if the waitUntil API failed.
+        # Hence, flag inversion is needed here to indicate that the waitUntil API succeeded.
+        results.wait_until_api_succeeded = not idl_results.state_wait_until_failed
+
     return results
