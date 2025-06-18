@@ -72,7 +72,7 @@ class StateOptionsWorkflow1(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
         return StateSchema.with_starting_state(InitState1())
 
+
 class StateOptionsWorkflow2(ObjectWorkflow):
     def get_workflow_states(self) -> StateSchema:
         return StateSchema.with_starting_state(InitState2())
-

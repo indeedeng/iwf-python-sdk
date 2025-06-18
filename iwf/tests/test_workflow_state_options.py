@@ -7,12 +7,15 @@ from iwf.iwf_api.models import IDReusePolicy
 from iwf.iwf_api.models import (
     PersistenceLoadingPolicy,
     PersistenceLoadingType,
-    WorkflowStateOptions as IdlWorkflowStateOptions, RetryPolicy,
+    WorkflowStateOptions as IdlWorkflowStateOptions,
+    RetryPolicy,
     WaitUntilApiFailurePolicy,
 )
 from iwf.tests.worker_server import registry
-from iwf.tests.workflows.state_options_workflow import (StateOptionsWorkflow1,
-                                                        StateOptionsWorkflow2)
+from iwf.tests.workflows.state_options_workflow import (
+    StateOptionsWorkflow1,
+    StateOptionsWorkflow2,
+)
 from iwf.workflow_options import WorkflowOptions
 from iwf.workflow_state_options import WorkflowStateOptions, _to_idl_state_options
 from ..errors import WorkflowFailed
@@ -44,6 +47,7 @@ class TestWorkflowStateOptions(unittest.TestCase):
         assert non_empty.state_id == "state-id-2"
 
     """Test that proceed_to_execute_when_wait_until_retry_exhausted correctly handles both enum values."""
+
     def test_proceed_to_execute_when_wait_until_retry_exhausted(self):
         retry_policy = RetryPolicy(maximum_attempts=1)
 
@@ -53,7 +57,10 @@ class TestWorkflowStateOptions(unittest.TestCase):
             wait_until_api_retry_policy=retry_policy,
         )
         result_proceed = _to_idl_state_options(False, options_proceed, {})
-        assert result_proceed.wait_until_api_failure_policy == WaitUntilApiFailurePolicy.PROCEED_ON_FAILURE
+        assert (
+            result_proceed.wait_until_api_failure_policy
+            == WaitUntilApiFailurePolicy.PROCEED_ON_FAILURE
+        )
 
         # Test FAIL_WORKFLOW_ON_FAILURE
         options_fail = WorkflowStateOptions(
@@ -61,7 +68,10 @@ class TestWorkflowStateOptions(unittest.TestCase):
             wait_until_api_retry_policy=retry_policy,
         )
         result_fail = _to_idl_state_options(False, options_fail, {})
-        assert result_fail.wait_until_api_failure_policy == WaitUntilApiFailurePolicy.FAIL_WORKFLOW_ON_FAILURE
+        assert (
+            result_fail.wait_until_api_failure_policy
+            == WaitUntilApiFailurePolicy.FAIL_WORKFLOW_ON_FAILURE
+        )
 
         # Test with None/unset value
         options = WorkflowStateOptions()
@@ -69,6 +79,7 @@ class TestWorkflowStateOptions(unittest.TestCase):
         # By default, wait_until_api_failure_policy should not be set when proceed_to_execute_when_wait_until_retry_exhausted is None
         # The IWF service will use FAIL_WORKFLOW_ON_FAILURE by default
         from iwf.iwf_api.types import Unset
+
         self.assertTrue(isinstance(result.wait_until_api_failure_policy, Unset))
 
     def test_proceed_on_failure(self):
@@ -82,10 +93,7 @@ class TestWorkflowStateOptions(unittest.TestCase):
         )
         output = self.client.wait_for_workflow_completion(wf_id)
 
-        assert (
-            output
-            == "InitState1_execute_completed"
-        )
+        assert output == "InitState1_execute_completed"
 
     def test_fail_workflow_on_failure(self):
         wf_id = f"{inspect.currentframe().f_code.co_name}-{time.time_ns()}"
