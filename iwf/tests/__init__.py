@@ -28,6 +28,8 @@ from iwf.tests.workflows.rpc_workflow import RPCWorkflow
 from iwf.tests.workflows.state_options_override_workflow import (
     StateOptionsOverrideWorkflow,
 )
+from iwf.tests.workflows.state_options_workflow import (StateOptionsWorkflow1,
+                                                        StateOptionsWorkflow2)
 from iwf.tests.workflows.timer_workflow import TimerWorkflow
 from iwf.tests.workflows.wait_for_state_with_state_execution_id_workflow import (
     WaitForStateWithStateExecutionIdWorkflow,
@@ -57,6 +59,8 @@ registry.add_workflow(RecoveryWorkflow())
 registry.add_workflow(RpcMemoWorkflow())
 registry.add_workflow(RPCWorkflow())
 registry.add_workflow(StateOptionsOverrideWorkflow())
+registry.add_workflow(StateOptionsWorkflow1())
+registry.add_workflow(StateOptionsWorkflow2())
 registry.add_workflow(TimerWorkflow())
 registry.add_workflow(WaitForStateWithStateExecutionIdWorkflow())
 registry.add_workflow(WaitForStateWithWaitForKeyWorkflow())

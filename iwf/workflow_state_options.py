@@ -108,17 +108,6 @@ def _to_idl_state_options(
             )
     if options.wait_until_api_retry_policy is not None:
         res.wait_until_api_retry_policy = options.wait_until_api_retry_policy
-    if options.proceed_to_execute_when_wait_until_retry_exhausted is not None:
-        if options.proceed_to_execute_when_wait_until_retry_exhausted:
-            res.wait_until_api_failure_policy = (
-                WaitUntilApiFailurePolicy.PROCEED_ON_FAILURE
-            )
-        else:
-            res.wait_until_api_failure_policy = (
-                WaitUntilApiFailurePolicy.FAIL_WORKFLOW_ON_FAILURE
-            )
-
-        pass
     if options.wait_until_api_timeout_seconds is not None:
         res.wait_until_api_timeout_seconds = options.wait_until_api_timeout_seconds
     if options.execute_api_retry_policy is not None:
