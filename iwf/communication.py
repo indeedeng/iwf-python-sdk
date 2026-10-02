@@ -1,3 +1,4 @@
+from threading import Lock
 from typing import Any, Optional, Union
 
 from iwf.errors import WorkflowDefinitionError, NotRegisteredError
@@ -34,6 +35,7 @@ class Communication:
         self._internal_channel_type_store = internal_channel_type_store
         self._signal_channel_type_store = signal_channel_type_store
         self._to_publish_internal_channel = {}
+        self._publish_lock = Lock()
         self._state_movements = []
         self._internal_channel_infos = internal_channel_infos
         self._signal_channel_infos = signal_channel_infos
@@ -64,11 +66,11 @@ class Communication:
             raise WorkflowDefinitionError(
                 f"InternalChannel value is not of type {registered_type}"
             )
-        vals = self._to_publish_internal_channel.get(channel_name)
-        if vals is None:
-            vals = []
-        vals.append(self._object_encoder.encode(value))
-        self._to_publish_internal_channel[channel_name] = vals
+        encoded_value = self._object_encoder.encode(value)
+        with self._publish_lock:
+            self._to_publish_internal_channel.setdefault(channel_name, []).append(
+                encoded_value
+            )
 
     def get_to_publishing_internal_channel(self) -> list[InterStateChannelPublishing]:
         pubs = []
